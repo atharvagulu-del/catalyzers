@@ -89,7 +89,7 @@ export default function Header() {
                             Results
                         </a>
                         <a
-                            href="/#about"
+                            href="/about"
                             className="text-sm font-medium hover:text-primary transition-colors"
                         >
                             About
@@ -135,6 +135,20 @@ export default function Header() {
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             Results
+                        </a>
+                        <a
+                            href="/teachers"
+                            className="text-lg font-medium hover:text-primary transition-colors py-2"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            Teachers
+                        </a>
+                        <a
+                            href="/about"
+                            className="text-lg font-medium hover:text-primary transition-colors py-2"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
+                            About
                         </a>
                         <a
                             href="/#about"
