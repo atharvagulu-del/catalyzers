@@ -105,7 +105,7 @@ export default function AboutPage() {
                             <p className="text-sm md:text-lg font-normal max-w-3xl mx-auto leading-relaxed text-gray-200">
                                 Catalyzers was created for students who are already studying in big coaching institutes but feel confused, left behind, or hesitant to ask doubts.
                                 <br /><br />
-                                In large classrooms, it's easy for some students to struggle silently — not because they are weak, but because they need personal attention and clearer explanations.
+                                In large classrooms, it&apos;s easy for some students to struggle silently — not because they are weak, but because they need personal attention and clearer explanations.
                                 <br /><br />
                                 At Catalyzers, we work alongside your main coaching institute to help you truly understand concepts, clear doubts without hesitation, and regain confidence in your preparation for JEE and NEET.
                             </p>
