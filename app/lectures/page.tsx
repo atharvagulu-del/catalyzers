@@ -5,19 +5,37 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
 
+import Image from "next/image";
+
 export default function LecturesPage() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <Header />
 
             <main className="flex-grow container px-4 md:px-6 py-12">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                        Explore our <span className="text-primary">Courses</span>
-                    </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Select your exam and class to start learning with our comprehensive video lectures, quizzes, and PYQs.
-                    </p>
+                <div className="relative text-center mb-16 py-16 md:py-32 overflow-hidden rounded-3xl shadow-xl">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <Image
+                            src="/assets/teachers/allteacher.jpg"
+                            alt="Teachers Background"
+                            fill
+                            className="object-cover object-[center_25%]"
+                            priority
+                        />
+                        {/* Dark Overlay */}
+                        <div className="absolute inset-0 bg-black/60"></div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative z-10 px-4">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                            Explore our <span className="text-primary-foreground text-yellow-400">Courses</span>
+                        </h1>
+                        <p className="text-lg text-gray-100 max-w-2xl mx-auto drop-shadow-md font-medium">
+                            Select your exam and class to start learning with our comprehensive video lectures, quizzes, and PYQs.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">

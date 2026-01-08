@@ -72,16 +72,26 @@ export default function LessonPage({ params, searchParams }: PageProps) {
                     <div className={`rounded-xl overflow-hidden shadow-2xl relative mb-8 group bg-white border border-gray-200 ${activeResource?.type === 'video' ? 'aspect-video bg-black' : 'min-h-[600px] flex flex-col'
                         }`}>
                         {activeResource?.type === 'video' ? (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                                {/* YouTube Embed Placeholder */}
-                                <div className="text-center text-white">
-                                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-transform cursor-pointer">
-                                        <Play className="h-8 w-8 text-white fill-white" />
+                            activeResource.url && activeResource.url !== 'placeholder' ? (
+                                <iframe
+                                    src={`https://www.youtube.com/embed/${activeResource.url}`}
+                                    title={activeResource.title}
+                                    className="w-full h-full object-cover"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                                    {/* YouTube Embed Placeholder */}
+                                    <div className="text-center text-white">
+                                        <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-transform cursor-pointer">
+                                            <Play className="h-8 w-8 text-white fill-white" />
+                                        </div>
+                                        <p className="font-semibold text-lg">Video Placeholder</p>
+                                        <p className="text-sm text-gray-400">Duration: {activeResource.duration || '10:00'}</p>
                                     </div>
-                                    <p className="font-semibold text-lg">Video Placeholder</p>
-                                    <p className="text-sm text-gray-400">Duration: {activeResource.duration || '10:00'}</p>
                                 </div>
-                            </div>
+                            )
                         ) : (activeResource?.type === 'quiz' || activeResource?.type === 'pyq') ? (
                             <div className="h-full overflow-y-auto bg-gray-50">
                                 <QuizInterface
@@ -137,26 +147,33 @@ export default function LessonPage({ params, searchParams }: PageProps) {
                             <h3 className="font-bold text-gray-900 mb-4">Up Next</h3>
                             <div className="space-y-4">
                                 {/* Option 1: Practice Test (if available and currently watching video) */}
-                                {activeResource.type === 'video' && chapter.resources.find(r => r.type === 'pyq') && (
-                                    <Link
-                                        href={`/lectures/${params.exam}/${params.slug}/${unit.id}/${chapter.id}?resource=${chapter.resources.find(r => r.type === 'pyq')?.id}`}
-                                        className="block group"
-                                    >
-                                        <div className="bg-white rounded-lg border border-gray-200 hover:border-blue-500 transition-all p-4 shadow-sm hover:shadow-md">
-                                            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2 block flex items-center gap-1">
-                                                <HelpCircle className="h-3 w-3" />
-                                                Practice
-                                            </span>
-                                            <h4 className="font-bold text-gray-800 mb-1 group-hover:text-blue-700 leading-tight">
-                                                Take Practice Test
-                                            </h4>
-                                            <div className="flex items-center text-sm text-gray-500">
-                                                <FileText className="h-3 w-3 mr-1" />
-                                                {chapter.resources.find(r => r.type === 'pyq')?.questionCount} Questions
+                                {activeResource.type === 'video' && (() => {
+                                    const nextRes = chapter.resources.find(r => r.type === 'pyq' || r.type === 'quiz');
+                                    if (!nextRes) return null;
+
+                                    const isFullTest = nextRes.type === 'quiz';
+
+                                    return (
+                                        <Link
+                                            href={`/lectures/${params.exam}/${params.slug}/${unit.id}/${chapter.id}?resource=${nextRes.id}`}
+                                            className="block group"
+                                        >
+                                            <div className={`bg-white rounded-lg border hover:border-${isFullTest ? 'orange' : 'blue'}-500 transition-all p-4 shadow-sm hover:shadow-md border-gray-200`}>
+                                                <span className={`text-xs font-bold text-${isFullTest ? 'orange' : 'blue'}-600 uppercase tracking-wider mb-2 block flex items-center gap-1`}>
+                                                    {isFullTest ? <Trophy className="h-3 w-3" /> : <HelpCircle className="h-3 w-3" />}
+                                                    {isFullTest ? 'Full Test' : 'Practice'}
+                                                </span>
+                                                <h4 className={`font-bold text-gray-800 mb-1 group-hover:text-${isFullTest ? 'orange' : 'blue'}-700 leading-tight`}>
+                                                    {nextRes.title || (isFullTest ? 'Take Full Chapter Test' : 'Take Practice Test')}
+                                                </h4>
+                                                <div className="flex items-center text-sm text-gray-500">
+                                                    <FileText className="h-3 w-3 mr-1" />
+                                                    {nextRes.questionCount} Questions
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Link>
-                                )}
+                                        </Link>
+                                    );
+                                })()}
 
                                 {/* Option 2: Next Topic / Chapter */}
                                 {(() => {
@@ -217,7 +234,7 @@ export default function LessonPage({ params, searchParams }: PageProps) {
                                                 </div>
                                             </Link>
                                         );
-                                    } else if (activeResource.type === 'pyq' || !chapter.resources.find(r => r.type === 'pyq')) {
+                                    } else if (activeResource.type === 'pyq' || activeResource.type === 'quiz' || !chapter.resources.find(r => r.type === 'pyq' || r.type === 'quiz')) {
                                         return (
                                             <div className="bg-green-50 rounded-lg p-4 text-center border border-green-100">
                                                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">

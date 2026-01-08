@@ -64,19 +64,19 @@ export default function TeachersPage() {
                             >
                                 <div
                                     className={`flex flex-col ${teacher.imagePosition === "right"
-                                            ? "md:flex-row-reverse"
-                                            : "md:flex-row"
+                                        ? "md:flex-row-reverse"
+                                        : "md:flex-row"
                                         } gap-8 md:gap-12 items-center`}
                                 >
                                     {/* Teacher Image */}
                                     <div className="w-full md:w-2/5 flex-shrink-0">
-                                        <div className="relative w-full aspect-square max-w-md mx-auto transform transition-transform duration-500 group-hover:scale-105">
+                                        <div className="relative w-full aspect-square max-w-md mx-auto overflow-hidden transform transition-transform duration-500 group-hover:scale-105">
                                             <Image
                                                 src={teacher.image}
                                                 alt={teacher.name}
                                                 width={400}
                                                 height={400}
-                                                className="w-full h-full object-contain drop-shadow-2xl"
+                                                className="w-full h-full object-cover object-top drop-shadow-2xl scale-[1.35] origin-top"
                                                 priority
                                             />
                                         </div>

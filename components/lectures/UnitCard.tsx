@@ -133,7 +133,7 @@ export default function UnitCard({ unit, exam, slug }: UnitCardProps) {
 
             <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-between items-center">
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    {unit.chapters.length} Topics
+                    {unit.chapters.length === 1 ? "Full Chapter" : `${unit.chapters.length} Topics`}
                 </span>
                 <Link
                     href={`/lectures/${exam}/${slug}/${unit.id}/${unit.chapters[0]?.id}`}
