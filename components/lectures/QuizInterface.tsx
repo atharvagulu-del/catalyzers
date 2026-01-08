@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, ChevronRight, RefreshCw, Trophy, HelpCircle, SkipForward } from 'lucide-react';
 import { Question } from '@/lib/lectureData';
@@ -291,10 +292,12 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
 
                         {currentQuestion.image && (
                             <div className="mt-6 flex justify-center">
-                                <img
+                                <Image
                                     src={currentQuestion.image}
                                     alt="Question Diagram"
-                                    className="max-h-64 md:max-h-80 w-auto rounded-lg border border-gray-100 shadow-sm"
+                                    width={800}
+                                    height={600}
+                                    className="max-h-64 md:max-h-80 w-auto h-auto rounded-lg border border-gray-100 shadow-sm"
                                 />
                             </div>
                         )}
