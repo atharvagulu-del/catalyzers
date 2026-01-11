@@ -1,144 +1,199 @@
 "use client";
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { PlayCircle, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+    PhysicsIcon,
+    MathsIcon,
+    ChemistryIcon,
+    BiologyIcon
+} from "@/components/ui/custom-icons";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
+import { useRouter } from "next/navigation";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { getLastVisited, LastVisitedItem } from "@/lib/learningHistory";
+import { Clock, ChevronRight, HelpCircle, FileText } from "lucide-react";
 
-import Image from "next/image";
+// All possible subjects
+const allSubjects = [
+    { id: "maths", title: "Mathematics", icon: MathsIcon, slug: "mathematics", category: "jee" },
+    { id: "biology", title: "Biology", icon: BiologyIcon, slug: "biology", category: "neet" },
+    { id: "physics", title: "Physics", icon: PhysicsIcon, slug: "physics", category: "common" },
+    { id: "chemistry", title: "Chemistry", icon: ChemistryIcon, slug: "chemistry", category: "common" }
+];
 
 export default function LecturesPage() {
-    return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Header />
+    const { session, user } = useAuth();
+    const router = useRouter();
+    const [userProfile, setUserProfile] = useState<{ name?: string, class?: string, exam?: string } | null>(null);
+    const [recentLecture, setRecentLecture] = useState<LastVisitedItem | null>(null);
 
-            <main className="flex-grow container px-4 md:px-6 py-12">
-                <div className="relative text-center mb-16 py-16 md:py-32 overflow-hidden rounded-3xl shadow-xl">
-                    {/* Background Image */}
-                    <div className="absolute inset-0 z-0">
-                        <Image
-                            src="/assets/teachers/allteacher.jpg"
-                            alt="Teachers Background"
-                            fill
-                            className="object-cover object-[center_25%]"
-                            priority
-                        />
-                        {/* Dark Overlay */}
-                        <div className="absolute inset-0 bg-black/60"></div>
-                    </div>
+    useEffect(() => {
+        const saved = localStorage.getItem('userProfile');
+        if (saved) {
+            setUserProfile(JSON.parse(saved));
+        }
 
-                    {/* Content */}
-                    <div className="relative z-10 px-4">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-                            Explore our <span className="text-primary-foreground text-yellow-400">Courses</span>
-                        </h1>
-                        <p className="text-lg text-gray-100 max-w-2xl mx-auto drop-shadow-md font-medium">
-                            Select your exam and class to start learning with our comprehensive video lectures, quizzes, and PYQs.
-                        </p>
-                    </div>
-                </div>
+        const fetchHistory = async () => {
+            if (user?.id) {
+                const history = await getLastVisited(user.id);
+                setRecentLecture(history);
+            }
+        };
+        fetchHistory();
+    }, [session, user]);
 
-                <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                    {/* JEE Section */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="bg-blue-50 p-6 border-b border-blue-100 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
-                                    <GraduationCap className="h-8 w-8" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">JEE (Main + Advanced)</h2>
-                                    <p className="text-gray-600 text-sm">For Aspiring Engineers</p>
-                                </div>
+    // Derived State
+    const examType = (userProfile?.exam || "jee").toLowerCase().includes("neet") ? "neet" : "jee";
+    const userClass = (userProfile?.class || "11");
+    // Check for Dropper (Class 13 or explicit "Dropper")
+    const isDropper = userClass.toLowerCase().includes("dropper") || userClass.includes("13");
+
+    // Filter Subjects based on Exam
+    const visibleSubjects = allSubjects.filter(sub => {
+        if (sub.category === "common") return true;
+        return sub.category === examType;
+    });
+
+    const renderSubjectGrid = (grade: string) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {visibleSubjects.map((sub) => {
+                const link = `/lectures/${examType}/${sub.slug}-${grade}`;
+                return (
+                    <Link href={link} key={`${sub.id}-${grade}`} className="block group">
+                        <motion.div
+                            whileHover={{ y: -4, borderColor: "#3B82F6" }} // Blue border on hover
+                            className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 cursor-pointer transition-all flex flex-col items-center justify-center gap-4 h-48 shadow-sm hover:shadow-md"
+                        >
+                            <div className="transform transition-transform duration-300 group-hover:scale-110">
+                                <sub.icon size={64} />
                             </div>
-                        </div>
-
-                        <div className="p-6 space-y-8">
-                            {/* Class 11 */}
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-                                    Class 11
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <SubjectCard exam="jee" subject="mathematics" grade="11" label="Mathematics" color="bg-blue-50 hover:bg-blue-100 text-blue-700" />
-                                    <SubjectCard exam="jee" subject="physics" grade="11" label="Physics" color="bg-purple-50 hover:bg-purple-100 text-purple-700" />
-                                    <SubjectCard exam="jee" subject="chemistry" grade="11" label="Chemistry" color="bg-teal-50 hover:bg-teal-100 text-teal-700" />
-                                </div>
-                            </div>
-
-                            {/* Class 12 */}
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-indigo-500 rounded-full"></span>
-                                    Class 12
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <SubjectCard exam="jee" subject="mathematics" grade="12" label="Mathematics" color="bg-blue-50 hover:bg-blue-100 text-blue-700" />
-                                    <SubjectCard exam="jee" subject="physics" grade="12" label="Physics" color="bg-purple-50 hover:bg-purple-100 text-purple-700" />
-                                    <SubjectCard exam="jee" subject="chemistry" grade="12" label="Chemistry" color="bg-teal-50 hover:bg-teal-100 text-teal-700" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* NEET Section */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="bg-emerald-50 p-6 border-b border-emerald-100 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-emerald-100 rounded-lg text-emerald-600">
-                                    <BookOpen className="h-8 w-8" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">NEET (Medical)</h2>
-                                    <p className="text-gray-600 text-sm">For Aspiring Doctors</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-6 space-y-8">
-                            {/* Class 11 */}
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-emerald-500 rounded-full"></span>
-                                    Class 11
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <SubjectCard exam="neet" subject="biology" grade="11" label="Biology" color="bg-emerald-50 hover:bg-emerald-100 text-emerald-700" />
-                                    <SubjectCard exam="neet" subject="physics" grade="11" label="Physics" color="bg-purple-50 hover:bg-purple-100 text-purple-700" />
-                                    <SubjectCard exam="neet" subject="chemistry" grade="11" label="Chemistry" color="bg-teal-50 hover:bg-teal-100 text-teal-700" />
-                                </div>
-                            </div>
-
-                            {/* Class 12 */}
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                    <span className="w-2 h-8 bg-green-500 rounded-full"></span>
-                                    Class 12
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <SubjectCard exam="neet" subject="biology" grade="12" label="Biology" color="bg-emerald-50 hover:bg-emerald-100 text-emerald-700" />
-                                    <SubjectCard exam="neet" subject="physics" grade="12" label="Physics" color="bg-purple-50 hover:bg-purple-100 text-purple-700" />
-                                    <SubjectCard exam="neet" subject="chemistry" grade="12" label="Chemistry" color="bg-teal-50 hover:bg-teal-100 text-teal-700" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-            <Footer />
+                            <span className="font-bold text-slate-800 dark:text-slate-100 text-lg">
+                                {sub.title}
+                            </span>
+                        </motion.div>
+                    </Link>
+                );
+            })}
         </div>
     );
-}
 
-function SubjectCard({ exam, subject, grade, label, color }: { exam: string, subject: string, grade: string, label: string, color: string }) {
     return (
-        <Link
-            href={`/lectures/${exam}/${subject}-${grade}`}
-            className={`p-4 rounded-xl border border-transparent transition-all duration-300 flex items-center justify-between group ${color}`}
-        >
-            <span className="font-semibold">{label}</span>
-            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all" />
-        </Link>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+            <DashboardHeader />
+            <div className="space-y-10 max-w-5xl mx-auto p-4 md:p-8">
+
+
+                <div>
+                    <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-2 transition-colors">
+                        <ArrowLeft className="w-4 h-4 mr-1" />
+                        Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100">
+                        Lectures
+                    </h1>
+                </div>
+
+                {/* Dropper View: Class 11 & 12 Sections */}
+                {isDropper ? (
+                    <>
+                        <section>
+                            <div className="flex items-center gap-3 mb-6">
+                                <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-wider">Class 11 Syllabus</span>
+                                <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+                            </div>
+                            {renderSubjectGrid("11")}
+                        </section>
+
+                        <section>
+                            <div className="flex items-center gap-3 mb-6">
+                                <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-xs font-bold uppercase tracking-wider">Class 12 Syllabus</span>
+                                <div className="h-px bg-slate-200 dark:bg-slate-800 flex-1" />
+                            </div>
+                            {renderSubjectGrid("12")}
+                        </section>
+                    </>
+                ) : (
+                    // Standard View: Single Class
+                    <section>
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                                Class {userClass.replace(/\D/g, '') || "11"} Syllabus
+                            </span>
+                        </div>
+                        {/* Extract only the number from userClass (e.g., "Class 11" -> "11") */}
+                        {renderSubjectGrid(userClass.replace(/\D/g, '') || "11")}
+                    </section>
+                )}
+
+                {/* Continue Learning Section */}
+                <section className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-100 dark:border-slate-800 shadow-sm mt-12">
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-6">
+                        Continue Learning
+                    </h2>
+
+                    {recentLecture ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <Link href={recentLecture.url} className="group block">
+                                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-blue-500 hover:shadow-md transition-all">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className={`p-3 rounded-lg ${recentLecture.type === 'video' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                            recentLecture.type === 'quiz' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' :
+                                                'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                                            }`}>
+                                            {recentLecture.type === 'video' ? <PlayCircle className="w-6 h-6" /> :
+                                                recentLecture.type === 'quiz' ? <HelpCircle className="w-6 h-6" /> :
+                                                    <FileText className="w-6 h-6" />}
+                                        </div>
+                                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/50 px-2 py-1 rounded">
+                                            Last Visited
+                                        </span>
+                                    </div>
+                                    <h3 className="font-bold text-slate-900 dark:text-slate-100 text-lg mb-1 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        {recentLecture.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-1">
+                                        {recentLecture.subtitle}
+                                    </p>
+
+                                    <div className="flex items-center text-xs text-slate-400 dark:text-slate-500 gap-4">
+                                        {recentLecture.duration && (
+                                            <div className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3" />
+                                                {recentLecture.duration}
+                                            </div>
+                                        )}
+                                        {recentLecture.questionCount && (
+                                            <div className="flex items-center gap-1">
+                                                <HelpCircle className="w-3 h-3" />
+                                                {recentLecture.questionCount} Questions
+                                            </div>
+                                        )}
+                                        <div className="ml-auto flex items-center gap-1 text-blue-600 dark:text-blue-400 font-medium">
+                                            Resume <ChevronRight className="w-3 h-3" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                    ) : (
+                        // IF No History (Default State)
+                        <div className="flex flex-col items-center justify-center text-center py-4">
+                            <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
+                                <PlayCircle className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
+                                Start your preparation journey!
+                            </h3>
+                            <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-6">
+                                You have not watched any lectures yet. Select a subject above to begin your first class.
+                            </p>
+                        </div>
+                    )}
+                </section>
+            </div>
+        </div>
     );
 }

@@ -34,7 +34,7 @@ const OnScreenKeyboard = ({ onInput, onDelete, onClear, onSubmit }: { onInput: (
             <div className="grid grid-cols-2 gap-2">
                 <button
                     onClick={onDelete}
-                    className="h-12 font-semibold bg-gray-200 text-gray-700 rounded-lg shadow-[0_2px_0_0_#9ca3af] hover:bg-gray-300 active:shadow-none active:translate-y-0.5 transition-all flex items-center justify-center"
+                    className="h-12 font-semibold bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-200 rounded-lg shadow-[0_2px_0_0_#9ca3af] dark:shadow-[0_2px_0_0_#475569] hover:bg-gray-300 dark:hover:bg-slate-600 active:shadow-none active:translate-y-0.5 transition-all flex items-center justify-center"
                 >
                     ⌫ Backspace
                 </button>
@@ -220,18 +220,18 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
     if (showResult) {
         const percentage = Math.round((score / questions.length) * 100);
         return (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full flex flex-col items-center justify-center p-8 text-center min-h-[500px]">
-                <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mb-6">
-                    <Trophy className="h-12 w-12 text-yellow-600" />
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 h-full flex flex-col items-center justify-center p-8 text-center min-h-[500px]">
+                <div className="w-24 h-24 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-6">
+                    <Trophy className="h-12 w-12 text-yellow-600 dark:text-yellow-500" />
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Practice Complete!</h2>
-                <p className="text-gray-600 mb-8 max-w-md">
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-slate-100 mb-2">Practice Complete!</h2>
+                <p className="text-gray-600 dark:text-slate-300 mb-8 max-w-md">
                     You&apos;ve leveled up your skills on <strong>{title}</strong>.
                     <br />
                     Score: {score}/{questions.length} ({percentage}%)
                 </p>
 
-                <div className="w-full max-w-sm bg-gray-100 rounded-full h-4 mb-8">
+                <div className="w-full max-w-sm bg-gray-100 dark:bg-slate-800 rounded-full h-4 mb-8">
                     <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${percentage}%` }}
@@ -251,11 +251,11 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
 
     // --- Main Quiz UI ---
     return (
-        <div className="flex flex-col h-full bg-white relative">
+        <div className="flex flex-col h-full bg-white dark:bg-slate-900 relative transition-colors">
             {/* 1. Header & Progress */}
-            <div className="flex-none p-4 md:p-6 border-b border-gray-100">
+            <div className="flex-none p-4 md:p-6 border-b border-gray-100 dark:border-slate-800">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="font-bold text-gray-400 text-sm tracking-wider uppercase">
+                    <h2 className="font-bold text-gray-400 dark:text-slate-500 text-sm tracking-wider uppercase">
                         Question {currentIndex + 1} / {questions.length}
                     </h2>
                 </div>
@@ -264,7 +264,7 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                     {questions.map((_, idx) => (
                         <div
                             key={idx}
-                            className={`flex-1 rounded-full ${idx < currentIndex ? 'bg-[#1865f2]' : idx === currentIndex ? 'bg-gray-300' : 'bg-gray-100'
+                            className={`flex-1 rounded-full ${idx < currentIndex ? 'bg-[#1865f2]' : idx === currentIndex ? 'bg-gray-300 dark:bg-slate-600' : 'bg-gray-100 dark:bg-slate-800'
                                 }`}
                         />
                     ))}
@@ -280,13 +280,13 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                         {currentQuestion.examSource && (
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                                <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">
+                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
                                     {currentQuestion.examSource}
                                 </span>
                             </div>
                         )}
 
-                        <p className="text-xl md:text-2xl font-serif text-gray-900 leading-relaxed antialiased">
+                        <p className="text-xl md:text-2xl font-serif text-gray-900 dark:text-slate-100 leading-relaxed antialiased">
                             <Latex>{currentQuestion.text}</Latex>
                         </p>
 
@@ -297,7 +297,7 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                     alt="Question Diagram"
                                     width={800}
                                     height={600}
-                                    className="max-h-64 md:max-h-80 w-auto h-auto rounded-lg border border-gray-100 shadow-sm"
+                                    className="max-h-64 md:max-h-80 w-auto h-auto rounded-lg border border-gray-100 dark:border-slate-800 shadow-sm"
                                 />
                             </div>
                         )}
@@ -310,13 +310,13 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg text-blue-900 overflow-hidden"
+                                className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-lg text-blue-900 dark:text-blue-200 overflow-hidden"
                             >
                                 <div className="flex gap-2 mb-2">
-                                    <HelpCircle className="w-4 h-4 text-blue-600 mt-0.5" />
-                                    <p className="font-bold text-sm uppercase tracking-wide text-blue-700">Hint</p>
+                                    <HelpCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+                                    <p className="font-bold text-sm uppercase tracking-wide text-blue-700 dark:text-blue-300">Hint</p>
                                 </div>
-                                <p className="text-blue-900/80 leading-relaxed pl-6">{currentQuestion.hint || "No hint available for this question."}</p>
+                                <p className="text-blue-900/80 dark:text-blue-200/80 leading-relaxed pl-6">{currentQuestion.hint || "No hint available for this question."}</p>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -328,15 +328,15 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                 <input
                                     type="text"
                                     readOnly={true} // Read-only to enforce keyboard usage
-                                    className="w-full max-w-xs p-4 text-center border-2 border-gray-200 rounded-xl text-2xl font-bold tracking-widest focus:border-blue-600 hover:border-gray-300 transition-all outline-none bg-gray-50"
+                                    className="w-full max-w-xs p-4 text-center border-2 border-gray-200 dark:border-slate-700 rounded-xl text-2xl font-bold tracking-widest focus:border-blue-600 hover:border-gray-300 dark:hover:border-slate-600 transition-all outline-none bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-slate-100"
                                     placeholder="_ _ _"
                                     value={selectedOption !== null && selectedOption !== -1 ? selectedOption : ''}
                                 />
 
                                 {showExplanation ? (
                                     <div className={`mt-6 p-4 rounded-lg border w-full max-w-xs text-center ${selectedOption == currentQuestion.correctAnswer
-                                        ? 'bg-green-50 border-green-200 text-green-800'
-                                        : 'bg-red-50 border-red-200 text-red-800'
+                                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-900/30 text-green-800 dark:text-green-300'
+                                        : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900/30 text-red-800 dark:text-red-300'
                                         }`}>
                                         <p className="font-bold text-lg mb-1">
                                             {selectedOption == currentQuestion.correctAnswer ? 'Correct!' : 'Incorrect'}
@@ -359,22 +359,22 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                 const isCorrect = (status === 'correct' || showExplanation) && index === currentQuestion.correctAnswer;
 
                                 // Determine styles based on state
-                                let containerClass = "border-2 border-gray-200 hover:border-gray-300 bg-white";
-                                let iconClass = "border-2 border-gray-300";
+                                let containerClass = "border-2 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800";
+                                let iconClass = "border-2 border-gray-300 dark:border-slate-500 text-transparent";
 
                                 if (isSelected) {
-                                    containerClass = "border-2 border-[#1865f2] bg-blue-50/10 shadow-[0_0_0_1px_#1865f2]";
-                                    iconClass = "bg-[#1865f2] border-[#1865f2]"; // Filed blue circle
+                                    containerClass = "border-2 border-[#1865f2] bg-blue-50/10 dark:bg-blue-900/20 shadow-[0_0_0_1px_#1865f2]";
+                                    iconClass = "bg-[#1865f2] border-[#1865f2] text-white"; // Filled blue circle
                                 }
 
                                 if (isWrong) {
-                                    containerClass = "border-2 border-[#b01e1e] bg-red-50/10"; // Khan red
-                                    iconClass = "bg-[#b01e1e] border-[#b01e1e]";
+                                    containerClass = "border-2 border-[#b01e1e] bg-red-50/10 dark:bg-red-900/20"; // Khan red
+                                    iconClass = "bg-[#b01e1e] border-[#b01e1e] text-white";
                                 }
 
                                 if (isCorrect) {
-                                    containerClass = "border-2 border-[#00a60e] bg-green-50/10"; // Khan green
-                                    iconClass = "bg-[#00a60e] border-[#00a60e]";
+                                    containerClass = "border-2 border-[#00a60e] bg-green-50/10 dark:bg-green-900/20"; // Khan green
+                                    iconClass = "bg-[#00a60e] border-[#00a60e] text-white";
                                 }
 
                                 return (
@@ -394,11 +394,11 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                                 <div className="w-2.5 h-2.5 bg-white rounded-full" />
                                             )}
                                             {/* Icons for terminal states */}
-                                            {isWrong && <X className="w-4 h-4 text-white stroke-[3]" />}
-                                            {isCorrect && <Check className="w-4 h-4 text-white stroke-[4]" />}
+                                            {isWrong && <X className="w-4 h-4 stroke-[3]" />}
+                                            {isCorrect && <Check className="w-4 h-4 stroke-[4]" />}
                                         </div>
 
-                                        <span className="text-lg text-gray-800 leading-snug pt-0.5 font-medium">
+                                        <span className="text-lg text-gray-800 dark:text-slate-200 leading-snug pt-0.5 font-medium">
                                             <Latex>{option}</Latex>
                                         </span>
                                     </motion.button>
@@ -410,11 +410,9 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
             </div>
 
             {/* 3. Sticky Bottom Action Bar (Desktop & Mobile) */}
-            {/* HIDE ACTION BAR FOR NUMERICAL when keyboard is active to avoid dup buttons, but show for others or if explanation */}
-            {/* Actually, let's keep it but maybe hide the Check button for numerical since it's in the keyboard? */}
-            <div className={`flex-none p-4 md:px-8 md:py-6 border-t border-gray-200 transition-colors duration-300 ${status === 'correct' ? 'bg-[#dfffe0] border-t-transparent' :
-                status === 'incorrect' ? 'bg-[#ffebe6] border-t-transparent' :
-                    status === 'stuck' ? 'bg-gray-50' : 'bg-white'
+            <div className={`flex-none p-4 md:px-8 md:py-6 border-t border-gray-200 dark:border-slate-800 transition-colors duration-300 ${status === 'correct' ? 'bg-[#dfffe0] dark:bg-[#003305] border-t-transparent' :
+                status === 'incorrect' ? 'bg-[#ffebe6] dark:bg-[#4a0d0d] border-t-transparent' :
+                    status === 'stuck' ? 'bg-gray-50 dark:bg-slate-800' : 'bg-white dark:bg-slate-900'
                 }`}>
                 <div className="max-w-2xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-4">
 
@@ -427,12 +425,12 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                     animate={{ opacity: 1, y: 0 }}
                                     className="flex items-start gap-3"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#00a60e] shadow-sm">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-[#00a60e] shadow-sm">
                                         <Check className="w-5 h-5 stroke-[3]" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-[#004d05] text-lg">Nice work!</h3>
-                                        <p className="text-[#004d05]/80 text-sm">You got it right.</p>
+                                        <h3 className="font-bold text-[#004d05] dark:text-[#4ade80] text-lg">Nice work!</h3>
+                                        <p className="text-[#004d05]/80 dark:text-[#4ade80]/80 text-sm">You got it right.</p>
                                     </div>
                                 </motion.div>
                             )}
@@ -442,12 +440,12 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                     animate={{ opacity: 1, y: 0 }}
                                     className="flex items-start gap-3"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#b01e1e] shadow-sm">
+                                    <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-[#b01e1e] shadow-sm">
                                         <X className="w-5 h-5 stroke-[3]" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-[#700c0c] text-lg">Not quite yet...</h3>
-                                        <p className="text-[#700c0c]/80 text-sm font-medium cursor-pointer hover:underline">
+                                        <h3 className="font-bold text-[#700c0c] dark:text-[#f87171] text-lg">Not quite yet...</h3>
+                                        <p className="text-[#700c0c]/80 dark:text-[#f87171]/80 text-sm font-medium cursor-pointer hover:underline">
                                             {currentQuestion.explanation || 'Try again or get help.'}
                                         </p>
                                     </div>
@@ -458,8 +456,8 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                 >
-                                    <h3 className="font-bold text-gray-800 text-lg">Stuck?</h3>
-                                    <p className="text-gray-600 text-sm">Review related articles/videos or use a hint.</p>
+                                    <h3 className="font-bold text-gray-800 dark:text-slate-200 text-lg">Stuck?</h3>
+                                    <p className="text-gray-600 dark:text-slate-400 text-sm">Review related articles/videos or use a hint.</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -472,13 +470,13 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                 <button
                                     onClick={!hintRevealed ? handleShowHint : undefined}
                                     disabled={hintRevealed}
-                                    className={`flex-1 md:flex-none px-6 py-3 font-bold text-[#1865f2] hover:bg-blue-50 rounded-md transition-colors ${hintRevealed ? 'opacity-50 cursor-default' : ''}`}
+                                    className={`flex-1 md:flex-none px-6 py-3 font-bold text-[#1865f2] hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors ${hintRevealed ? 'opacity-50 cursor-default' : ''}`}
                                 >
                                     {hintRevealed ? 'Hint shown' : 'Get a hint'}
                                 </button>
                                 <button
                                     onClick={handleSkipQuestion}
-                                    className="flex-1 md:flex-none px-6 py-3 bg-white border border-gray-300 text-gray-700 font-bold rounded-md hover:bg-gray-50 transition-colors shadow-sm"
+                                    className="flex-1 md:flex-none px-6 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 font-bold rounded-md hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
                                 >
                                     Skip for now
                                 </button>
@@ -494,7 +492,7 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                             <>
                                 <button
                                     onClick={handleSkip}
-                                    className="px-4 py-3 text-gray-500 font-bold hover:text-gray-900 transition-colors"
+                                    className="px-4 py-3 text-gray-500 dark:text-slate-400 font-bold hover:text-gray-900 dark:hover:text-slate-200 transition-colors"
                                 >
                                     Skip
                                 </button>
@@ -505,7 +503,7 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
                                         disabled={selectedOption === null && status !== 'incorrect'}
                                         className={`w-full md:w-auto flex-1 px-8 py-3 font-bold rounded-md transition-all ${selectedOption !== null || status === 'incorrect'
                                             ? 'bg-[#1865f2] text-white shadow-[0_4px_0_0_#0b4eba] hover:bg-[#0b4eba] active:shadow-none active:translate-y-1'
-                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                            : 'bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed'
                                             }`}
                                     >
                                         {status === 'incorrect' ? 'Try Again' : 'Check'}

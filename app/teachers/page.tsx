@@ -12,6 +12,7 @@ const teachers = [
         shortBio: "With over 14 years of experience in teaching Physics for JEE and NEET, Adil Sir is a highly respected educator known for his crystal-clear concept delivery, structured approach, and result-oriented mentorship. His classes are designed to empower students with a deep understanding of Physics while sharpening their problem-solving skills essential for cracking top competitive exams.",
         image: "/assets/teachers/adilsir.png",
         imagePosition: "left",
+        scale: "scale-[1.35]",
     },
     {
         id: "kirti-maam",
@@ -19,8 +20,9 @@ const teachers = [
         experience: "15 YEARS",
         role: "Senior Chemistry Faculty",
         shortBio: "With an impressive 15-year track record in coaching students for JEE and NEET, Kirti Ma'am stands out as a seasoned and inspiring Chemistry faculty. Her passion for teaching and deep command over the subject have helped thousands of students grasp even the most challenging concepts with ease.",
-        image: "/assets/teachers/kirtimam.png",
+        image: "/assets/teachers/kirti_updated.png",
         imagePosition: "right",
+        scale: "scale-100",
     },
     {
         id: "mayank-sir",
@@ -30,6 +32,7 @@ const teachers = [
         shortBio: "Dedicated, dynamic, and highly skilled in teaching Mathematics to JEE aspirants, Mayank Sir brings 8 years of experience and a genuine passion for making math engaging and accessible. His focus is on helping students move toward achieving their dream ranks.",
         image: "/assets/teachers/mayanksir.png",
         imagePosition: "left",
+        scale: "scale-[1.35]",
     },
 ];
 
@@ -76,7 +79,7 @@ export default function TeachersPage() {
                                                 alt={teacher.name}
                                                 width={400}
                                                 height={400}
-                                                className="w-full h-full object-cover object-top drop-shadow-2xl scale-[1.35] origin-top"
+                                                className={`w-full h-full object-cover object-top drop-shadow-2xl ${teacher.scale} origin-top`}
                                                 priority
                                             />
                                         </div>

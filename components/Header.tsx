@@ -1,11 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone, LogOut, User, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/components/auth/AuthProvider"; // Use Supabase Auth Hook
+import LoginDrawer from "@/components/auth/LoginDrawer";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [loginDrawerOpen, setLoginDrawerOpen] = useState(false);
+    const [callDropdownOpen, setCallDropdownOpen] = useState(false);
+    const { session, user, fullName } = useAuth();
 
     return (
         <>
@@ -25,7 +32,7 @@ export default function Header() {
                     </button>
 
                     {/* Logo */}
-                    <a href="/" className="flex items-center gap-3">
+                    <Link href="/" className="flex items-center gap-3">
                         <div className="relative h-10 w-10">
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
                                 <svg
@@ -60,106 +67,177 @@ export default function Header() {
                         <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                             Catalyzer
                         </span>
-                    </a>
+                    </Link>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-6">
-                        <a
-                            href="/"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                        >
+                        <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
                             Home
-                        </a>
-                        <a
-                            href="/courses"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                        >
+                        </Link>
+                        <Link href="/courses" className="text-sm font-medium hover:text-primary transition-colors">
                             Courses
-                        </a>
-                        <a
-                            href="/teachers"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                        >
+                        </Link>
+                        <Link href="/teachers" className="text-sm font-medium hover:text-primary transition-colors">
                             Teachers
-                        </a>
-                        <a
-                            href="/#results"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                        >
+                        </Link>
+                        <Link href="/#results" className="text-sm font-medium hover:text-primary transition-colors">
                             Results
-                        </a>
-                        <a
-                            href="/about"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                        >
+                        </Link>
+                        <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
                             About
-                        </a>
-                        <a
-                            href="/lectures"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                        >
+                        </Link>
+                        <Link href="/lectures" className="text-sm font-medium hover:text-primary transition-colors">
                             Lectures
-                        </a>
+                        </Link>
                     </nav>
 
-                    {/* Book Demo Button */}
-                    <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer" className="ml-auto md:ml-0">
-                        <Button size="default" className="shadow-md rounded-md px-4 py-2 h-10">
-                            Book Free Demo
-                        </Button>
-                    </a>
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-3 ml-auto md:ml-0">
+                        {/* Call Button & Dropdown */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setCallDropdownOpen(!callDropdownOpen)}
+                                className="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-colors"
+                            >
+                                <Phone className="w-5 h-5" />
+                            </button>
+
+                            <AnimatePresence>
+                                {callDropdownOpen && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setCallDropdownOpen(false)}
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50"
+                                        >
+                                            <a
+                                                href="tel:+919999999999"
+                                                className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg"
+                                            >
+                                                Request a Callback
+                                            </a>
+                                            <a
+                                                href="https://cal.com/atharva-gulve-9osunz/free-counselling"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg"
+                                            >
+                                                Book Free Demo
+                                            </a>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Login / Profile */}
+                        {session ? (
+                            // Logged In State
+                            <div className="flex items-center gap-3">
+                                <Link href="/dashboard">
+                                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg hover:ring-2 hover:ring-offset-2 hover:ring-primary transition-all cursor-pointer">
+                                        {fullName ? fullName[0].toUpperCase() : user?.email?.[0].toUpperCase() || "U"}
+                                    </div>
+                                </Link>
+                            </div>
+                        ) : (
+                            // Logged Out State
+                            <Button
+                                onClick={() => setLoginDrawerOpen(true)}
+                                variant="outline"
+                                className="border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-6"
+                            >
+                                Login
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </header>
 
+            {/* Login Drawer */}
+            <LoginDrawer
+                isOpen={loginDrawerOpen}
+                onClose={() => setLoginDrawerOpen(false)}
+            />
+
             {/* Mobile Menu */}
-            {mobileMenuOpen && (
-                <div className="fixed inset-0 top-16 z-50 bg-white md:hidden animate-slide-in overflow-y-auto">
-                    <nav className="flex flex-col p-6 gap-4">
-                        <a
-                            href="/"
-                            className="text-lg font-medium hover:text-primary transition-colors py-2"
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             onClick={() => setMobileMenuOpen(false)}
+                            className="fixed inset-0 top-16 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="fixed insert-y-0 left-0 top-16 bottom-0 w-[75%] max-w-sm bg-white z-50 md:hidden overflow-y-auto shadow-xl"
                         >
-                            Home
-                        </a>
-                        <a
-                            href="/courses"
-                            className="text-lg font-medium hover:text-primary transition-colors py-2"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Courses
-                        </a>
-                        <a
-                            href="/#results"
-                            className="text-lg font-medium hover:text-primary transition-colors py-2"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Results
-                        </a>
-                        <a
-                            href="/teachers"
-                            className="text-lg font-medium hover:text-primary transition-colors py-2"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Teachers
-                        </a>
-                        <a
-                            href="/about"
-                            className="text-lg font-medium hover:text-primary transition-colors py-2"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            About
-                        </a>
-                        <a
-                            href="/lectures"
-                            className="text-lg font-medium hover:text-primary transition-colors py-2"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            Lectures
-                        </a>
-                    </nav>
-                </div>
-            )}
+                            <nav className="flex flex-col p-6 gap-2">
+                                <Link
+                                    href="/"
+                                    className="text-lg font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors py-3 px-4 rounded-lg"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Home
+                                </Link>
+                                <Link
+                                    href="/courses"
+                                    className="text-lg font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors py-3 px-4 rounded-lg"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Courses
+                                </Link>
+                                <Link
+                                    href="/teachers"
+                                    className="text-lg font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors py-3 px-4 rounded-lg"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Teachers
+                                </Link>
+                                <Link
+                                    href="/#results"
+                                    className="text-lg font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors py-3 px-4 rounded-lg"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Results
+                                </Link>
+                                <Link
+                                    href="/lectures"
+                                    className="text-lg font-medium text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors py-3 px-4 rounded-lg"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    Lectures
+                                </Link>
+
+                                <div className="my-4 border-t border-slate-100" />
+
+                                {!session && (
+                                    <button
+                                        onClick={() => {
+                                            setMobileMenuOpen(false);
+                                            setLoginDrawerOpen(true);
+                                        }}
+                                        className="text-lg font-medium text-blue-600 hover:bg-blue-50 transition-colors py-3 px-4 rounded-lg text-left"
+                                    >
+                                        Log in / Register
+                                    </button>
+                                )}
+                            </nav>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </>
     );
 }

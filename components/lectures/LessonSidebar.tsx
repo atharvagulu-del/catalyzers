@@ -31,8 +31,8 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
     };
 
     return (
-        <div className="w-full md:w-80 bg-white border-r border-gray-200 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto hidden md:block custom-scrollbar">
-            <div className="p-4 border-b border-gray-100 bg-white sticky top-0 z-10">
+        <div className="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto hidden md:block custom-scrollbar transition-colors">
+            <div className="p-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
                 <Link
                     href={`/lectures/${exam}/${slug}`}
                     className="text-sm text-primary font-bold flex items-center hover:underline mb-3"
@@ -40,7 +40,7 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Unit: {unit.title}
                 </Link>
-                <div className="w-full bg-gray-100 rounded-full h-2">
+                <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2">
                     <div className="bg-primary h-2 rounded-full" style={{ width: '30%' }}></div>
                 </div>
             </div>
@@ -51,30 +51,30 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                     const isActiveChapter = chapter.id === currentChapterId;
 
                     return (
-                        <div key={chapter.id} className="border-b border-gray-100 last:border-0">
+                        <div key={chapter.id} className="border-b border-gray-100 dark:border-slate-800 last:border-0">
                             {/* Chapter Header (Accordion Toggle) */}
                             <button
                                 onClick={() => toggleChapter(chapter.id)}
-                                className={`w-full px-4 py-4 flex items-start gap-3 text-left transition-colors hover:bg-gray-50 focus:outline-none ${isActiveChapter ? 'bg-blue-50/50' : ''
+                                className={`w-full px-4 py-4 flex items-start gap-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-slate-800/50 focus:outline-none ${isActiveChapter ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''
                                     }`}
                             >
                                 <div className="mt-0.5">
                                     {isActiveChapter ? (
-                                        <div className="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-white">
+                                        <div className="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-white dark:bg-slate-900">
                                             <div className="w-2.5 h-2.5 bg-primary rounded-full"></div>
                                         </div>
                                     ) : (
-                                        <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                                        <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-slate-600"></div>
                                     )}
                                 </div>
                                 <div className="flex-grow">
-                                    <h3 className={`text-sm font-bold leading-tight ${isActiveChapter ? 'text-gray-900' : 'text-gray-700'
+                                    <h3 className={`text-sm font-bold leading-tight ${isActiveChapter ? 'text-gray-900 dark:text-slate-100' : 'text-gray-700 dark:text-slate-300'
                                         }`}>
                                         {chapter.title}
                                     </h3>
                                 </div>
                                 <ChevronDown
-                                    className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''
+                                    className={`h-5 w-5 text-gray-400 dark:text-slate-500 transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''
                                         }`}
                                 />
                             </button>
@@ -104,11 +104,11 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                                                         key={resource.id}
                                                         href={`/lectures/${exam}/${slug}/${unit.id}/${chapter.id}?resource=${resource.id}`}
                                                         className={`w-full text-left py-2 px-3 rounded-lg text-sm flex items-start gap-3 transition-colors group ${isActive
-                                                                ? 'bg-blue-50 text-blue-700 font-semibold'
-                                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
+                                                            : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
                                                             }`}
                                                     >
-                                                        <div className={`mt-0.5 transition-colors ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-primary'}`}>
+                                                        <div className={`mt-0.5 transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary'}`}>
                                                             {getResourceIcon(resource.type)}
                                                         </div>
                                                         <span className="leading-snug">{resource.title}</span>
