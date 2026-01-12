@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, ChevronRight, RefreshCw, Trophy, HelpCircle, SkipForward } from 'lucide-react';
@@ -8,11 +8,17 @@ import { Question } from '@/lib/lectureData';
 import confetti from 'canvas-confetti';
 import 'katex/dist/katex.min.css';
 import Latex from 'react-latex-next';
+import { saveTestResult } from '@/lib/performanceTracking';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 interface QuizInterfaceProps {
     questions: Question[];
     title: string;
     onComplete?: () => void;
+    // New props for tracking
+    testId?: string;
+    testType?: 'full_chapter' | 'topic_pyq' | 'topic_quiz';
+    subject?: string;
 }
 
 const OnScreenKeyboard = ({ onInput, onDelete, onClear, onSubmit }: { onInput: (val: string) => void, onDelete: () => void, onClear: () => void, onSubmit: () => void }) => {
@@ -49,7 +55,17 @@ const OnScreenKeyboard = ({ onInput, onDelete, onClear, onSubmit }: { onInput: (
     );
 };
 
-export default function QuizInterface({ questions = [], title, onComplete }: QuizInterfaceProps) {
+// Question metrics for penalty-based scoring
+interface QuestionMetric {
+    wrongAttempts: number;
+    hintUsed: boolean;
+    skipped: boolean;
+}
+
+export default function QuizInterface({ questions = [], title, onComplete, testId, testType, subject }: QuizInterfaceProps) {
+    const { user } = useAuth();
+    const hasSaved = useRef(false); // Prevent duplicate saves on retry
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState<number | string | null>(null);
     const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect' | 'stuck'>('idle');
@@ -57,6 +73,9 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
     const [showResult, setShowResult] = useState(false);
     const [shake, setShake] = useState(0); // Key to trigger shake animation
     const [hintRevealed, setHintRevealed] = useState(false);
+
+    // Track metrics per question for penalty-based scoring
+    const [questionMetrics, setQuestionMetrics] = useState<QuestionMetric[]>([]);
 
     const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
 
@@ -78,7 +97,10 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
             return arr;
         };
 
-        setShuffledQuestions([...shuffleArray(mcqs), ...shuffleArray(numericals)]);
+        const shuffled = [...shuffleArray(mcqs), ...shuffleArray(numericals)];
+        setShuffledQuestions(shuffled);
+        // Initialize metrics for each question
+        setQuestionMetrics(shuffled.map(() => ({ wrongAttempts: 0, hintUsed: false, skipped: false })));
 
     }, [questions]);
 
@@ -151,8 +173,6 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
 
         let isCorrect = false;
         if (currentQuestion.type === 'numerical') {
-            // Basic numerical validation (string comparison of trimmed values or integer parse)
-            // Clean input and answer
             const inputs = String(selectedOption).trim();
             const answers = String(currentQuestion.correctAnswer).trim();
             isCorrect = inputs === answers;
@@ -163,16 +183,19 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
         if (isCorrect) {
             setStatus('correct');
             setScore(prev => prev + 1);
-            // Trigger simple confetti
             confetti({
                 particleCount: 150,
                 spread: 80,
                 origin: { y: 0.7 },
-                colors: ['#1865f2', '#00a60e', '#ffffff', '#fbbf24'] // Blue, Green, White, Amber
+                colors: ['#1865f2', '#00a60e', '#ffffff', '#fbbf24']
             });
         } else {
             setStatus('incorrect');
-            setShake(prev => prev + 1); // Trigger shake
+            setShake(prev => prev + 1);
+            // Track wrong attempt for this question
+            setQuestionMetrics(prev => prev.map((m, i) =>
+                i === currentIndex ? { ...m, wrongAttempts: m.wrongAttempts + 1 } : m
+            ));
         }
     };
 
@@ -184,16 +207,62 @@ export default function QuizInterface({ questions = [], title, onComplete }: Qui
             setHintRevealed(false);
         } else {
             setShowResult(true);
+
+            // Calculate effective score with penalties
+            if (user && testId && !hasSaved.current) {
+                hasSaved.current = true;
+
+                // Calculate penalty-based score
+                let totalEffectiveScore = 0;
+                let totalWrongAttempts = 0;
+                let totalHintsUsed = 0;
+                let totalSkips = 0;
+
+                questionMetrics.forEach((metric) => {
+                    let qScore = 1.0; // Base score for correct answer
+                    qScore -= metric.wrongAttempts * 0.25; // -25% per wrong attempt
+                    qScore -= metric.hintUsed ? 0.15 : 0;   // -15% if hint used
+                    qScore -= metric.skipped ? 0.10 : 0;    // -10% if skipped first
+                    qScore = Math.max(0.25, qScore);        // Minimum 25% for correct
+                    totalEffectiveScore += qScore;
+
+                    totalWrongAttempts += metric.wrongAttempts;
+                    totalHintsUsed += metric.hintUsed ? 1 : 0;
+                    totalSkips += metric.skipped ? 1 : 0;
+                });
+
+                saveTestResult(user.id, {
+                    testId: testId,
+                    testTitle: title,
+                    testType: testType || 'topic_quiz',
+                    subject: subject || 'Unknown',
+                    totalQuestions: questions.length,
+                    correctAnswers: score, // Raw correct count
+                    totalWrongAttempts,
+                    totalHintsUsed,
+                    totalSkips,
+                    effectiveScore: Math.round(totalEffectiveScore * 100) / 100
+                });
+            }
+
             if (onComplete) onComplete();
         }
     };
 
     const handleSkip = () => {
         setStatus('stuck');
+        // Mark this question as skipped
+        setQuestionMetrics(prev => prev.map((m, i) =>
+            i === currentIndex ? { ...m, skipped: true } : m
+        ));
     };
 
     const handleShowHint = () => {
         setHintRevealed(true);
+        // Mark hint as used for this question
+        setQuestionMetrics(prev => prev.map((m, i) =>
+            i === currentIndex ? { ...m, hintUsed: true } : m
+        ));
     };
 
     const handleSkipQuestion = () => {

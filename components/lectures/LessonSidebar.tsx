@@ -31,8 +31,9 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
     };
 
     return (
-        <div className="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto hidden md:block custom-scrollbar transition-colors">
-            <div className="p-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
+        <div className="w-full md:w-80 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 h-full flex flex-col hidden md:flex transition-colors rounded-l-[30px] overflow-hidden">
+            {/* Sidebar Header */}
+            <div className="pl-6 pr-4 py-4 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 shrink-0">
                 <Link
                     href={`/lectures/${exam}/${slug}`}
                     className="text-sm text-primary font-bold flex items-center hover:underline mb-3"
@@ -45,18 +46,18 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                 </div>
             </div>
 
-            <div className="pb-4">
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 pb-6 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar]:w-1.5">
                 {unit.chapters.map((chapter) => {
                     const isExpanded = expandedChapters.includes(chapter.id);
                     const isActiveChapter = chapter.id === currentChapterId;
 
                     return (
-                        <div key={chapter.id} className="border-b border-gray-100 dark:border-slate-800 last:border-0">
+                        <div key={chapter.id} className={`rounded-2xl transition-all duration-200 border ${isActiveChapter ? 'bg-blue-50/40 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/20' : 'border-transparent hover:bg-gray-50 dark:hover:bg-slate-800/50'}`}>
                             {/* Chapter Header (Accordion Toggle) */}
                             <button
                                 onClick={() => toggleChapter(chapter.id)}
-                                className={`w-full px-4 py-4 flex items-start gap-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-slate-800/50 focus:outline-none ${isActiveChapter ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''
-                                    }`}
+                                className="w-full px-4 py-3 flex items-start gap-3 text-left focus:outline-none"
                             >
                                 <div className="mt-0.5">
                                     {isActiveChapter ? (
@@ -64,7 +65,7 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                                             <div className="w-2.5 h-2.5 bg-primary rounded-full"></div>
                                         </div>
                                     ) : (
-                                        <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-slate-600"></div>
+                                        <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-slate-600 group-hover:border-gray-400"></div>
                                     )}
                                 </div>
                                 <div className="flex-grow">
@@ -92,7 +93,7 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                                         }}
                                         transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
                                     >
-                                        <div className="pl-12 pr-4 pb-4 space-y-1">
+                                        <div className="pl-3 pr-3 pb-3 space-y-1">
                                             {chapter.resources.map((resource) => {
                                                 // Determine if this is the active resource
                                                 // If no param is present, default to first resource of the active chapter
@@ -103,9 +104,9 @@ export default function LessonSidebar({ unit, currentChapterId, exam, slug }: Le
                                                     <Link
                                                         key={resource.id}
                                                         href={`/lectures/${exam}/${slug}/${unit.id}/${chapter.id}?resource=${resource.id}`}
-                                                        className={`w-full text-left py-2 px-3 rounded-lg text-sm flex items-start gap-3 transition-colors group ${isActive
-                                                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
-                                                            : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
+                                                        className={`w-full text-left py-2 px-3 rounded-xl text-sm flex items-start gap-3 transition-all group ${isActive
+                                                            ? 'bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-300 font-semibold shadow-sm border border-blue-100 dark:border-blue-900/30'
+                                                            : 'text-gray-600 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-slate-200'
                                                             }`}
                                                     >
                                                         <div className={`mt-0.5 transition-colors ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-primary'}`}>

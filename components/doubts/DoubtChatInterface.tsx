@@ -381,7 +381,7 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none]">
                 {loadingHistory ? (
                     <div className="flex justify-center p-12">
                         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
@@ -390,23 +390,40 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
                     /* EMPTY STATE / WELCOME UI */
                     <div className="h-full flex flex-col items-center justify-center mt-0 relative z-10">
                         {/* Large Animated Character */}
-                        <div className="relative w-48 h-48 md:w-56 md:h-56 mb-8 flex items-center justify-center">
+                        <div className="relative w-32 h-32 md:w-40 md:h-40 mb-4 flex items-center justify-center">
                             <div className="absolute inset-0 bg-blue-400/20 blur-[40px] rounded-full animate-pulse" />
                             <LottieAnimation animationData={robotAnimation} loop={true} />
                         </div>
 
-                        <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2 text-center">
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1 text-center">
                             How can I help you today?
                         </h2>
 
+                        {/* Scrolling Subtext - Allen Style (Step Animation) */}
+                        <div className="h-[84px] md:h-[96px] overflow-hidden relative w-full max-w-lg mx-auto mt-4 scroller-mask">
+                            <div className="absolute inset-0 flex flex-col items-center justify-start animate-scroll-step">
+                                {/* 5 Unique Phrases - No AI Mentions */}
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Clear your doubts instantly</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Simplify your concepts</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Understand with real examples</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Master complex topics easily</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Step-by-step solutions</span>
 
+                                {/* Duplicate for seamless loop */}
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Clear your doubts instantly</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Simplify your concepts</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Understand with real examples</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Master complex topics easily</span>
+                                <span className="h-[28px] md:h-[32px] leading-[28px] md:leading-[32px] text-base md:text-lg text-slate-700 dark:text-slate-200 text-center font-bold">Step-by-step solutions</span>
+                            </div>
+                        </div>
 
                         {/* Quick Start Buttons */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="mt-8 flex gap-3"
+                            className="mt-6 flex gap-3"
                         >
                             <button
                                 onClick={() => setInput("What are Newton's Laws of Motion?")}

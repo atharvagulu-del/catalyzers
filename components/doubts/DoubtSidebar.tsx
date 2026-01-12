@@ -69,7 +69,7 @@ export default function DoubtSidebar({ activeId, onSelectSession }: DoubtSidebar
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#fcfcfc] dark:bg-slate-950 border-r border-slate-300 dark:border-slate-700 w-full font-sans pt-6 md:pt-8">
+        <div className="flex flex-col h-full bg-inherit w-full font-sans pt-6 md:pt-4">
             {/* Logo Area (Hidden if Sidebar is embedded, but good for context) */}
             <div className="px-6 pb-4">
                 {/* Main Navigation - Based on Allen.in */}
@@ -117,11 +117,11 @@ export default function DoubtSidebar({ activeId, onSelectSession }: DoubtSidebar
                 </div>
 
                 {/* Session List */}
-                <div className="flex-1 overflow-y-auto -mx-2 px-2 space-y-3 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto -mx-2 px-2 space-y-3 scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none]">
                     {/* New Doubt Button - Placed at top of list for easy access */}
                     <button
                         onClick={() => onSelectSession(null)}
-                        className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-xl text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors mb-2"
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-xl text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors mb-2 shadow-sm"
                     >
                         <Plus className="w-4 h-4" /> Ask New Doubt
                     </button>
@@ -138,8 +138,8 @@ export default function DoubtSidebar({ activeId, onSelectSession }: DoubtSidebar
                                 key={session.id}
                                 onClick={() => onSelectSession(session.id)}
                                 className={`w-full text-left p-4 rounded-xl border transition-all group relative ${activeId === session.id
-                                    ? 'bg-blue-50 dark:bg-blue-900/10 border-[#0067FF] dark:border-blue-500 shadow-sm'
-                                    : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'
+                                    ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 shadow-sm'
+                                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800'
                                     }`}
                             >
                                 <div className="flex items-start gap-3">

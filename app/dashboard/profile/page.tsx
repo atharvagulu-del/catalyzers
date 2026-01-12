@@ -24,8 +24,8 @@ export default function ProfilePage() {
     return (
         <div className="space-y-8">
             {/* Header / Profile Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-8 items-center md:items-start transition-colors">
-                <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg ring-4 ring-blue-50 dark:ring-blue-900/30">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-4 md:gap-8 items-center md:items-start transition-colors">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-blue-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg ring-4 ring-blue-50 dark:ring-blue-900/30">
                     {fullName ? fullName[0] : "S"}
                 </div>
                 <div className="flex-1 text-center md:text-left space-y-2">

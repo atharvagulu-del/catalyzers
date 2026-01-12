@@ -22,7 +22,7 @@ export default function DashboardHeader({ onMenuClick }: { onMenuClick?: () => v
     const displayExam = userProfile?.exam || "";
 
     return (
-        <header className="sticky top-0 z-30 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16">
+        <header className="sticky top-0 z-30 w-full bg-white dark:bg-black h-16">
             <div className="h-full px-4 md:px-6 flex items-center justify-between">
 
                 {/* Left: Mobile Toggle & Logo */}
@@ -51,7 +51,7 @@ export default function DashboardHeader({ onMenuClick }: { onMenuClick?: () => v
                                 {(displayClass && displayExam) ? `${displayClass} • ${displayExam}` : <span className="text-orange-600">Complete Profile</span>}
                             </p>
                             <Link href="/courses" className="text-xs font-semibold text-blue-600 hover:underline flex items-center justify-end gap-0.5 mt-0.5">
-                                Explore courses <ChevronRight className="w-3 h-3" />
+                                Explore offline courses <ChevronRight className="w-3 h-3" />
                             </Link>
                         </div>
                     </div>

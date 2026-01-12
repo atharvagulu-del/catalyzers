@@ -4,44 +4,44 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { Clock, Calendar } from "lucide-react";
 import { motion, useMotionValue } from "framer-motion";
 import {
-    RevisionNotesIcon,
-    CustomPracticeIcon,
-    ImprovementBookIcon,
-    FlashcardsIcon,
-    PyqIcon
+    // RevisionNotesIcon,
+    // CustomPracticeIcon,
+    // ImprovementBookIcon,
+    // FlashcardsIcon,
+    // ExplainItIcon
 } from "@/components/ui/custom-icons";
 import { useState, useEffect } from "react";
 import { getOrCreateDailyPlan, toggleGoalStatus, DailyGoal } from "@/lib/dailyGoals";
 import { CheckCircle, Circle, ArrowRight, TrendingUp, Zap, BookOpen, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
+import { useRouter } from "next/navigation";
 
 const quickActions = [
     {
-        title: "Revision Notes",
-        icon: RevisionNotesIcon,
-        badge: "NEW",
+        title: "Revision Formulas",
+        icon: null,
+        iconSrc: "/assets/icons/revise.svg",
         href: "/dashboard/revision-notes"
     },
     {
         title: "Custom Practice",
-        icon: CustomPracticeIcon,
+        icon: null,
+        iconSrc: "/assets/icons/custom.svg",
         href: "/dashboard/custom-practice"
     },
     {
-        title: "Improvement Book",
-        icon: ImprovementBookIcon,
+        title: "Improve",
+        icon: null,
+        iconSrc: "/assets/icons/grow.svg",
         href: "/dashboard/improvement-book"
     },
+
     {
-        title: "Flashcards",
-        icon: FlashcardsIcon,
-        href: "/dashboard/flashcards"
-    },
-    {
-        title: "PYQ Papers",
-        icon: PyqIcon,
-        href: "/dashboard/pyq-papers"
+        title: "Explain it",
+        icon: null,
+        iconSrc: "/assets/icons/idea.svg",
+        href: "/dashboard/explain-it"
     }
 ];
 
@@ -71,6 +71,14 @@ export default function DashboardPage() {
         fetchGoals();
     }, [user]);
 
+    // Force Redirect for Teacher
+    const router = useRouter();
+    useEffect(() => {
+        if (user?.email?.toLowerCase() === "ritagulve1984@gmail.com") {
+            router.push("/teacher");
+        }
+    }, [user, router]);
+
     const toggleGoal = async (goal: DailyGoal) => {
         if (!user?.id) return;
 
@@ -99,10 +107,10 @@ export default function DashboardPage() {
     const displayExam = userExam || user?.user_metadata?.exam || "JEE";
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
             {/* Welcome Section */}
             <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
                     Welcome back, {displayName}! 👋
                 </h1>
                 <p className="text-slate-500 dark:text-slate-400 mt-1">
@@ -110,37 +118,37 @@ export default function DashboardPage() {
                 </p>
             </div>
 
-            {/* Quick Actions (Allen-style colorful cards) */}
+            {/* Quick Actions (Exact Allen Style) */}
             <section>
-                <div className="flex items-center justify-between mb-4">
+                <div className="mb-6">
                     <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Quick Actions</h2>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 gap-4 px-2 md:flex md:gap-10 md:overflow-visible md:pb-6 md:px-0">
                     {quickActions.map((action) => (
-                        <Link key={action.title} href={action.href || "#"} passHref>
-                            <motion.div
-                                whileHover={{ y: -4, scale: 1.01 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:border-blue-100 transition-all flex flex-col items-center justify-center gap-4 group relative overflow-hidden h-40 md:h-48 cursor-pointer"
-                            >
-                                {/* Icon */}
-                                <div className="transform group-hover:scale-110 transition-transform duration-300">
-                                    <action.icon size={64} />
-                                </div>
+                        <Link key={action.title} href={action.href || "#"} className="group flex-shrink-0">
+                            <div className="flex flex-col items-center gap-3">
+                                {/* Button Container - Bottom Shadow Only */}
+                                <button
+                                    className="relative w-full aspect-square max-w-[120px] md:w-[115px] md:h-[115px] bg-slate-50 dark:bg-[#222222] rounded-[24px] md:rounded-[28px] 
+                                               shadow-[0px_14px_24px_-10px_rgba(0,0,0,0.08),0px_6px_0px_-2px_rgba(0,0,0,0.03)]
+                                               hover:shadow-[0px_18px_32px_-10px_rgba(0,0,0,0.12),0px_8px_0px_-2px_rgba(0,0,0,0.04)]
+                                               active:translate-y-1 active:shadow-none active:scale-[0.99]
+                                               transition-all duration-200 ease-out
+                                               flex items-center justify-center
+                                               border border-slate-200/60 dark:border-white/5 mx-auto"
+                                >
+                                    {/* Icon */}
+                                    <div className="transform transition-transform duration-300 group-hover:scale-105">
+                                        <img src={action.iconSrc} alt={action.title} className="w-10 h-10 md:w-[54px] md:h-[54px]" />
+                                    </div>
+                                </button>
 
-                                {/* Title */}
-                                <span className="font-bold text-slate-700 dark:text-slate-200 text-sm md:text-base text-center leading-tight">
+                                {/* Label */}
+                                <span className="text-sm md:text-xs font-semibold text-slate-700 dark:text-slate-300 text-center leading-tight max-w-[90px] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                     {action.title}
                                 </span>
-
-                                {/* Badge */}
-                                {action.badge && (
-                                    <span className="absolute top-3 right-3 px-2 py-0.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                                        {action.badge}
-                                    </span>
-                                )}
-                            </motion.div>
+                            </div>
                         </Link>
                     ))}
                 </div>
@@ -149,7 +157,7 @@ export default function DashboardPage() {
             {/* Secondary Actions / More Config */}
             <div className="grid md:grid-cols-3 gap-6">
                 {/* Tests Section */}
-                <section className="md:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+                <section className="md:col-span-2 bg-white dark:bg-[#111111] rounded-[24px] md:rounded-[28px] shadow-sm border border-slate-100 dark:border-neutral-800 p-5 md:p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             My Schedule
@@ -157,8 +165,8 @@ export default function DashboardPage() {
                         <button className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">View Calendar</button>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/50">
-                        <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm mb-4">
+                    <div className="flex flex-col items-center justify-center py-6 md:py-10 text-center border-2 border-dashed border-slate-200 dark:border-neutral-800 rounded-2xl bg-slate-50/50 dark:bg-neutral-900/30">
+                        <div className="w-16 h-16 bg-white dark:bg-[#1A1A1A] rounded-full flex items-center justify-center shadow-sm mb-4">
                             <Calendar className="w-8 h-8 text-slate-400" />
                         </div>
                         <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">No Tests Scheduled</h3>
@@ -169,7 +177,7 @@ export default function DashboardPage() {
                 </section>
 
                 {/* Daily Engagement */}
-                <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+                <section className="bg-white dark:bg-[#111111] rounded-[24px] md:rounded-[28px] shadow-sm border border-slate-100 dark:border-neutral-800 p-5 md:p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             Daily Goals
@@ -179,56 +187,53 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex flex-col gap-6 items-center">
-                        {/* Progress Circle - Adjusted size / layout */}
-                        {/* Premium Progress Ring */}
-                        <div className="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
-                            {/* Glow Effect Background */}
-                            <div className={`absolute inset-0 rounded-full blur-xl opacity-20 transition-colors duration-500 ${progress === 100 ? 'bg-green-500' : 'bg-blue-500'}`} />
-
-                            <svg className="w-full h-full transform -rotate-90 drop-shadow-lg" viewBox="0 0 120 120">
-                                {/* Gradient Definition */}
-                                <defs>
-                                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stopColor={progress === 100 ? "#22c55e" : "#3B82F6"} />
-                                        <stop offset="100%" stopColor={progress === 100 ? "#4ade80" : "#8B5CF6"} />
-                                    </linearGradient>
-                                </defs>
-
+                        {/* Clean Progress Ring - No gimmicks */}
+                        <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 flex items-center justify-center">
+                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
                                 {/* Background Track */}
                                 <circle
-                                    cx="60" cy="60" r="52"
+                                    cx="60" cy="60" r="54"
                                     stroke="currentColor"
-                                    strokeWidth="8"
+                                    strokeWidth="6"
                                     fill="none"
-                                    className="text-slate-100 dark:text-slate-800"
+                                    className="text-slate-100 dark:text-neutral-800"
                                 />
 
-                                {/* Progress Path */}
+                                {/* Progress Path - Single solid color */}
                                 <motion.circle
-                                    cx="60" cy="60" r="52"
-                                    stroke="url(#progressGradient)"
-                                    strokeWidth="8"
+                                    cx="60" cy="60" r="54"
+                                    stroke={progress === 100 ? "#22c55e" : "#3B82F6"}
+                                    strokeWidth="6"
                                     fill="none"
                                     strokeLinecap="round"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: progress / 100 }}
-                                    transition={{ duration: 1.5, ease: "easeOut" }}
-                                    style={{ pathLength: useMotionValue(0) }} // Placeholder for typing
+                                    transition={{ duration: 1.2, ease: "easeOut" }}
+                                    style={{ pathLength: useMotionValue(0) }}
                                 />
+
+                                {/* Small dot indicator at end */}
+                                {progress > 0 && progress < 100 && (
+                                    <circle
+                                        cx="60"
+                                        cy="6"
+                                        r="3"
+                                        fill="#3B82F6"
+                                        style={{
+                                            transform: `rotate(${progress * 3.6}deg)`,
+                                            transformOrigin: '60px 60px'
+                                        }}
+                                    />
+                                )}
                             </svg>
 
-                            {/* Center Text */}
+                            {/* Center Text - Clean typography */}
                             <div className="absolute flex flex-col items-center justify-center">
-                                <motion.span
-                                    key={progress}
-                                    initial={{ scale: 0.5, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    className={`text-3xl font-black tracking-tight ${progress === 100 ? 'text-green-500' : 'text-slate-800 dark:text-slate-100'}`}
-                                >
+                                <span className={`text-xl md:text-2xl font-bold ${progress === 100 ? 'text-green-500' : 'text-slate-800 dark:text-slate-100'}`}>
                                     {progress}%
-                                </motion.span>
-                                <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mt-0.5">
-                                    Done
+                                </span>
+                                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                    DONE
                                 </span>
                             </div>
                         </div>

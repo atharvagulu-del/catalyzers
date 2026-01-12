@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User, Loader2 } from "lucide-react";
+import { X, Mail, Lock, User, Loader2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -32,6 +32,12 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
 
                 if (error) throw error;
 
+                if (form.email === "ritagulve1984@gmail.com") {
+                    router.push("/teacher");
+                    onClose();
+                    return;
+                }
+
                 onClose();
                 router.push("/dashboard");
 
@@ -41,6 +47,9 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
                     email: form.email,
                     password: form.password,
                     // Name is collected during Onboarding now
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    }
                 });
 
                 if (error) throw error;
@@ -48,7 +57,11 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
                 // Check if session key exists (means auto-confirmed/fake email) or not
                 if (data?.session) {
                     onClose();
-                    router.push("/onboarding");
+                    if (form.email === "ritagulve1984@gmail.com") {
+                        router.push("/teacher");
+                    } else {
+                        router.push("/onboarding");
+                    }
                 } else {
                     // Email verification required
                     setVerificationSent(true);
@@ -165,6 +178,7 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
                                             />
                                         </div>
                                     </div>
+
 
                                     <Button
                                         type="submit"

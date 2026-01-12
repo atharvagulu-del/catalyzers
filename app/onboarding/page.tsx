@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const classes = ["Class 11", "Class 12", "Dropper"];
@@ -14,19 +14,18 @@ export default function OnboardingPage() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         name: "",
+        phone: "",
         class: "",
         exam: ""
     });
 
     // Clear ghost data on mount to prevent auto-fill from previous sessions
     useEffect(() => {
-        // We only clear if we are genuinely starting fresh. 
-        // For now, let's clear it to be safe as per user feedback about "auto selecting"
         localStorage.removeItem('userProfile');
     }, []);
 
     const handleNext = async () => {
-        if (step < 3) setStep(step + 1);
+        if (step < 4) setStep(step + 1);
         else {
             // Save to localStorage immediately - this is our "Offline Mode" guarantee
             localStorage.setItem('userProfile', JSON.stringify(formData));
@@ -35,13 +34,13 @@ export default function OnboardingPage() {
                 // Try to save to Supabase, but don't block if it fails
                 const { supabase } = await import("@/lib/supabase");
 
-                // key fix: check if we actually have a user first
                 const { data: { user } } = await supabase.auth.getUser();
 
                 if (user) {
                     await supabase.auth.updateUser({
                         data: {
                             full_name: formData.name,
+                            phone: formData.phone,
                             class: formData.class,
                             exam: formData.exam,
                             onboarded: true
@@ -51,11 +50,8 @@ export default function OnboardingPage() {
                     console.log("Onboarding: No active session, skipping cloud save.");
                 }
             } catch (error) {
-                // Silently fail for cloud save, but allow user to proceed
                 console.error("Cloud save failed (likely email not verified), proceeding locally:", error);
             } finally {
-                // Redirect to dashboard (user requested this specifically)
-                // The dashboard layout will handle showing lectures or whatever based on this data
                 router.refresh();
                 router.push("/dashboard");
             }
@@ -73,21 +69,23 @@ export default function OnboardingPage() {
                 <div className="h-2 bg-slate-100">
                     <motion.div
                         className="h-full bg-blue-600"
-                        initial={{ width: "33%" }}
-                        animate={{ width: `${step * 33.33}%` }}
+                        initial={{ width: "25%" }}
+                        animate={{ width: `${step * 25}%` }}
                     />
                 </div>
 
                 <div className="p-8">
                     <h1 className="text-2xl font-bold text-slate-800 mb-2">
                         {step === 1 && "What's your name?"}
-                        {step === 2 && "Which class are you in?"}
-                        {step === 3 && "What is your target exam?"}
+                        {step === 2 && "What's your phone number?"}
+                        {step === 3 && "Which class are you in?"}
+                        {step === 4 && "What is your target exam?"}
                     </h1>
                     <p className="text-slate-500 mb-8">
                         {step === 1 && "Let's personalize your learning experience."}
-                        {step === 2 && "We'll show you the right courses."}
-                        {step === 3 && "Almost there! One last step."}
+                        {step === 2 && "We'll use this for your enrollment."}
+                        {step === 3 && "We'll show you the right courses."}
+                        {step === 4 && "Almost there! One last step."}
                     </p>
 
                     <div className="space-y-4">
@@ -103,6 +101,21 @@ export default function OnboardingPage() {
                         )}
 
                         {step === 2 && (
+                            <div className="relative">
+                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                <input
+                                    type="tel"
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    placeholder="Enter 10-digit number"
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none text-lg"
+                                    autoFocus
+                                    maxLength={10}
+                                />
+                            </div>
+                        )}
+
+                        {step === 3 && (
                             <div className="grid gap-3">
                                 {classes.map((cls) => (
                                     <button
@@ -122,7 +135,7 @@ export default function OnboardingPage() {
                             </div>
                         )}
 
-                        {step === 3 && (
+                        {step === 4 && (
                             <div className="grid gap-3">
                                 {exams.map((exam) => (
                                     <button
@@ -148,12 +161,13 @@ export default function OnboardingPage() {
                             onClick={handleNext}
                             disabled={
                                 (step === 1 && !formData.name) ||
-                                (step === 2 && !formData.class) ||
-                                (step === 3 && !formData.exam)
+                                (step === 2 && (!formData.phone || formData.phone.length < 10)) ||
+                                (step === 3 && !formData.class) ||
+                                (step === 4 && !formData.exam)
                             }
                             className="w-full py-6 text-lg rounded-xl"
                         >
-                            {step === 3 ? "Complete Profile" : "Continue"}
+                            {step === 4 ? "Complete Profile" : "Continue"}
                             <ChevronRight className="w-5 h-5 ml-2" />
                         </Button>
                     </div>

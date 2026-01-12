@@ -58,12 +58,29 @@ export async function middleware(request: NextRequest) {
 
     const { data: { session } } = await supabase.auth.getSession()
 
+    // 0. SPECIAL: Redirect specific teacher email to /teacher if they are on home or dashboard
+    if (session?.user?.email?.toLowerCase() === 'ritagulve1984@gmail.com') {
+        if (request.nextUrl.pathname === '/' || request.nextUrl.pathname.startsWith('/dashboard')) {
+            return NextResponse.redirect(new URL('/teacher', request.url))
+        }
+    }
+
     // 1. Redirect Home ("/") to Dashboard if logged in
     if (request.nextUrl.pathname === '/' && session) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
-    // 2. Redirect Dashboard/Lectures to Onboarding if NOT onboarded
+    // 2. Protect teacher routes - require login
+    if (request.nextUrl.pathname.startsWith('/teacher')) {
+        if (!session) {
+            return NextResponse.redirect(new URL('/', request.url))
+        }
+        // Teacher role check is handled in the layout component
+        // as we need to query the database for teacher_profiles
+        return response
+    }
+
+    // 3. Redirect Dashboard/Lectures to Onboarding if NOT onboarded
     // Note: Middleware can't easily check localStorage, so we rely on user_metadata.
     if (session &&
         (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/lectures')) &&

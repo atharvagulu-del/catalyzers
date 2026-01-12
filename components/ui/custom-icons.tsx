@@ -21,23 +21,23 @@ export const RevisionNotesIcon = ({ size = 48, className, ...props }: IconProps)
 
 export const CustomPracticeIcon = ({ size = 48, className, ...props }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
-        <rect width="48" height="48" rx="12" fill="#F0FDF4" />
-        <circle cx="24" cy="24" r="14" fill="#DCFCE7" />
-        <circle cx="24" cy="24" r="10" stroke="#16A34A" strokeWidth="3" />
-        <circle cx="24" cy="24" r="4" fill="#16A34A" />
-        <path d="M32 16L36 12" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" />
-        <path d="M28 20L38 10" stroke="#15803D" strokeWidth="2" strokeLinecap="round" />
+        <rect width="48" height="48" rx="12" fill="#F3E8FF" />
+        <circle cx="24" cy="24" r="14" fill="#E9D5FF" />
+        <circle cx="24" cy="24" r="10" stroke="#9333EA" strokeWidth="3" />
+        <circle cx="24" cy="24" r="4" fill="#9333EA" />
+        <path d="M32 16L36 12" stroke="#9333EA" strokeWidth="2" strokeLinecap="round" />
+        <path d="M28 20L38 10" stroke="#7E22CE" strokeWidth="2" strokeLinecap="round" />
     </svg>
 );
 
 export const ImprovementBookIcon = ({ size = 48, className, ...props }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
-        <rect width="48" height="48" rx="12" fill="#FFF7ED" />
-        <path d="M12 36V24" stroke="#EA580C" strokeWidth="3" strokeLinecap="round" />
-        <path d="M20 36V18" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
-        <path d="M28 36V28" stroke="#FB923C" strokeWidth="3" strokeLinecap="round" />
-        <path d="M36 36V14" stroke="#FDBA74" strokeWidth="3" strokeLinecap="round" />
-        <path d="M10 36H38" stroke="#9A3412" strokeWidth="2" strokeLinecap="round" />
+        <rect width="48" height="48" rx="12" fill="#F0FDF4" />
+        <path d="M12 36V24" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" />
+        <path d="M20 36V18" stroke="#16A34A" strokeWidth="3" strokeLinecap="round" />
+        <path d="M28 36V28" stroke="#22C55E" strokeWidth="3" strokeLinecap="round" />
+        <path d="M36 36V14" stroke="#15803D" strokeWidth="3" strokeLinecap="round" />
+        <path d="M10 36H38" stroke="#14532D" strokeWidth="2" strokeLinecap="round" />
     </svg>
 );
 
@@ -57,6 +57,16 @@ export const PyqIcon = ({ size = 48, className, ...props }: IconProps) => (
         <path d="M18 26H28" stroke="white" strokeWidth="2" strokeLinecap="round" />
         <path d="M18 32H24" stroke="white" strokeWidth="2" strokeLinecap="round" />
         <text x="17" y="36" fill="white" fontSize="8" fontWeight="bold">PYQ</text>
+    </svg>
+);
+
+export const ExplainItIcon = ({ size = 48, className, ...props }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+        <rect width="48" height="48" rx="12" fill="#FEF3C7" />
+        <path d="M24 10C19.0294 10 15 14.0294 15 19C15 22.3137 16.9804 25.1569 19.8 26.6V30C19.8 30.5523 20.2477 31 20.8 31H27.2C27.7523 31 28.2 30.5523 28.2 30V26.6C31.0196 25.1569 33 22.3137 33 19C33 14.0294 28.9706 10 24 10Z" fill="#F59E0B" />
+        <rect x="20" y="33" width="8" height="3" rx="1" fill="#D97706" />
+        <rect x="21" y="37" width="6" height="2" rx="1" fill="#B45309" />
+        <path d="M24 14V19L27 22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 );
 

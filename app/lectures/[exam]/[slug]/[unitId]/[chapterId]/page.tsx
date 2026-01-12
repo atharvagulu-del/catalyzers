@@ -7,9 +7,10 @@ import QuizInterface from "@/components/lectures/QuizInterface";
 import { Play, FileText, HelpCircle, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { saveLastVisited } from "@/lib/learningHistory";
 import { checkGoalCompletion } from "@/lib/dailyGoals";
+import { trackLectureWatchTime } from "@/lib/performanceTracking";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 interface PageProps {
@@ -58,6 +59,38 @@ export default function LessonPage({ params, searchParams }: PageProps) {
         }
     }, [activeResource, params, subjectData, unit, chapter, user]);
 
+    // Track video watch time every 30 seconds
+    useEffect(() => {
+        if (!user || !activeResource || activeResource.type !== 'video' || !subjectData) {
+            return;
+        }
+
+        // Track time only when tab is visible
+        let isVisible = true;
+        const handleVisibility = () => {
+            isVisible = document.visibilityState === 'visible';
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+
+        // Track every 30 seconds
+        const interval = setInterval(() => {
+            if (isVisible) {
+                trackLectureWatchTime(
+                    user.id,
+                    activeResource.id,
+                    activeResource.title,
+                    subjectData.subject,
+                    30 // 30 seconds
+                );
+            }
+        }, 30000); // 30 seconds
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', handleVisibility);
+        };
+    }, [user, activeResource, subjectData]);
+
     const handleResourceCompletion = async () => {
         if (user && activeResource) {
             await checkGoalCompletion(user.id, activeResource.id, 'complete');
@@ -71,8 +104,7 @@ export default function LessonPage({ params, searchParams }: PageProps) {
     if (!activeResource) return <div className="p-8 text-center">No content available</div>;
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col transition-colors">
-            <DashboardHeader />
+        <div className="w-full min-h-[calc(100vh-6rem)] bg-white dark:bg-slate-950 flex flex-col transition-colors rounded-[30px] overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
 
             <div className="flex flex-grow">
                 {/* Sidebar - Hidden on mobile, sticky on desktop */}
@@ -98,7 +130,7 @@ export default function LessonPage({ params, searchParams }: PageProps) {
                     </h1>
 
                     {/* Content Player / Interaction Area */}
-                    <div className={`rounded-xl overflow-hidden shadow-2xl relative mb-8 group bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 ${activeResource?.type === 'video' ? 'aspect-video bg-black' : 'min-h-[600px] flex flex-col'
+                    <div className={`rounded-[24px] overflow-hidden shadow-2xl relative mb-8 group bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 ${activeResource?.type === 'video' ? 'aspect-video bg-black' : 'min-h-[600px] flex flex-col'
                         }`}>
                         {activeResource?.type === 'video' ? (
                             activeResource.url && activeResource.url !== 'placeholder' ? (
@@ -128,6 +160,9 @@ export default function LessonPage({ params, searchParams }: PageProps) {
                                     questions={activeResource.questions || []}
                                     title={activeResource.title}
                                     onComplete={handleResourceCompletion}
+                                    testId={activeResource.id}
+                                    testType={activeResource.type === 'quiz' ? 'full_chapter' : 'topic_pyq'}
+                                    subject={subjectData.subject}
                                 />
                             </div>
                         ) : (

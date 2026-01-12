@@ -34,26 +34,26 @@ const sidebarItems = [
     },
     {
         name: "Performance",
-        href: "/dashboard/profile",
+        href: "/dashboard/performance",
         icon: PerformanceIcon,
     },
 ];
 
-export default function Sidebar({ isOpen = false, onClose }: { isOpen?: boolean; onClose?: () => void }) {
+export default function Sidebar({ isOpen = false, onClose, drawerOnly = false }: { isOpen?: boolean; onClose?: () => void; drawerOnly?: boolean }) {
     const pathname = usePathname();
 
     return (
         <>
-            {/* Mobile Overlay - only visible when menu is open on mobile */}
+            {/* Mobile Overlay - visible when menu is open on mobile OR desktop if drawerOnly is set */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    className={`fixed inset-0 bg-black/50 z-40 ${drawerOnly ? "" : "md:hidden"}`}
                     onClick={onClose}
                 />
             )}
 
-            <aside className={`fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col z-50 transition-transform duration-300 
-                ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+            <aside className={`fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-black flex flex-col z-50 transition-transform duration-300 
+                ${isOpen ? "translate-x-0" : `-translate-x-full ${drawerOnly ? "" : "md:translate-x-0"}`}`}>
                 {/* Navigation */}
                 <nav className="flex-1 p-4 space-y-1 overflow-y-auto mt-2">
                     {sidebarItems.map((item) => {

@@ -52,4 +52,104 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Custom scrollbar hiding */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Allen-Style Step Scroll Animation (5 Phrases with Pauses) */
+/* Each phrase shows for ~3s, animation total ~15s */
+@keyframes scroll-step {
+
+  0%,
+  15% {
+    transform: translateY(0);
+  }
+
+  20%,
+  35% {
+    transform: translateY(-32px);
+  }
+
+  40%,
+  55% {
+    transform: translateY(-64px);
+  }
+
+  60%,
+  75% {
+    transform: translateY(-96px);
+  }
+
+  80%,
+  95% {
+    transform: translateY(-128px);
+  }
+
+  100% {
+    transform: translateY(-160px);
+  }
+}
+
+/* Mobile version */
+@keyframes scroll-step-mobile {
+
+  0%,
+  15% {
+    transform: translateY(0);
+  }
+
+  20%,
+  35% {
+    transform: translateY(-28px);
+  }
+
+  40%,
+  55% {
+    transform: translateY(-56px);
+  }
+
+  60%,
+  75% {
+    transform: translateY(-84px);
+  }
+
+  80%,
+  95% {
+    transform: translateY(-112px);
+  }
+
+  100% {
+    transform: translateY(-140px);
+  }
+}
+
+.animate-scroll-step {
+  animation: scroll-step-mobile 15s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  .animate-scroll-step {
+    animation: scroll-step 15s ease-in-out infinite;
+  }
+}
+
+/* Gradient mask for fade effect - top line bright, others fade */
+.scroller-mask {
+  mask-image: linear-gradient(to bottom,
+      black 0%,
+      black 40%,
+      rgba(0, 0, 0, 0.5) 60%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,
+      black 0%,
+      black 40%,
+      rgba(0, 0, 0, 0.5) 60%,
+      transparent 100%);
+}
+
+.scroll-phrase {
+  transition: opacity 0.3s ease-out;
 }
