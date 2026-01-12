@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllChaptersForAI, ChapterInfo } from "@/lib/lectureSearch";
 
-// Google Gemini API Key - Same as doubts API
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AIzaSyB2xaMxGi0ZihkfhillYIlrJiu_OTSACmQ";
+// Google Gemini API Key - Must be set in Environment Variables
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Get all available lectures for AI to suggest
 const ALL_CHAPTERS = getAllChaptersForAI();
@@ -82,11 +82,12 @@ JSON response:
 
 REMEMBER: If "correct" shows they understood, needsLecture MUST be false.`;
 
-        // FREE TIER MODELS ONLY - same as doubts API
+        // Models from User's Access List
         const configurations = [
+            { model: "gemini-2.0-flash", version: "v1beta" },
             { model: "gemini-2.0-flash-lite", version: "v1beta" },
-            { model: "gemini-2.5-flash-lite", version: "v1beta" },
-            { model: "gemini-2.0-flash", version: "v1beta" }
+            { model: "gemini-2.5-flash", version: "v1beta" },
+            { model: "gemini-2.5-pro", version: "v1beta" }
         ];
 
         for (const config of configurations) {

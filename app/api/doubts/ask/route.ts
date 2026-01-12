@@ -9,8 +9,8 @@ import path from 'path';
 const supabaseUrl = "https://rnoxehthfxffirafloth.supabase.co";
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJub3hlaHRoZnhmZmlyYWZsb3RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMjEzNzQsImV4cCI6MjA4MzU5NzM3NH0.9HqDWUW6iYUL6tIkiY3PnJ1vYJobWEunoeMi1XQkV9A";
 
-// Google Gemini API Key - Use billing-enabled key as fallback
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AIzaSyB2xaMxGi0ZihkfhillYIlrJiu_OTSACmQ";
+// Google Gemini API Key - Must be set in Environment Variables
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Free tier rate limit
 const DAILY_LIMIT = 50;
@@ -74,10 +74,12 @@ Look at the conversation history and the NEW question. Detect topic switches bet
     ];
 
     // FREE TIER MODELS ONLY
+    // Models from User's Access List
     const configurations = [
+        { model: "gemini-2.0-flash", version: "v1beta" },
         { model: "gemini-2.0-flash-lite", version: "v1beta" },
-        { model: "gemini-2.5-flash-lite", version: "v1beta" },
-        { model: "gemini-2.0-flash", version: "v1beta" }
+        { model: "gemini-2.5-flash", version: "v1beta" },
+        { model: "gemini-2.5-pro", version: "v1beta" }
     ];
 
     for (const config of configurations) {
