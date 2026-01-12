@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { getOrCreateDailyPlan, toggleGoalStatus, DailyGoal } from "@/lib/dailyGoals";
 import { CheckCircle, Circle, ArrowRight, TrendingUp, Zap, BookOpen, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import confetti from "canvas-confetti";
 import { useRouter } from "next/navigation";
 
@@ -139,8 +140,8 @@ export default function DashboardPage() {
                                                border border-slate-200/60 dark:border-white/5 mx-auto"
                                 >
                                     {/* Icon */}
-                                    <div className="transform transition-transform duration-300 group-hover:scale-105">
-                                        <img src={action.iconSrc} alt={action.title} className="w-10 h-10 md:w-[54px] md:h-[54px]" />
+                                    <div className="relative w-10 h-10 md:w-[54px] md:h-[54px] transform transition-transform duration-300 group-hover:scale-105">
+                                        <Image src={action.iconSrc} alt={action.title} fill className="object-contain" />
                                     </div>
                                 </button>
 

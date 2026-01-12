@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Send, RefreshCw, Sparkles, CheckCircle, AlertTriangle, BookOpen, ChevronDown, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { getSubjects, getChaptersForSubject, getRandomPrompt, ExplainItPrompt } from "@/lib/explainItPrompts";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -215,8 +216,8 @@ export default function ExplainItPage() {
         <div className="space-y-6 max-w-3xl mx-auto">
             {/* Page Title */}
             <div className="flex items-center gap-4">
-                <div className="w-14 h-14 flex-shrink-0">
-                    <img src="/assets/icons/idea.svg" alt="Explain It" className="w-full h-full" />
+                <div className="w-14 h-14 flex-shrink-0 relative">
+                    <Image src="/assets/icons/idea.svg" alt="Explain It" fill className="object-contain" />
                 </div>
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Explain It</h1>

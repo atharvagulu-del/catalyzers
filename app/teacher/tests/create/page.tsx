@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import {
@@ -55,13 +55,7 @@ export default function CreateTestPage() {
     const [students, setStudents] = useState<Enrollment[]>([]);
     const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
 
-    useEffect(() => {
-        if (step === 2 && formData.class) {
-            fetchStudents();
-        }
-    }, [step, formData.class]);
-
-    async function fetchStudents() {
+    const fetchStudents = useCallback(async () => {
         setLoadingStudents(true);
         try {
             const enrollments = await getAllEnrollments({
@@ -77,7 +71,13 @@ export default function CreateTestPage() {
         } finally {
             setLoadingStudents(false);
         }
-    }
+    }, [formData.class, formData.batch]);
+
+    useEffect(() => {
+        if (step === 2 && formData.class) {
+            fetchStudents();
+        }
+    }, [step, formData.class, fetchStudents]);
 
     function validateForm(): boolean {
         if (!formData.test_name.trim()) {
@@ -200,8 +200,8 @@ export default function CreateTestPage() {
                 <div className="flex items-center gap-2">
                     <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 1
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-200 text-slate-500"
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-200 text-slate-500"
                             }`}
                     >
                         {step > 1 ? <Check className="w-4 h-4" /> : "1"}
@@ -219,8 +219,8 @@ export default function CreateTestPage() {
                 <div className="flex items-center gap-2">
                     <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 2
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-200 text-slate-500"
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-200 text-slate-500"
                             }`}
                     >
                         2

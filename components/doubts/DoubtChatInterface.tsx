@@ -550,7 +550,7 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
 
                             <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-2">New Topic Detected? 🤔</h3>
                             <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
-                                This looks like a different question. To ensure higher accuracy, I'll start a new chat for this one. You can always access both chats from your history list.
+                                This looks like a different question. To ensure higher accuracy, I&apos;ll start a new chat for this one. You can always access both chats from your history list.
                             </p>
 
                             <div className="flex flex-wrap gap-3">

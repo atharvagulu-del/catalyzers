@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAllTests, OfflineTest, getTestStudents } from "@/lib/offlineTests";
 import {
     FileText,
@@ -28,15 +28,7 @@ export default function TestsListPage() {
     const [classFilter, setClassFilter] = useState<string>("");
     const [subjectFilter, setSubjectFilter] = useState<string>("");
 
-    useEffect(() => {
-        fetchTests();
-    }, []);
-
-    useEffect(() => {
-        filterTests();
-    }, [tests, searchQuery, classFilter, subjectFilter]);
-
-    async function fetchTests() {
+    const fetchTests = useCallback(async () => {
         setLoading(true);
         try {
             const testsData = await getAllTests();
@@ -55,9 +47,9 @@ export default function TestsListPage() {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
 
-    function filterTests() {
+    const filterTests = useCallback(() => {
         let filtered = [...tests];
 
         if (searchQuery) {
@@ -78,7 +70,15 @@ export default function TestsListPage() {
         }
 
         setFilteredTests(filtered);
-    }
+    }, [tests, searchQuery, classFilter, subjectFilter]);
+
+    useEffect(() => {
+        fetchTests();
+    }, [fetchTests]);
+
+    useEffect(() => {
+        filterTests();
+    }, [filterTests]);
 
     // Get unique subjects for filter
     const subjects = [...new Set(tests.map((t) => t.subject))];
@@ -248,14 +248,14 @@ export default function TestsListPage() {
                                     <div className="flex items-center gap-4">
                                         <div
                                             className={`w-12 h-12 rounded-xl flex items-center justify-center ${isPast
-                                                    ? "bg-slate-100 dark:bg-slate-700"
-                                                    : "bg-blue-100 dark:bg-blue-900/30"
+                                                ? "bg-slate-100 dark:bg-slate-700"
+                                                : "bg-blue-100 dark:bg-blue-900/30"
                                                 }`}
                                         >
                                             <FileText
                                                 className={`w-6 h-6 ${isPast
-                                                        ? "text-slate-500"
-                                                        : "text-blue-600 dark:text-blue-400"
+                                                    ? "text-slate-500"
+                                                    : "text-blue-600 dark:text-blue-400"
                                                     }`}
                                             />
                                         </div>
@@ -293,8 +293,8 @@ export default function TestsListPage() {
                                         <div className="text-right">
                                             <div
                                                 className={`text-sm font-medium ${isPast
-                                                        ? "text-slate-500"
-                                                        : "text-blue-600 dark:text-blue-400"
+                                                    ? "text-slate-500"
+                                                    : "text-blue-600 dark:text-blue-400"
                                                     }`}
                                             >
                                                 {new Date(test.test_date).toLocaleDateString("en-IN", {

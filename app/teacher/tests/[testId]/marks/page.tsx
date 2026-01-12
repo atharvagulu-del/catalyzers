@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import {
@@ -48,11 +48,7 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
     const [success, setSuccess] = useState(false);
     const [showRankings, setShowRankings] = useState(false);
 
-    useEffect(() => {
-        fetchData();
-    }, [resolvedParams.testId]);
-
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             // Fetch test
@@ -108,7 +104,11 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
         } finally {
             setLoading(false);
         }
-    }
+    }, [resolvedParams.testId, router]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     function updateMarks(userId: string, value: string) {
         // Allow empty or valid numbers only
@@ -237,8 +237,8 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
                         <button
                             onClick={() => setShowRankings(!showRankings)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-colors ${showRankings
-                                    ? "bg-purple-600 text-white"
-                                    : "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
+                                ? "bg-purple-600 text-white"
+                                : "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
                                 }`}
                         >
                             <Trophy className="w-5 h-5" />
@@ -312,19 +312,19 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
                             <div
                                 key={student.userId}
                                 className={`flex items-center justify-between p-4 ${student.rank <= 3
-                                        ? "bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-900/10"
-                                        : ""
+                                    ? "bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-900/10"
+                                    : ""
                                     }`}
                             >
                                 <div className="flex items-center gap-4">
                                     <div
                                         className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${student.rank === 1
-                                                ? "bg-yellow-100 text-yellow-700"
-                                                : student.rank === 2
-                                                    ? "bg-slate-200 text-slate-700"
-                                                    : student.rank === 3
-                                                        ? "bg-amber-100 text-amber-700"
-                                                        : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                                            ? "bg-yellow-100 text-yellow-700"
+                                            : student.rank === 2
+                                                ? "bg-slate-200 text-slate-700"
+                                                : student.rank === 3
+                                                    ? "bg-amber-100 text-amber-700"
+                                                    : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                                             }`}
                                     >
                                         {student.rank <= 3 ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     getAllEnrollments,
     updateEnrollment,
@@ -49,15 +49,7 @@ export default function StudentsPage() {
     const [addClass, setAddClass] = useState<"11" | "12" | "Dropper">("11");
     const [addBatch, setAddBatch] = useState("");
 
-    useEffect(() => {
-        fetchEnrollments();
-    }, []);
-
-    useEffect(() => {
-        filterEnrollments();
-    }, [enrollments, searchQuery, classFilter, statusFilter]);
-
-    async function fetchEnrollments() {
+    const fetchEnrollments = useCallback(async () => {
         setLoading(true);
         try {
             const data = await getAllEnrollments();
@@ -76,9 +68,9 @@ export default function StudentsPage() {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
 
-    function filterEnrollments() {
+    const filterEnrollments = useCallback(() => {
         let filtered = [...enrollments];
 
         if (searchQuery) {
@@ -102,7 +94,15 @@ export default function StudentsPage() {
         }
 
         setFilteredEnrollments(filtered);
-    }
+    }, [enrollments, searchQuery, classFilter, statusFilter]);
+
+    useEffect(() => {
+        fetchEnrollments();
+    }, [fetchEnrollments]);
+
+    useEffect(() => {
+        filterEnrollments();
+    }, [filterEnrollments]);
 
     function startEditing(enrollment: Enrollment) {
         setEditingId(enrollment.id);
