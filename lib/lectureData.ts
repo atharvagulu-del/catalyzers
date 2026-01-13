@@ -52,6 +52,91 @@ export const getSubjectData = (exam: string, subject: string, grade: string): Su
     return lectureData[key];
 };
 
+// Helper to get all chapters for a class/subject/exam (for test creation)
+// Filters out "Full Test" chapters and quiz-only chapters
+export const getChaptersForTest = (
+    exam: 'JEE' | 'NEET',
+    subject: string,
+    grade: '11' | '12' | 'Dropper'
+): { unitTitle: string; chapters: Chapter[] }[] => {
+    // Map grade to lectureData format
+    const gradeMap: Record<string, string> = {
+        '11': '11',
+        '12': '12',
+        'Dropper': '12', // Droppers typically use 12th syllabus
+    };
+
+    // Map subject names
+    const subjectMap: Record<string, string> = {
+        'Physics': 'physics',
+        'Chemistry': 'chemistry',
+        'Mathematics': 'mathematics',
+        'Maths': 'mathematics',
+        'Biology': 'biology',
+        'Full Test': 'mathematics', // Default for full tests
+    };
+
+    const normalizedSubject = subjectMap[subject] || subject.toLowerCase();
+    const normalizedGrade = gradeMap[grade] || '11';
+
+    const key = `${exam.toLowerCase()}-${normalizedSubject}-${normalizedGrade}`;
+    const data = lectureData[key];
+
+    if (!data) {
+        console.warn(`No lecture data found for key: ${key}`);
+        return [];
+    }
+
+    // Filter chapters to exclude:
+    // 1. Full Test chapters (contain "full test" in title)
+    // 2. Quiz-only chapters (contain "quiz" or "practice" in title without actual lecture content)
+    const filterChapter = (chapter: Chapter): boolean => {
+        const lowerTitle = chapter.title.toLowerCase();
+        const excludePatterns = [
+            'full test',
+            'full chapter test',
+            'unit test',
+            'practice test',
+            'mock test',
+            'revision test',
+        ];
+        return !excludePatterns.some(pattern => lowerTitle.includes(pattern));
+    };
+
+    return data.units
+        .map(unit => ({
+            unitTitle: unit.title,
+            chapters: unit.chapters.filter(filterChapter),
+        }))
+        .filter(unit => unit.chapters.length > 0); // Remove empty units
+};
+
+// Helper to get specific chapters by IDs (for AI recommendations)
+export const getChaptersByIds = (
+    exam: 'JEE' | 'NEET',
+    subject: string,
+    grade: string,
+    chapterIds: string[]
+): Chapter[] => {
+    const units = getChaptersForTest(exam, subject, grade as '11' | '12' | 'Dropper');
+    const allChapters = units.flatMap(u => u.chapters);
+    return allChapters.filter(ch => chapterIds.includes(ch.id));
+};
+
+// Helper to get lecture resources for specific chapters
+export const getLecturesForChapters = (
+    exam: 'JEE' | 'NEET',
+    subject: string,
+    grade: string,
+    chapterIds: string[]
+): { chapterTitle: string; resources: Resource[] }[] => {
+    const chapters = getChaptersByIds(exam, subject, grade, chapterIds);
+    return chapters.map(ch => ({
+        chapterTitle: ch.title,
+        resources: ch.resources,
+    }));
+};
+
 // Helper to generate mock questions for any topic with varied templates
 const generateMockQuestions = (topic: string, count: number): Question[] => {
     const questionTemplates = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import {
@@ -8,6 +8,7 @@ import {
     getTestStudents,
     getTestResults,
     saveTestResults,
+    updateTestPaper,
     OfflineTest,
     TestResult
 } from "@/lib/offlineTests";
@@ -23,9 +24,15 @@ import {
     Check,
     AlertCircle,
     Trophy,
-    Medal
+    Medal,
+    Clock,
+    Upload,
+    Image as ImageIcon,
+    X,
+    Plus
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface StudentWithMarks {
     userId: string;
@@ -35,8 +42,7 @@ interface StudentWithMarks {
     existingResult?: TestResult;
 }
 
-export default function EnterMarksPage({ params }: { params: Promise<{ testId: string }> }) {
-    const resolvedParams = use(params);
+export default function EnterMarksPage({ params }: { params: { testId: string } }) {
     const { session } = useAuth();
     const router = useRouter();
 
@@ -48,22 +54,31 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
     const [success, setSuccess] = useState(false);
     const [showRankings, setShowRankings] = useState(false);
 
+    // Test Paper Upload State
+    const [testPaperImages, setTestPaperImages] = useState<string[]>([]);
+    const [uploadingImage, setUploadingImage] = useState(false);
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             // Fetch test
-            const testData = await getTestById(resolvedParams.testId);
+            const testData = await getTestById(params.testId);
             if (!testData) {
                 router.push("/teacher/tests");
                 return;
             }
             setTest(testData);
 
+            // Load existing test paper images
+            if (testData.test_paper && testData.test_paper.length > 0) {
+                setTestPaperImages(testData.test_paper);
+            }
+
             // Fetch assigned students
-            const studentIds = await getTestStudents(resolvedParams.testId);
+            const studentIds = await getTestStudents(params.testId);
 
             // Fetch existing results
-            const existingResults = await getTestResults(resolvedParams.testId);
+            const existingResults = await getTestResults(params.testId);
             const resultsMap = new Map(existingResults.map((r) => [r.student_id, r]));
 
             // Fetch student details from enrollments
@@ -104,11 +119,13 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
         } finally {
             setLoading(false);
         }
-    }, [resolvedParams.testId, router]);
+    }, [params.testId, router]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    const isTestEnded = test ? new Date() > new Date(test.end_time) : false;
 
     function updateMarks(userId: string, value: string) {
         // Allow empty or valid numbers only
@@ -119,6 +136,8 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
             return;
         }
 
+        if (!isTestEnded) return;
+
         setStudents((prev) =>
             prev.map((s) => (s.userId === userId ? { ...s, marks: value } : s))
         );
@@ -126,6 +145,12 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
 
     async function handleSave() {
         if (!test || !session?.user?.id) return;
+
+        // Validate test paper images - minimum 2 required
+        if (testPaperImages.length < 2) {
+            setError("Please upload at least 2 test paper images before saving marks. Students need to see the test paper for revision.");
+            return;
+        }
 
         // Validate all marks
         const resultsToSave = students
@@ -174,14 +199,94 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
             .map((s) => ({ ...s, marksNum: parseInt(s.marks) }))
             .sort((a, b) => b.marksNum - a.marksNum);
 
+        const total = studentsWithMarks.length;
+
         return studentsWithMarks.map((student, index) => {
             const rank = index + 1;
-            const studentsBelow = studentsWithMarks.length - rank;
-            const percentile = Math.round(
-                (studentsBelow / studentsWithMarks.length) * 100
-            );
+            // For single student, show 100%ile
+            // Otherwise: percentage of students scoring less than this student
+            let percentile: number;
+            if (total === 1) {
+                percentile = 100;
+            } else {
+                const studentsBelow = total - rank;
+                percentile = Math.round((studentsBelow / (total - 1)) * 100);
+            }
             return { ...student, rank, percentile };
         });
+    }
+
+    // Handle test paper image upload
+    async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const files = e.target.files;
+        if (!files || files.length === 0 || !test) return;
+
+        setUploadingImage(true);
+        setError("");
+
+        try {
+            const newImageUrls: string[] = [];
+
+            for (const file of Array.from(files)) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    setError('Please upload only image files');
+                    continue;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    setError('Image too large. Max 5MB per image.');
+                    continue;
+                }
+
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${test.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+                // Upload to Supabase Storage
+                const { error: uploadError } = await supabase.storage
+                    .from('test-papers')
+                    .upload(fileName, file);
+
+                if (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    setError('Failed to upload image. Make sure "test-papers" bucket exists.');
+                    continue;
+                }
+
+                // Get public URL
+                const { data: urlData } = supabase.storage
+                    .from('test-papers')
+                    .getPublicUrl(fileName);
+
+                if (urlData.publicUrl) {
+                    newImageUrls.push(urlData.publicUrl);
+                }
+            }
+
+            if (newImageUrls.length > 0) {
+                const updatedImages = [...testPaperImages, ...newImageUrls];
+                setTestPaperImages(updatedImages);
+
+                // Save to database
+                await updateTestPaper(test.id, updatedImages);
+            }
+        } catch (err) {
+            console.error('Error uploading image:', err);
+            setError('Failed to upload image');
+        } finally {
+            setUploadingImage(false);
+        }
+    }
+
+    // Remove test paper image
+    async function handleRemoveImage(index: number) {
+        if (!test) return;
+
+        const updatedImages = testPaperImages.filter((_, i) => i !== index);
+        setTestPaperImages(updatedImages);
+        await updateTestPaper(test.id, updatedImages);
     }
 
     if (loading) {
@@ -255,10 +360,22 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
                         <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                             <Calendar className="w-5 h-5" />
                             <span>
-                                {new Date(test.test_date).toLocaleDateString("en-IN", {
+                                {new Date(test.start_time).toLocaleDateString("en-IN", {
                                     day: "numeric",
-                                    month: "long",
+                                    month: "short",
                                     year: "numeric",
+                                })}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                            <Clock className="w-5 h-5" />
+                            <span>
+                                {new Date(test.start_time).toLocaleTimeString("en-IN", {
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                })} - {new Date(test.end_time).toLocaleTimeString("en-IN", {
+                                    hour: "2-digit",
+                                    minute: "2-digit"
                                 })}
                             </span>
                         </div>
@@ -280,6 +397,94 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
                         </span>
                     )}
                 </div>
+            </div>
+
+            {/* Time Lock Warning */}
+            {!isTestEnded && !test.is_marks_entered && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-center gap-3 mb-6">
+                    <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                    <div>
+                        <h4 className="font-semibold text-amber-800 dark:text-amber-300">Test in Progress</h4>
+                        <p className="text-sm text-amber-700 dark:text-amber-400">
+                            Marks entry will be enabled after the test ends at {new Date(test.end_time).toLocaleTimeString("en-IN", { timeStyle: 'short' })}.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Test Paper Upload Section */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-blue-600" />
+                        <h3 className="font-semibold text-slate-900 dark:text-white">Test Paper Images</h3>
+                    </div>
+                    <label className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+                        {uploadingImage ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <Upload className="w-4 h-4" />
+                        )}
+                        <span className="text-sm font-medium">
+                            {uploadingImage ? "Uploading..." : "Upload Images"}
+                        </span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                    Upload test paper images so students can review after results are out.
+                </p>
+
+                {testPaperImages.length === 0 ? (
+                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
+                        <ImageIcon className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">No test paper images uploaded yet</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {testPaperImages.map((imageUrl, index) => (
+                            <div key={index} className="relative group aspect-[3/4] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                                <Image
+                                    src={imageUrl}
+                                    alt={`Test paper page ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                />
+                                <button
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs py-1 text-center">
+                                    Page {index + 1}
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* Add More Button */}
+                        <label className="aspect-[3/4] rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 dark:hover:border-blue-600 transition-colors">
+                            <Plus className="w-8 h-8 text-slate-400 mb-1" />
+                            <span className="text-xs text-slate-500">Add More</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageUpload}
+                                disabled={uploadingImage}
+                                className="hidden"
+                            />
+                        </label>
+                    </div>
+                )}
             </div>
 
             {/* Error/Success Messages */}
@@ -427,7 +632,8 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
                                                             placeholder="--"
                                                             min="0"
                                                             max={test.max_marks}
-                                                            className="w-20 px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-center text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            disabled={!isTestEnded}
+                                                            className={`w-20 px-3 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-center text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 ${!isTestEnded ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                         />
                                                         <span className="text-sm text-slate-400">
                                                             / {test.max_marks}
@@ -447,7 +653,7 @@ export default function EnterMarksPage({ params }: { params: Promise<{ testId: s
                                 </span>
                                 <button
                                     onClick={handleSave}
-                                    disabled={saving || enteredCount === 0}
+                                    disabled={saving || enteredCount === 0 || !isTestEnded}
                                     className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     {saving ? (

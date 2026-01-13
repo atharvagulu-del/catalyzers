@@ -44,8 +44,14 @@ export interface OfflineTest {
     class: '11' | '12' | 'Dropper';
     batch: string | null;
     test_date: string;
+    start_time: string;
+    end_time: string;
     max_marks: number;
     is_marks_entered: boolean;
+    chapters?: string[];  // Array of chapter IDs
+    custom_topics?: string[];  // Custom topics added by teacher
+    exam_type?: 'JEE' | 'NEET';  // Exam type for syllabus
+    test_paper?: string[];  // Array of image URLs for test paper
     created_at: string;
 }
 
@@ -193,8 +199,13 @@ export async function createTest(test: {
     class: '11' | '12' | 'Dropper';
     batch?: string;
     test_date: string;
+    start_time: string;
+    end_time: string;
     max_marks: number;
     created_by: string;
+    chapters?: string[];  // Array of chapter IDs
+    custom_topics?: string[];  // Custom topics added by teacher
+    exam_type?: 'JEE' | 'NEET';  // Exam type
 }): Promise<OfflineTest | null> {
     const { data, error } = await supabase
         .from('offline_tests')
@@ -246,6 +257,15 @@ export async function updateTestMarksEnteredStatus(testId: string, status: boole
     const { error } = await supabase
         .from('offline_tests')
         .update({ is_marks_entered: status })
+        .eq('id', testId);
+
+    return !error;
+}
+
+export async function updateTestPaper(testId: string, testPaperUrls: string[]): Promise<boolean> {
+    const { error } = await supabase
+        .from('offline_tests')
+        .update({ test_paper: testPaperUrls })
         .eq('id', testId);
 
     return !error;
@@ -400,16 +420,23 @@ export async function getMyTestsWithResults(userId: string): Promise<TestWithRes
         if (myResult?.marks_obtained !== null && myResult?.marks_obtained !== undefined) {
             // Sort results by marks (descending)
             const sortedResults = allResults
-                .filter(r => r.marks_obtained !== null)
+                .filter(r => r.marks_obtained !== null && r.marks_obtained !== undefined)
                 .sort((a, b) => (b.marks_obtained || 0) - (a.marks_obtained || 0));
 
             // Find my rank
             const myIndex = sortedResults.findIndex(r => r.student_id === userId);
             if (myIndex !== -1) {
                 myRank = myIndex + 1;
-                // Percentile = (Number of students below me / Total students) * 100
-                const studentsBelow = sortedResults.length - myRank;
-                myPercentile = Math.round((studentsBelow / sortedResults.length) * 100);
+                // Percentile formula: ((N - R) / N) * 100 where N = total, R = rank
+                // For single student, show 100%ile (they're at the top)
+                const totalWithMarks = sortedResults.length;
+                if (totalWithMarks === 1) {
+                    myPercentile = 100;
+                } else {
+                    // Standard percentile: percentage of students scoring less than you
+                    const studentsBelow = totalWithMarks - myRank;
+                    myPercentile = Math.round((studentsBelow / (totalWithMarks - 1)) * 100);
+                }
             }
         }
 
@@ -488,3 +515,86 @@ export async function getTeacherDashboardStats(): Promise<{
         testsWithMarks: tests.filter(t => t.is_marks_entered).length,
     };
 }
+
+// ==========================================
+// CLASS AVERAGE CALCULATION
+// ==========================================
+
+export async function getClassAverage(testId: string): Promise<number> {
+    const { data: results, error } = await supabase
+        .from('test_results')
+        .select('marks_obtained')
+        .eq('test_id', testId)
+        .not('marks_obtained', 'is', null);
+
+    if (error || !results || results.length === 0) {
+        return 0;
+    }
+
+    const total = results.reduce((sum, r) => sum + (r.marks_obtained || 0), 0);
+    return Math.round(total / results.length);
+}
+
+// ==========================================
+// GET TEST WITH FULL DETAILS (for result page)
+// ==========================================
+
+export async function getTestWithFullDetails(testId: string, userId: string): Promise<{
+    test: OfflineTest | null;
+    myResult: TestResult | null;
+    classAverage: number;
+    totalStudents: number;
+    myRank: number | null;
+    myPercentile: number | null;
+} | null> {
+    // Get test
+    const { data: test, error: testError } = await supabase
+        .from('offline_tests')
+        .select('*')
+        .eq('id', testId)
+        .single();
+
+    if (testError || !test) return null;
+
+    // Get all results for this test
+    const { data: allResults } = await supabase
+        .from('test_results')
+        .select('*')
+        .eq('test_id', testId);
+
+    const results = allResults || [];
+    const totalStudents = results.length;
+
+    // Get my result
+    const myResult = results.find(r => r.student_id === userId) || null;
+
+    // Calculate class average
+    const validResults = results.filter(r => r.marks_obtained !== null);
+    const classAverage = validResults.length > 0
+        ? Math.round(validResults.reduce((sum, r) => sum + (r.marks_obtained || 0), 0) / validResults.length)
+        : 0;
+
+    // Calculate rank and percentile
+    let myRank: number | null = null;
+    let myPercentile: number | null = null;
+
+    if (myResult?.marks_obtained !== null && myResult?.marks_obtained !== undefined) {
+        const sortedResults = validResults.sort((a, b) => (b.marks_obtained || 0) - (a.marks_obtained || 0));
+        const myIndex = sortedResults.findIndex(r => r.student_id === userId);
+        if (myIndex !== -1) {
+            myRank = myIndex + 1;
+            const studentsBelow = sortedResults.length - myRank;
+            myPercentile = Math.round((studentsBelow / sortedResults.length) * 100);
+        }
+    }
+
+    return {
+        test,
+        myResult,
+        classAverage,
+        totalStudents,
+        myRank,
+        myPercentile,
+    };
+}
+

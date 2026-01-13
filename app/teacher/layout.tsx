@@ -3,7 +3,7 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { checkIsTeacher } from "@/lib/offlineTests";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import {
     Loader2,
@@ -58,26 +58,50 @@ export default function TeacherLayout({
 
     useEffect(() => {
         async function verifyTeacher() {
-            if (!session?.user?.id) {
-                router.push("/");
-                return;
-            }
+            try {
+                // Force a session refresh to ensure we have the latest metadata
+                const { data: { session: freshSession }, error } = await supabase.auth.refreshSession();
 
-            if (session.user.email === "ritagulve1984@gmail.com") {
-                setIsTeacher(true);
-                return;
-            }
+                if (error || !freshSession?.user) {
+                    console.log('[TeacherLayout] Session refresh failed:', error);
+                    window.location.href = "/";
+                    return;
+                }
 
-            const teacherStatus = await checkIsTeacher(session.user.id);
-            setIsTeacher(teacherStatus);
+                // Check role from user_metadata
+                const userRole = freshSession.user.user_metadata?.role;
+                console.log('[TeacherLayout] Role from refresh:', userRole);
 
-            if (!teacherStatus) {
-                router.push("/dashboard");
+                if (userRole === 'teacher') {
+                    setIsTeacher(true);
+                } else {
+                    // Don't redirect immediately, let's see why it failed
+                    console.log('[TeacherLayout] Role mismatch. Expected teacher, got:', userRole);
+                    setIsTeacher(false);
+                }
+            } catch (err) {
+                console.error('[TeacherLayout] Error:', err);
+                setIsTeacher(false);
             }
         }
 
         verifyTeacher();
-    }, [session, router]);
+    }, [router]);
+
+    if (isTeacher === false) {
+        return (
+            <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 gap-4">
+                <div className="text-center p-8 bg-white rounded-xl shadow-lg">
+                    <h1 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h1>
+                    <p className="text-slate-600 mb-4">You do not have permission to view this page.</p>
+                    <p className="text-xs text-slate-400 mb-4">Current Role: {session?.user?.user_metadata?.role || 'None'}</p>
+                    <Link href="/dashboard" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Go to Dashboard
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     if (isTeacher === null) {
         return (

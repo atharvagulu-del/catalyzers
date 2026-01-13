@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getPerformanceStats, PerformanceStats } from "@/lib/performanceTracking";
 import { Clock, Trophy, HelpCircle, TrendingUp, Edit3, Loader2, X } from "lucide-react";
@@ -8,6 +9,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function PerformancePage() {
+    const router = useRouter();
     const { user, fullName } = useAuth();
     const [stats, setStats] = useState<PerformanceStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -138,7 +140,11 @@ export default function PerformancePage() {
                             </thead>
                             <tbody>
                                 {displayedTests.map((test) => (
-                                    <tr key={test.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                    <tr
+                                        key={test.id}
+                                        className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                                        onClick={() => router.push(`/dashboard/performance/test/${test.id}`)}
+                                    >
                                         <td className="py-4 px-6">
                                             <span className="font-semibold text-slate-900 dark:text-white">{test.testTitle}</span>
                                         </td>
@@ -220,7 +226,11 @@ export default function PerformancePage() {
                                     </thead>
                                     <tbody>
                                         {stats?.recentTests?.map((test) => (
-                                            <tr key={test.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                            <tr
+                                                key={test.id}
+                                                className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                                                onClick={() => router.push(`/dashboard/performance/test/${test.id}`)}
+                                            >
                                                 <td className="py-4 px-6">
                                                     <span className="font-semibold text-slate-900 dark:text-white">{test.testTitle}</span>
                                                 </td>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/auth/AuthProvider";
-import { Clock, Calendar } from "lucide-react";
+import { Clock, Calendar, Loader2 } from "lucide-react";
 import { motion, useMotionValue } from "framer-motion";
 import {
     // RevisionNotesIcon,
@@ -17,6 +17,8 @@ import Link from "next/link";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { useRouter } from "next/navigation";
+import { getMyTestsWithResults, TestWithResults } from "@/lib/offlineTests";
+import TestCard from "@/components/dashboard/TestCard";
 
 const quickActions = [
     {
@@ -54,6 +56,9 @@ export default function DashboardPage() {
     const [goals, setGoals] = useState<DailyGoal[]>([]);
     const [isLoadingGoals, setIsLoadingGoals] = useState(true);
 
+    const [tests, setTests] = useState<TestWithResults[]>([]);
+    const [isLoadingTests, setIsLoadingTests] = useState(true);
+
     useEffect(() => {
         const saved = localStorage.getItem('userProfile');
         if (saved) {
@@ -62,14 +67,20 @@ export default function DashboardPage() {
             setUserExam(parsed.exam);
         }
 
-        const fetchGoals = async () => {
+        const fetchData = async () => {
             if (user?.id) {
-                const fetched = await getOrCreateDailyPlan(user.id);
-                setGoals(fetched);
+                // Fetch Goals
+                const fetchedGoals = await getOrCreateDailyPlan(user.id);
+                setGoals(fetchedGoals);
+                setIsLoadingGoals(false);
+
+                // Fetch Tests
+                const fetchedTests = await getMyTestsWithResults(user.id);
+                setTests(fetchedTests);
+                setIsLoadingTests(false);
             }
-            setIsLoadingGoals(false);
         };
-        fetchGoals();
+        fetchData();
     }, [user]);
 
     // Force Redirect for Teacher
@@ -106,6 +117,12 @@ export default function DashboardPage() {
 
     const displayName = userName || fullName || user?.email?.split("@")[0] || "Student";
     const displayExam = userExam || user?.user_metadata?.exam || "JEE";
+
+    // Filter Tests
+    const now = new Date();
+    const liveTests = tests.filter(t => new Date(t.start_time) <= now && new Date(t.end_time) >= now);
+    const upcomingTests = tests.filter(t => new Date(t.start_time) > now);
+    const pastTests = tests.filter(t => new Date(t.end_time) < now);
 
     return (
         <div className="space-y-6 md:space-y-8">
@@ -158,23 +175,59 @@ export default function DashboardPage() {
             {/* Secondary Actions / More Config */}
             <div className="grid md:grid-cols-3 gap-6">
                 {/* Tests Section */}
-                <section className="md:col-span-2 bg-white dark:bg-[#111111] rounded-[24px] md:rounded-[28px] shadow-sm border border-slate-100 dark:border-neutral-800 p-5 md:p-6">
+                <section className="md:col-span-2 bg-white dark:bg-[#111111] rounded-[24px] md:rounded-[28px] shadow-sm border border-slate-100 dark:border-neutral-800 p-5 md:p-6 flex flex-col min-h-[400px]">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             My Schedule
                         </h2>
-                        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">View Calendar</button>
+                        <Link href="/dashboard/calendar" className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">View Calendar</Link>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center py-6 md:py-10 text-center border-2 border-dashed border-slate-200 dark:border-neutral-800 rounded-2xl bg-slate-50/50 dark:bg-neutral-900/30">
-                        <div className="w-16 h-16 bg-white dark:bg-[#1A1A1A] rounded-full flex items-center justify-center shadow-sm mb-4">
-                            <Calendar className="w-8 h-8 text-slate-400" />
+                    {isLoadingTests ? (
+                        <div className="flex-1 flex items-center justify-center">
+                            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                         </div>
-                        <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">No Tests Scheduled</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
-                            Enjoy your free time! Stay tuned for upcoming mock tests.
-                        </p>
-                    </div>
+                    ) : tests.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-6 md:py-10 text-center border-2 border-dashed border-slate-200 dark:border-neutral-800 rounded-2xl bg-slate-50/50 dark:bg-neutral-900/30 flex-1">
+                            <div className="w-16 h-16 bg-white dark:bg-[#1A1A1A] rounded-full flex items-center justify-center shadow-sm mb-4">
+                                <Calendar className="w-8 h-8 text-slate-400" />
+                            </div>
+                            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">No Tests Scheduled</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
+                                Enjoy your free time! Stay tuned for upcoming mock tests.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-6">
+                            {/* Live & Upcoming - Show max 2 */}
+                            {(liveTests.length > 0 || upcomingTests.length > 0) && (
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Upcoming & Live</h3>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {[...liveTests, ...upcomingTests].slice(0, 2).map(t => <TestCard key={t.id} test={t} />)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Past Tests - Show max 2 (combined with above for total 4) */}
+                            {pastTests.length > 0 && (
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Past Tests</h3>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {pastTests.slice(0, 2).map(t => <TestCard key={t.id} test={t} />)}
+                                    </div>
+                                    {pastTests.length > 2 && (
+                                        <Link
+                                            href="/dashboard/tests"
+                                            className="block text-center text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 py-2"
+                                        >
+                                            View {pastTests.length - 2} more past tests →
+                                        </Link>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </section>
 
                 {/* Daily Engagement */}

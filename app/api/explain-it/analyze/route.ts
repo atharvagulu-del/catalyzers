@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllChaptersForAI, ChapterInfo } from "@/lib/lectureSearch";
 
-// Google Gemini API Key - Must be set in Environment Variables
+// Google Gemini API Key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+if (!GEMINI_API_KEY) {
+    console.error("Missing GEMINI_API_KEY environment variable");
+}
 
 // Get all available lectures for AI to suggest
 const ALL_CHAPTERS = getAllChaptersForAI();

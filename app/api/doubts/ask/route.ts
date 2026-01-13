@@ -5,12 +5,20 @@ import { getAllChaptersForAI, findRelatedLectures, type ChapterInfo } from '@/li
 import fs from 'fs';
 import path from 'path';
 
-// Credentials from lib/supabase.ts
-const supabaseUrl = "https://rnoxehthfxffirafloth.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJub3hlaHRoZnhmZmlyYWZsb3RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMjEzNzQsImV4cCI6MjA4MzU5NzM3NH0.9HqDWUW6iYUL6tIkiY3PnJ1vYJobWEunoeMi1XQkV9A";
+// Credentials from environment
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rnoxehthfxffirafloth.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Google Gemini API Key - Must be set in Environment Variables
+if (!supabaseAnonKey) {
+    console.error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable");
+}
+
+// Google Gemini API Key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+if (!GEMINI_API_KEY) {
+    console.error("Missing GEMINI_API_KEY environment variable");
+}
 
 // Free tier rate limit
 const DAILY_LIMIT = 50;

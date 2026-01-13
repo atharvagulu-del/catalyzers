@@ -58,14 +58,17 @@ export async function middleware(request: NextRequest) {
 
     const { data: { session } } = await supabase.auth.getSession()
 
-    // 0. SPECIAL: Redirect specific teacher email to /teacher if they are on home or dashboard
-    if (session?.user?.email?.toLowerCase() === 'ritagulve1984@gmail.com') {
+    // Role-based routing: Check user_metadata.role
+    const userRole = session?.user?.user_metadata?.role;
+
+    // Teachers: redirect from / or /dashboard to /teacher
+    if (userRole === 'teacher') {
         if (request.nextUrl.pathname === '/' || request.nextUrl.pathname.startsWith('/dashboard')) {
             return NextResponse.redirect(new URL('/teacher', request.url))
         }
     }
 
-    // 1. Redirect Home ("/") to Dashboard if logged in
+    // 1. Redirect Home ("/") to Dashboard if logged in (non-teachers)
     if (request.nextUrl.pathname === '/' && session) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
     }
@@ -76,7 +79,6 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/', request.url))
         }
         // Teacher role check is handled in the layout component
-        // as we need to query the database for teacher_profiles
         return response
     }
 
@@ -108,6 +110,6 @@ export const config = {
          * - auth/callback (auth callback)
          * Feel free to modify this pattern to include more paths.
          */
-        '/((?!_next/static|_next/image|favicon.ico|auth/callback|onboarding).*)',
+        '/((?!_next/static|_next/image|favicon.ico|auth/callback|onboarding|teacher).*)',
     ],
 }

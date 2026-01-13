@@ -139,7 +139,7 @@ export default function Header() {
                         {session ? (
                             // Logged In State
                             <div className="flex items-center gap-3">
-                                <Link href="/dashboard">
+                                <Link href={user?.user_metadata?.role === 'teacher' ? "/teacher" : "/dashboard"}>
                                     <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg hover:ring-2 hover:ring-offset-2 hover:ring-primary transition-all cursor-pointer">
                                         {fullName ? fullName[0].toUpperCase() : user?.email?.[0].toUpperCase() || "U"}
                                     </div>

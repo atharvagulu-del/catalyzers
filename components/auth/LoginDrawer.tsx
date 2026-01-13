@@ -16,8 +16,19 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
     const [form, setForm] = useState({
         email: "",
         password: "",
-        // Name removed
     });
+
+    // Check if user is a teacher
+    const checkIsTeacher = async (userId: string): Promise<boolean> => {
+        console.log('[Auth] Checking teacher status for user:', userId);
+        const { data, error } = await supabase
+            .from('teacher_profiles')
+            .select('id')
+            .eq('user_id', userId)
+            .single();
+        console.log('[Auth] Teacher check result:', { data, error });
+        return !!data;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,16 +36,34 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
 
         try {
             if (activeTab === "login") {
-                const { error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await supabase.auth.signInWithPassword({
                     email: form.email,
                     password: form.password,
                 });
 
                 if (error) throw error;
 
-                if (form.email === "ritagulve1984@gmail.com") {
-                    router.push("/teacher");
+                // Refresh session to get latest user_metadata
+                const { data: refreshData } = await supabase.auth.refreshSession();
+                const currentUser = refreshData?.user || data.user;
+
+                console.log('[Login] User data:', currentUser?.email);
+                console.log('[Login] User metadata:', currentUser?.user_metadata);
+
+                // Check role from user_metadata
+                if (currentUser) {
+                    const userRole = currentUser.user_metadata?.role;
+                    console.log('[Login] Role detected:', userRole);
                     onClose();
+
+                    // Use window.location for a hard redirect that will definitely work
+                    if (userRole === 'teacher') {
+                        console.log('[Login] Hard redirect to /teacher');
+                        window.location.href = "/teacher";
+                    } else {
+                        console.log('[Login] Hard redirect to /dashboard');
+                        window.location.href = "/dashboard";
+                    }
                     return;
                 }
 
@@ -42,26 +71,24 @@ export default function LoginDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
                 router.push("/dashboard");
 
             } else {
-                // Register
+                // Register - new users default to 'student' role
                 const { data, error } = await supabase.auth.signUp({
                     email: form.email,
                     password: form.password,
-                    // Name is collected during Onboarding now
                     options: {
                         emailRedirectTo: `${window.location.origin}/auth/callback`,
+                        data: {
+                            role: 'student'  // Default role for new signups
+                        }
                     }
                 });
 
                 if (error) throw error;
 
                 // Check if session key exists (means auto-confirmed/fake email) or not
-                if (data?.session) {
+                if (data?.session && data.user) {
                     onClose();
-                    if (form.email === "ritagulve1984@gmail.com") {
-                        router.push("/teacher");
-                    } else {
-                        router.push("/onboarding");
-                    }
+                    router.push("/onboarding");
                 } else {
                     // Email verification required
                     setVerificationSent(true);
