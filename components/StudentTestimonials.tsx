@@ -158,10 +158,10 @@ export default function StudentTestimonials() {
                 {/* General Testimonial Text */}
                 <div className="mt-12 max-w-6xl mx-auto text-center relative z-10 px-4">
                     <p className="text-blue-100/90 text-xs md:text-sm leading-relaxed font-normal">
-                        "Catalyzers is one of the best IIT JEE and NEET coaching institutes in Kota. The comprehensive study material and well-structured teaching approach helped me build a strong conceptual foundation in all subjects. The regular tests and mock exams prepared me thoroughly for the competitive exams and also helped me develop discipline and consistency in my studies. The faculty at Catalyzers is highly dedicated and supportive, always available to clear doubts and provide guidance whenever needed. Choosing Catalyzers in Kota for my IIT JEE/NEET preparation was one of the best decisions I made. The experienced teachers and their personalized teaching methods helped me improve my performance significantly. My confidence increased with continuous practice and evaluations, and my exam results reflect the effectiveness of the study material and test series. I would highly recommend Catalyzers to students aiming to crack IIT JEE or NEET."
+                        &ldquo;Catalyzers is one of the best IIT JEE and NEET coaching institutes in Kota. The comprehensive study material and well-structured teaching approach helped me build a strong conceptual foundation in all subjects. The regular tests and mock exams prepared me thoroughly for the competitive exams and also helped me develop discipline and consistency in my studies. The faculty at Catalyzers is highly dedicated and supportive, always available to clear doubts and provide guidance whenever needed. Choosing Catalyzers in Kota for my IIT JEE/NEET preparation was one of the best decisions I made. The experienced teachers and their personalized teaching methods helped me improve my performance significantly. My confidence increased with continuous practice and evaluations, and my exam results reflect the effectiveness of the study material and test series. I would highly recommend Catalyzers to students aiming to crack IIT JEE or NEET.&rdquo;
                     </p>
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
