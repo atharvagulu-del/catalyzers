@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     try {
         // Check cache first
         if (pageCache.has(pageNum)) {
-            return new NextResponse(pageCache.get(pageNum), {
+            return new NextResponse(pageCache.get(pageNum)! as any, {
                 headers: {
                     'Content-Type': 'image/png',
                     'Cache-Control': 'public, max-age=86400', // Cache for 1 day
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         // Cache the result
         pageCache.set(pageNum, imageBuffer);
 
-        return new NextResponse(imageBuffer, {
+        return new NextResponse(imageBuffer as any, {
             headers: {
                 'Content-Type': 'image/png',
                 'Cache-Control': 'public, max-age=86400',
