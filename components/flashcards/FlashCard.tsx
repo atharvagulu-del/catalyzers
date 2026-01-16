@@ -17,6 +17,7 @@ interface FlashCardProps {
     swipeDirection?: 'left' | 'right' | null;
     cardNumber?: number;
     totalCards?: number;
+    highlightColor?: 'green' | 'orange' | null;
 }
 
 // Helper to render LaTeX content
@@ -48,13 +49,16 @@ export default function FlashCard({
     onSwipeRight,
     swipeDirection,
     cardNumber,
-    totalCards
+    totalCards,
+    highlightColor
 }: FlashCardProps) {
     const [showHint, setShowHint] = useState(false);
     const [dragX, setDragX] = useState(0);
 
     // Full card background color based on swipe direction
     const getCardBackground = () => {
+        if (highlightColor === 'green') return 'bg-emerald-400';
+        if (highlightColor === 'orange') return 'bg-amber-400';
         if (swipeDirection === 'right') return 'bg-emerald-400';
         if (swipeDirection === 'left') return 'bg-amber-400';
         // During drag, show color based on drag direction
