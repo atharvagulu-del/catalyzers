@@ -361,7 +361,7 @@ export default function FlashcardSessionPage() {
 
             {/* Header */}
             <div className="relative z-10 pt-8 pb-4 text-center">
-                <h1 className="text-lg font-bold text-slate-800 dark:text-white">{sessionData.topic}</h1>
+                <h1 className="text-lg font-bold text-slate-800 dark:text-white">{sessionData?.topic}</h1>
                 <p className="text-sm text-slate-500">Card {currentIndex + 1} of {cards.length}</p>
 
                 {/* Close Button - Circular floating with dark mode styling */}
