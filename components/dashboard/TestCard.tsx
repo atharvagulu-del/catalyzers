@@ -126,20 +126,20 @@ export default function TestCard({ test }: TestCardProps) {
                 );
             case 'result':
                 return (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col md:flex-row gap-2">
                         <button
                             onClick={() => setShowSyllabus(true)}
-                            className="flex-1 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                            className="flex-1 py-2 md:py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs md:text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
                         >
-                            <BookOpen className="w-4 h-4" />
+                            <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             View Syllabus
                         </button>
                         <Link
                             href={`/dashboard/performance/test/${test.id}`}
-                            className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                            className="flex-1 py-2 md:py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-xs md:text-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
                         >
-                            <BarChart2 className="w-4 h-4" />
-                            View Result
+                            <BarChart2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            Result
                         </Link>
                     </div>
                 );
@@ -148,23 +148,23 @@ export default function TestCard({ test }: TestCardProps) {
 
     return (
         <>
-            <div className={`rounded-2xl border ${variant.borderColor} ${variant.bg} p-5 flex flex-col gap-4 relative overflow-hidden group transition-all duration-300 hover:shadow-md dark:hover:bg-slate-800`}>
+            <div className={`rounded-2xl border ${variant.borderColor} ${variant.bg} p-4 md:p-5 flex flex-col gap-3 md:gap-4 relative overflow-hidden group transition-all duration-300 hover:shadow-md dark:hover:bg-slate-800`}>
                 {/* Accent Line */}
                 <div className={`absolute top-0 left-0 w-1 h-full ${variant.accent} opacity-100`}></div>
 
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${variant.statusConfig.color}`}>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] md:text-xs font-bold flex items-center gap-1.5 ${variant.statusConfig.color}`}>
                         {variant.statusConfig.icon}
                         {variant.statusConfig.label}
                     </span>
                     <div className="flex items-center gap-2">
                         {hasChapters && (
-                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md">
+                            <span className="text-[10px] md:text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 md:py-1 rounded-md">
                                 {test.chapters!.length} Topics
                             </span>
                         )}
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 px-2 py-1 rounded-md border border-slate-100 dark:border-slate-600">
+                        <span className="text-[10px] md:text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 px-2 py-0.5 md:py-1 rounded-md border border-slate-100 dark:border-slate-600">
                             Offline
                         </span>
                     </div>
@@ -172,38 +172,38 @@ export default function TestCard({ test }: TestCardProps) {
 
                 {/* Title & Info */}
                 <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                         {test.test_name}
                     </h3>
-                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    <p className="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">
                         {test.subject} • {test.max_marks} Marks
                     </p>
                 </div>
 
                 {/* Meta Grid */}
-                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/50 pt-3">
+                <div className="grid grid-cols-2 gap-y-1.5 gap-x-2 text-[10px] md:text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/50 pt-2 md:pt-3">
                     <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <Calendar className="w-3 h-3 md:w-3.5 md:h-3.5 text-slate-400" />
                         <span>{start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <Clock className="w-3 h-3 md:w-3.5 md:h-3.5 text-slate-400" />
                         <span>{start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <Clock className="w-3 h-3 md:w-3.5 md:h-3.5 text-slate-400" />
                         <span>{durationMinutes} mins</span>
                     </div>
                     {status === 'result' && test.my_result && (
                         <div className="flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400">
-                            <Trophy className="w-3.5 h-3.5" />
+                            <Trophy className="w-3 h-3 md:w-3.5 md:h-3.5" />
                             <span>{test.my_result.marks_obtained}/{test.max_marks}</span>
                         </div>
                     )}
                 </div>
 
                 {/* Actions */}
-                <div className="mt-auto pt-2">
+                <div className="mt-auto pt-1 md:pt-2">
                     {renderCTA()}
                 </div>
             </div>

@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Back card -->
+  <rect x="14" y="8" width="36" height="44" rx="4" fill="#E0E7FF" stroke="#818CF8" stroke-width="2"/>
+  <!-- Front card -->
+  <rect x="10" y="12" width="36" height="44" rx="4" fill="white" stroke="#6366F1" stroke-width="2"/>
+  <!-- Question mark -->
+  <path d="M28 30C28 26.6863 30.6863 24 34 24C37.3137 24 40 26.6863 40 30C40 32.2 38.8 34.1 37 35.2V38H31V34.2C31 33.1 31.5 32 32.5 31.5C33.5 31 34 30.5 34 30C34 29.4 33.6 29 33 29C32.4 29 32 29.4 32 30H28Z" fill="#6366F1"/>
+  <circle cx="34" cy="42" r="2" fill="#6366F1"/>
+  <!-- Sparkle -->
+  <path d="M50 14L52 18L56 20L52 22L50 26L48 22L44 20L48 18L50 14Z" fill="#FBBF24"/>
+</svg>

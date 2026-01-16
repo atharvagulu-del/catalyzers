@@ -39,7 +39,12 @@ const quickActions = [
         iconSrc: "/assets/icons/grow.svg",
         href: "/dashboard/improvement-book"
     },
-
+    {
+        title: "Flash Cards",
+        icon: null,
+        iconSrc: "/assets/icons/flashcard.svg",
+        href: "/dashboard/flashcards"
+    },
     {
         title: "Explain it",
         icon: null,
@@ -142,31 +147,30 @@ export default function DashboardPage() {
                     <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Quick Actions</h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 px-2 md:flex md:gap-10 md:overflow-visible md:pb-6 md:px-0">
+                <div className="grid grid-cols-3 gap-3 px-2 md:flex md:gap-10 md:overflow-visible md:pb-6 md:px-0">
                     {quickActions.map((action) => (
-                        <Link key={action.title} href={action.href || "#"} className="group flex-shrink-0">
-                            <div className="flex flex-col items-center gap-3">
-                                {/* Button Container - Bottom Shadow Only */}
-                                <button
-                                    className="relative w-full aspect-square max-w-[120px] md:w-[115px] md:h-[115px] bg-slate-50 dark:bg-[#222222] rounded-[24px] md:rounded-[28px] 
-                                               shadow-[0px_14px_24px_-10px_rgba(0,0,0,0.08),0px_6px_0px_-2px_rgba(0,0,0,0.03)]
-                                               hover:shadow-[0px_18px_32px_-10px_rgba(0,0,0,0.12),0px_8px_0px_-2px_rgba(0,0,0,0.04)]
-                                               active:translate-y-1 active:shadow-none active:scale-[0.99]
-                                               transition-all duration-200 ease-out
-                                               flex items-center justify-center
-                                               border border-slate-200/60 dark:border-white/5 mx-auto"
-                                >
-                                    {/* Icon */}
-                                    <div className="relative w-10 h-10 md:w-[54px] md:h-[54px] transform transition-transform duration-300 group-hover:scale-105">
-                                        <Image src={action.iconSrc} alt={action.title} fill className="object-contain" />
-                                    </div>
-                                </button>
+                        <Link key={action.title} href={action.href || "#"} className="group flex flex-col items-center gap-2">
+                            {/* Button Container - Bottom Shadow Only */}
+                            <button
+                                className="relative w-full aspect-square max-w-[90px] md:max-w-[115px] md:w-[115px] md:h-[115px] bg-slate-50 dark:bg-[#222222] rounded-[20px] md:rounded-[28px] 
+                                           shadow-[0px_8px_16px_-6px_rgba(0,0,0,0.06),0px_4px_0px_-2px_rgba(0,0,0,0.03)]
+                                           md:shadow-[0px_14px_24px_-10px_rgba(0,0,0,0.08),0px_6px_0px_-2px_rgba(0,0,0,0.03)]
+                                           hover:shadow-[0px_18px_32px_-10px_rgba(0,0,0,0.12),0px_8px_0px_-2px_rgba(0,0,0,0.04)]
+                                           active:translate-y-1 active:shadow-none active:scale-[0.99]
+                                           transition-all duration-200 ease-out
+                                           flex items-center justify-center
+                                           border border-slate-200/60 dark:border-white/5 mx-auto"
+                            >
+                                {/* Icon */}
+                                <div className="relative w-8 h-8 md:w-[54px] md:h-[54px] transform transition-transform duration-300 group-hover:scale-105">
+                                    <Image src={action.iconSrc} alt={action.title} fill className="object-contain" />
+                                </div>
+                            </button>
 
-                                {/* Label */}
-                                <span className="text-sm md:text-xs font-semibold text-slate-700 dark:text-slate-300 text-center leading-tight max-w-[90px] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                    {action.title}
-                                </span>
-                            </div>
+                            {/* Label */}
+                            <span className="text-[10px] md:text-xs font-semibold text-slate-700 dark:text-slate-300 text-center leading-tight max-w-[80px] md:max-w-[90px] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                {action.title}
+                            </span>
                         </Link>
                     ))}
                 </div>
@@ -203,7 +207,7 @@ export default function DashboardPage() {
                             {(liveTests.length > 0 || upcomingTests.length > 0) && (
                                 <div className="space-y-3">
                                     <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Upcoming & Live</h3>
-                                    <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {[...liveTests, ...upcomingTests].slice(0, 2).map(t => <TestCard key={t.id} test={t} />)}
                                     </div>
                                 </div>
@@ -213,7 +217,7 @@ export default function DashboardPage() {
                             {pastTests.length > 0 && (
                                 <div className="space-y-3">
                                     <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Past Tests</h3>
-                                    <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {pastTests.slice(0, 2).map(t => <TestCard key={t.id} test={t} />)}
                                     </div>
                                     {pastTests.length > 2 && (

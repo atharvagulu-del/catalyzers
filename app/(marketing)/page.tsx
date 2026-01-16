@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import HeroCarousel from "@/components/HeroCarousel";
+import StudentTestimonials from "@/components/StudentTestimonials";
 import ExamCategories from "@/components/ExamCategories";
 import Statistics from "@/components/Statistics";
 import Testimonials from "@/components/Testimonials";
@@ -31,6 +32,7 @@ export default function Home() {
             <HeroCarousel />
             <ExamCategories />
             <Statistics />
+            <StudentTestimonials />
             <Testimonials />
             <ContentSections />
             <Footer />
