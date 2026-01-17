@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/Skeleton';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import {
     Settings, HelpCircle, LogOut, ChevronRight,
-    User, Download, ClipboardList, Shield, FileQuestion
+    User, Download, ClipboardList, Shield, FileQuestion, Video
 } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { supabase } from '@/lib/supabase';

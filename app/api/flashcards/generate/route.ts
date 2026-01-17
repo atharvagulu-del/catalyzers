@@ -95,9 +95,21 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const models = [
+            'gemini-2.0-flash',
+            'gemini-2.0-flash-lite',
+            'gemini-1.5-flash'
+        ];
 
-        const prompt = `Generate ${count} JEE/NEET flashcards for "${topic}" in ${subject}.
+        let text = '';
+        let modelUsed = '';
+
+        for (const modelName of models) {
+            try {
+                console.log(`[Flashcards] Trying model: ${modelName}`);
+                const model = genAI.getGenerativeModel({ model: modelName });
+
+                const prompt = `Generate ${count} JEE/NEET flashcards for "${topic}" in ${subject}.
 
 IMPORTANT: Return ONLY a JSON array. No explanations, no markdown.
 
@@ -108,11 +120,25 @@ Use $...$ for math formulas.
 
 Return ONLY the JSON array starting with [ and ending with ]`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                text = response.text();
 
-        console.log('Gemini raw response (first 300 chars):', text.substring(0, 300));
+                if (text) {
+                    modelUsed = modelName;
+                    break; // Success
+                }
+            } catch (modelError: any) {
+                console.error(`[Flashcards] Failed with ${modelName}:`, modelError.message);
+                // Continue to next model
+            }
+        }
+
+        if (!text) {
+            throw new Error("All AI models failed to generate content. Please try again later.");
+        }
+
+        console.log(`[Flashcards] Success with ${modelUsed}. Raw response (first 300 chars):`, text.substring(0, 300));
 
         // Extract and parse JSON
         let cards = extractJSON(text);
@@ -147,6 +173,7 @@ Return ONLY a JSON array like: [{"question": "...", "hint": "..." or null, "answ
 Use $...$ for formulas. Make these DIFFERENT from: ${normalizedCards.slice(0, 3).map(c => c.question.substring(0, 30)).join(', ')}`;
 
             try {
+                const model = genAI.getGenerativeModel({ model: modelUsed }); // Use the working model
                 const moreResult = await model.generateContent(morePrompt);
                 const moreText = moreResult.response.text();
                 const moreCards = extractJSON(moreText);
@@ -183,7 +210,10 @@ Use $...$ for formulas. Make these DIFFERENT from: ${normalizedCards.slice(0, 3)
     } catch (error) {
         console.error('Flashcard generation error:', error);
         return NextResponse.json(
-            { error: 'An error occurred while generating flashcards. Please try again.' },
+            {
+                error: 'An error occurred while generating flashcards.',
+                details: error instanceof Error ? error.message : String(error)
+            },
             { status: 500 }
         );
     }

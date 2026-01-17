@@ -12,13 +12,14 @@ import {
 } from "@/components/ui/custom-icons";
 import { useState, useEffect } from "react";
 import { getOrCreateDailyPlan, toggleGoalStatus, DailyGoal } from "@/lib/dailyGoals";
-import { CheckCircle, Circle, ArrowRight, TrendingUp, Zap, BookOpen, Lock, Sparkles } from "lucide-react";
+import { CheckCircle, Circle, ArrowRight, TrendingUp, Zap, BookOpen, Lock, Sparkles, Video } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { useRouter } from "next/navigation";
 import { getMyTestsWithResults, TestWithResults } from "@/lib/offlineTests";
 import TestCard from "@/components/dashboard/TestCard";
+import { supabase } from "@/lib/supabase";
 
 const quickActions = [
     {
@@ -57,6 +58,7 @@ export default function DashboardPage() {
     const { session, user, fullName } = useAuth();
     const [userName, setUserName] = useState("");
     const [userExam, setUserExam] = useState("");
+    const [isEnrolled, setIsEnrolled] = useState(false); // New state
 
     const [goals, setGoals] = useState<DailyGoal[]>([]);
     const [isLoadingGoals, setIsLoadingGoals] = useState(true);
@@ -83,10 +85,29 @@ export default function DashboardPage() {
                 const fetchedTests = await getMyTestsWithResults(user.id);
                 setTests(fetchedTests);
                 setIsLoadingTests(false);
+
+                // Fetch Enrollment Status
+                const { data } = await supabase
+                    .from('enrollments')
+                    .select('enrollment_status')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (data && data.enrollment_status === 'ENROLLED') {
+                    setIsEnrolled(true);
+                }
             }
         };
         fetchData();
     }, [user]);
+
+    const handleBookSession = () => {
+        if (isEnrolled) {
+            window.open('https://cal.com/catalyzer/doubt-session', '_blank');
+        } else {
+            alert("🔒 Premium Feature\n\nOne-on-one live doubt sessions are available only for enrolled students. Please upgrade your plan to access this feature.");
+        }
+    };
 
     // Force Redirect for Teacher
     const router = useRouter();

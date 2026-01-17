@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, Sparkles, MoreVertical, X, Loader2, BookOpen, ArrowRight, Menu } from 'lucide-react';
+import { Send, Image as ImageIcon, Sparkles, MoreVertical, X, Loader2, BookOpen, ArrowRight, Menu, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase-client';
 import Link from 'next/link';
@@ -43,8 +43,27 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
     const [suggestedLectures, setSuggestedLectures] = useState<LectureSuggestion[]>([]);
     const [chatClosed, setChatClosed] = useState(false);
     const [pendingContextSwitch, setPendingContextSwitch] = useState<{ reply: string, userMessage: string } | null>(null);
+    const [isEnrolled, setIsEnrolled] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const skipNextFetchRef = useRef(false); // Flag to skip fetch after creating session ourselves
+
+    // Check Enrollment
+    useEffect(() => {
+        const checkEnrollment = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user?.id) {
+                const { data } = await supabase
+                    .from('enrollments')
+                    .select('enrollment_status')
+                    .eq('user_id', session.user.id)
+                    .single();
+                if (data && data.enrollment_status === 'ENROLLED') {
+                    setIsEnrolled(true);
+                }
+            }
+        };
+        checkEnrollment();
+    }, []);
 
     // Load Messages
     useEffect(() => {
@@ -437,6 +456,47 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
                             >
                                 Search Questions
                             </button>
+                        </motion.div>
+
+                        {/* Premium 1:1 Doubt Section */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="mt-8 w-full max-w-sm"
+                        >
+                            {isEnrolled ? (
+                                <button
+                                    onClick={() => window.open('https://cal.com/catalyzer/doubt-session', '_blank')}
+                                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl group hover:shadow-md transition-all"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+                                            <Video className="w-5 h-5" />
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">Book 1:1 Live Session</div>
+                                            <div className="text-xs text-slate-500 dark:text-slate-400">Connect with a mentor now</div>
+                                        </div>
+                                    </div>
+                                    <ArrowRight className="w-4 h-4 text-emerald-500 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            ) : (
+                                <Link href="/courses" className="block w-full">
+                                    <div className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl group hover:shadow-md transition-all cursor-pointer">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center text-amber-600 dark:text-amber-300">
+                                                <Video className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <div className="font-bold text-slate-800 dark:text-slate-100 text-sm">Unlock Live Doubts</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">Enroll to book 1:1 sessions</div>
+                                            </div>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-amber-500 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </Link>
+                            )}
                         </motion.div>
                     </div>
                 ) : (

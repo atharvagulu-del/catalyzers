@@ -90,8 +90,7 @@ REMEMBER: If "correct" shows they understood, needsLecture MUST be false.`;
         const configurations = [
             { model: "gemini-2.0-flash", version: "v1beta" },
             { model: "gemini-2.0-flash-lite", version: "v1beta" },
-            { model: "gemini-2.5-flash", version: "v1beta" },
-            { model: "gemini-2.5-pro", version: "v1beta" }
+            { model: "gemini-1.5-flash", version: "v1beta" }
         ];
 
         for (const config of configurations) {

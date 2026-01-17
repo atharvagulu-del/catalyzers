@@ -19,7 +19,7 @@ const quickActions = [
   { title: 'Revision\nFormula', icon: ReviseIcon, route: '/revision-formula' },
   { title: 'Custom\nPractice', icon: CustomIcon, route: null },
   { title: 'Improve', icon: GrowIcon, route: null },
-  { title: 'Flash\nCards', icon: FlashcardIcon, route: null },
+  { title: 'Flash\nCards', icon: FlashcardIcon, route: '/flashcards' },
   { title: 'Explain it', icon: IdeaIcon, route: null },
 ];
 export default function HomeScreen() {

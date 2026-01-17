@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Send, RefreshCw, Sparkles, CheckCircle, AlertTriangle, BookOpen, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowRight, Send, RefreshCw, Sparkles, CheckCircle, AlertTriangle, BookOpen, ChevronDown, Loader2, Video } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { getSubjects, getChaptersForSubject, getRandomPrompt, ExplainItPrompt } from "@/lib/explainItPrompts";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { supabase } from "@/lib/supabase";
 
 // Dynamically import Lottie to avoid SSR issues
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
@@ -43,6 +44,25 @@ export default function ExplainItPage() {
     const [error, setError] = useState("");
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [onboardingChecked, setOnboardingChecked] = useState(false);
+    const [isEnrolled, setIsEnrolled] = useState(false);
+
+    useEffect(() => {
+        const checkEnrollment = async () => {
+            if (user?.id) {
+                const { data } = await supabase.from('enrollments').select('enrollment_status').eq('user_id', user.id).single();
+                if (data && data.enrollment_status === 'ENROLLED') setIsEnrolled(true);
+            }
+        };
+        checkEnrollment();
+    }, [user?.id]);
+
+    const handleBookSession = () => {
+        if (isEnrolled) {
+            window.open('https://cal.com/catalyzer/doubt-session', '_blank');
+        } else {
+            alert("🔒 Premium Feature\n\nOne-on-one live doubt sessions are available only for enrolled students.");
+        }
+    };
 
     const subjects = getSubjects();
     const chapters = selectedSubject ? getChaptersForSubject(selectedSubject) : [];
@@ -215,14 +235,28 @@ export default function ExplainItPage() {
     return (
         <div className="space-y-6 max-w-3xl mx-auto">
             {/* Page Title */}
-            <div className="flex items-center gap-4">
-                <div className="w-14 h-14 flex-shrink-0 relative">
-                    <Image src="/assets/icons/idea.svg" alt="Explain It" fill className="object-contain" />
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 flex-shrink-0 relative">
+                        <Image src="/assets/icons/idea.svg" alt="Explain It" fill className="object-contain" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Explain It</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">Test your true understanding</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">Explain It</h1>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">Test your true understanding</p>
-                </div>
+
+                <button
+                    onClick={handleBookSession}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-sm ${isEnrolled
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-200 dark:hover:bg-emerald-900/50"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
+                >
+                    <Video className="w-4 h-4" />
+                    <span className="hidden sm:inline">Book 1:1 Live Doubt</span>
+                    <span className="sm:hidden">Book 1:1</span>
+                </button>
             </div>
 
             <AnimatePresence mode="wait">

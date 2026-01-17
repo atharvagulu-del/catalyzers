@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Keyboard, Alert } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { Send, Image as ImageIcon, Sparkles, MoreVertical, ChevronLeft, PlayCircle } from 'lucide-react-native';
+import { Send, Image as ImageIcon, Sparkles, MoreVertical, ChevronLeft, PlayCircle, Video } from 'lucide-react-native';
 import { useAppColors } from '@/hooks/use-app-colors';
+import { Linking } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useAuth } from '@/context/AuthProvider';
@@ -13,7 +14,7 @@ import { findRelatedLectures, LectureSuggestion } from '@/lib/lectureSearch';
 import { supabase } from '@/lib/supabase';
 
 // Initialize Gemini
-const GEMINI_API_KEY = "AIzaSyC6P-GduvrcbgI5gSnXacPIuJzwE0_FB9c";
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 interface Message {
@@ -57,18 +58,35 @@ export default function DoubtChatScreen() {
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [sessionId, setSessionId] = useState<string | null>(paramSessionId || null);
+    const [isEnrolled, setIsEnrolled] = useState(false);
 
     const scrollViewRef = useRef<ScrollView>(null);
     const hasInitialQueryProcessed = useRef(false);
 
     useEffect(() => {
+        const checkEnrollment = async () => {
+            if (user?.id) {
+                const { data } = await supabase.from('enrollments').select('enrollment_status').eq('user_id', user.id).single();
+                if (data && data.enrollment_status === 'ENROLLED') setIsEnrolled(true);
+            }
+        };
+        checkEnrollment();
+
         if (paramSessionId) {
             loadSession(paramSessionId);
         } else if (initialQuery && !hasInitialQueryProcessed.current) {
             hasInitialQueryProcessed.current = true;
             sendMessage(initialQuery, true); // First message skips context check
         }
-    }, [initialQuery, paramSessionId]);
+    }, [initialQuery, paramSessionId, user]);
+
+    const handleBookSession = () => {
+        if (isEnrolled) {
+            Linking.openURL('https://cal.com/catalyzer/doubt-session');
+        } else {
+            Alert.alert("Premium Feature", "Only enrolled students can book 1:1 live doubt sessions.");
+        }
+    };
 
     const loadSession = async (id: string) => {
         try {
@@ -335,9 +353,14 @@ export default function DoubtChatScreen() {
                             <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>Catalyzer Assist</Text>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => router.push('/doubts/history')}>
-                        <MoreVertical size={24} color={colors.textSecondary} />
-                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <TouchableOpacity onPress={handleBookSession} style={{ padding: 6, backgroundColor: isEnrolled ? (colors.primary + '20') : 'transparent', borderRadius: 8 }}>
+                            <Video size={24} color={isEnrolled ? colors.primary : colors.textSecondary} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => router.push('/doubts/history')}>
+                            <MoreVertical size={24} color={colors.textSecondary} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* Messages Container */}

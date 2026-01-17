@@ -49,7 +49,7 @@ export default function FlashcardsPage() {
 
                 if (!response.ok) {
                     const data = await response.json();
-                    throw new Error(data.error || 'Failed to generate flashcards');
+                    throw new Error(data.details || data.error || 'Failed to generate flashcards');
                 }
 
                 const result = await response.json();

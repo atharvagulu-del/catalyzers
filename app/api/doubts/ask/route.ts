@@ -82,8 +82,7 @@ Look at the conversation history and the NEW question. Detect topic switches bet
     const configurations = [
         { model: "gemini-2.0-flash", version: "v1beta" },
         { model: "gemini-2.0-flash-lite", version: "v1beta" },
-        { model: "gemini-2.5-flash", version: "v1beta" },
-        { model: "gemini-2.5-pro", version: "v1beta" }
+        { model: "gemini-1.5-flash", version: "v1beta" }
     ];
 
     for (const config of configurations) {
