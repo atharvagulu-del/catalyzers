@@ -82,7 +82,7 @@ export default function Sidebar({ isOpen = false, onClose, drawerOnly = false }:
 
                 {/* Bottom Branding or simple footer */}
                 <div className="p-6 border-t border-slate-50 dark:border-slate-800 text-center">
-                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">© 2024 Catalyzer</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">© 2024 Catalyzers</p>
                 </div>
             </aside>
         </>

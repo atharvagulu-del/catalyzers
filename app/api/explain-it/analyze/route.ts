@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllChaptersForAI, ChapterInfo } from "@/lib/lectureSearch";
 
-// Google Gemini API Key
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Groq API Configuration
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-if (!GEMINI_API_KEY) {
-    console.error("Missing GEMINI_API_KEY environment variable");
+if (!GROQ_API_KEY) {
+    console.error("Missing GROQ_API_KEY environment variable");
 }
 
 // Get all available lectures for AI to suggest
@@ -86,84 +87,88 @@ JSON response:
 
 REMEMBER: If "correct" shows they understood, needsLecture MUST be false.`;
 
-        // Models from User's Access List
-        const configurations = [
-            { model: "gemini-2.0-flash", version: "v1beta" },
-            { model: "gemini-2.0-flash-lite", version: "v1beta" },
-            { model: "gemini-1.5-flash", version: "v1beta" }
-        ];
-
-        for (const config of configurations) {
-            try {
-                console.log(`[Explain It] Trying ${config.model}...`);
-
-                const response = await fetch(
-                    `https://generativelanguage.googleapis.com/${config.version}/models/${config.model}:generateContent?key=${GEMINI_API_KEY}`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
-                            generationConfig: { responseMimeType: "application/json" }
-                        })
-                    }
-                );
-
-                if (!response.ok) {
-                    const errText = await response.text();
-                    console.error(`[Explain It] ${config.model} Error: ${response.status} - ${errText}`);
-                    continue;
-                }
-
-                const data = await response.json();
-                let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-                if (rawText) {
-                    console.log(`[Explain It] Success with ${config.model}`);
-
-                    // Clean up response
-                    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
-                    try {
-                        const aiResponse = JSON.parse(rawText);
-
-                        // Build final response
-                        const feedback = {
-                            correct: aiResponse.correct,
-                            missing: aiResponse.missing,
-                            nextSteps: {
-                                text: aiResponse.nextSteps?.text || "Keep practicing!",
-                                lectureSlug: null as string | null,
-                                lectureTitle: null as string | null
-                            }
-                        };
-
-                        // Add lecture suggestion if AI recommends one
-                        if (aiResponse.needsLecture === true && aiResponse.nextSteps?.lectureIndex !== null && aiResponse.nextSteps?.lectureIndex !== undefined) {
-                            const lectureIndex = parseInt(aiResponse.nextSteps.lectureIndex);
-                            if (lectureIndex >= 0 && lectureIndex < relevantChapters.length) {
-                                const lecture = relevantChapters[lectureIndex];
-                                feedback.nextSteps.lectureSlug = lecture.url;
-                                feedback.nextSteps.lectureTitle = lecture.title;
-                                console.log(`[Explain It] Suggesting lecture: ${lecture.title}`);
-                            }
-                        }
-
-                        // Validate response structure
-                        if (feedback.correct && feedback.missing && feedback.nextSteps) {
-                            return NextResponse.json(feedback);
-                        }
-                    } catch (parseErr) {
-                        console.error(`[Explain It] Parse error:`, parseErr);
-                    }
-                }
-            } catch (err: any) {
-                console.error(`[Explain It] Exception on ${config.model}:`, err.message);
-            }
+        if (!GROQ_API_KEY) {
+            return NextResponse.json(
+                { error: "AI service not configured" },
+                { status: 500 }
+            );
         }
 
-        // All models failed - return error
-        console.error("[Explain It] All models failed");
+        try {
+            console.log(`[Explain It] Calling Groq llama-3.3-70b-versatile...`);
+
+            const response = await fetch(GROQ_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{ role: "user", content: systemPrompt }],
+                    max_tokens: 1000,
+                    temperature: 0.7,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                console.error(`[Explain It] Groq Error: ${response.status} - ${errText}`);
+                return NextResponse.json(
+                    { error: "Failed to analyze. Please try again." },
+                    { status: 500 }
+                );
+            }
+
+            const data = await response.json();
+            let rawText = data.choices?.[0]?.message?.content?.trim();
+
+            if (rawText) {
+                console.log(`[Explain It] Success with Groq`);
+
+                // Clean up response
+                rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+                try {
+                    const aiResponse = JSON.parse(rawText);
+
+                    // Build final response
+                    const feedback = {
+                        correct: aiResponse.correct,
+                        missing: aiResponse.missing,
+                        nextSteps: {
+                            text: aiResponse.nextSteps?.text || "Keep practicing!",
+                            lectureSlug: null as string | null,
+                            lectureTitle: null as string | null
+                        }
+                    };
+
+                    // Add lecture suggestion if AI recommends one
+                    if (aiResponse.needsLecture === true && aiResponse.nextSteps?.lectureIndex !== null && aiResponse.nextSteps?.lectureIndex !== undefined) {
+                        const lectureIndex = parseInt(aiResponse.nextSteps.lectureIndex);
+                        if (lectureIndex >= 0 && lectureIndex < relevantChapters.length) {
+                            const lecture = relevantChapters[lectureIndex];
+                            feedback.nextSteps.lectureSlug = lecture.url;
+                            feedback.nextSteps.lectureTitle = lecture.title;
+                            console.log(`[Explain It] Suggesting lecture: ${lecture.title}`);
+                        }
+                    }
+
+                    // Validate response structure
+                    if (feedback.correct && feedback.missing && feedback.nextSteps) {
+                        return NextResponse.json(feedback);
+                    }
+                } catch (parseErr) {
+                    console.error(`[Explain It] Parse error:`, parseErr);
+                }
+            }
+        } catch (err: any) {
+            console.error(`[Explain It] Exception:`, err.message);
+        }
+
+        // API call failed - return error
+        console.error("[Explain It] Groq call failed");
         return NextResponse.json(
             { error: "Failed to analyze. Please try again." },
             { status: 500 }

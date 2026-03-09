@@ -2,11 +2,16 @@
 
 import Header from "@/components/Header";
 import HeroCarousel from "@/components/HeroCarousel";
+import HeroText from "@/components/HeroText";
 import StudentTestimonials from "@/components/StudentTestimonials";
 import ExamCategories from "@/components/ExamCategories";
-import Statistics from "@/components/Statistics";
 import Testimonials from "@/components/Testimonials";
+import RoadmapSection from "@/components/RoadmapSection";
+import HallOfFame from "@/components/HallOfFame";
+import ComparePrep from "@/components/ComparePrep";
 import ContentSections from "@/components/ContentSections";
+import LiveClassPromo from "@/components/LiveClassPromo";
+import AppPromo from "@/components/AppPromo";
 import Footer from "@/components/Footer";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -30,11 +35,16 @@ export default function Home() {
         <main className="min-h-screen">
             <Header />
             <HeroCarousel />
+            <HeroText />
             <ExamCategories />
-            <Statistics />
+            <RoadmapSection />
+            <HallOfFame />
+            <ComparePrep />
+            <ContentSections />
+            <LiveClassPromo />
             <StudentTestimonials />
             <Testimonials />
-            <ContentSections />
+            <AppPromo />
             <Footer />
         </main>
     );

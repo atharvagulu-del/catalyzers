@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getLecturesForChapters, getChaptersForTest, Chapter, Resource } from '@/lib/lectureData';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+// Groq API Configuration
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 interface RecommendationRequest {
     testId: string;
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // Build context for Gemini
+        // Build context for AI
         const chaptersContext = availableChapters.map(ch => ({
             title: ch.chapterTitle,
             resources: ch.resources.map(r => ({
@@ -103,9 +104,33 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
 }`;
 
         try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-            const result = await model.generateContent(prompt);
-            const responseText = result.response.text();
+            if (!GROQ_API_KEY) {
+                throw new Error("GROQ_API_KEY not set");
+            }
+
+            console.log('[Test Recommendations] Calling Groq llama-3.3-70b-versatile...');
+
+            const response = await fetch(GROQ_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{ role: "user", content: prompt }],
+                    max_tokens: 1000,
+                    temperature: 0.7,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Groq API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const responseText = data.choices?.[0]?.message?.content?.trim();
 
             // Parse the response
             let recommendations: RecommendationResponse['recommendations'] = [];
@@ -118,7 +143,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
                     recommendations = parsed.recommendations || [];
                 }
             } catch (parseError) {
-                console.error('Failed to parse Gemini response:', parseError);
+                console.error('Failed to parse Groq response:', parseError);
                 // Fallback: generate simple recommendations
                 recommendations = generateFallbackRecommendations(availableChapters, percentage);
             }
@@ -126,7 +151,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
             return NextResponse.json({ recommendations });
 
         } catch (aiError) {
-            console.error('Gemini API error:', aiError);
+            console.error('Groq API error:', aiError);
             // Fallback recommendations if AI fails
             const fallbackRecs = generateFallbackRecommendations(availableChapters, percentage);
             return NextResponse.json({ recommendations: fallbackRecs });
@@ -141,7 +166,7 @@ Return ONLY valid JSON in this exact format (no markdown, no explanation):
     }
 }
 
-// Fallback if Gemini fails
+// Fallback if Groq fails
 function generateFallbackRecommendations(
     chapters: { chapterTitle: string; resources: Resource[] }[],
     percentage: number

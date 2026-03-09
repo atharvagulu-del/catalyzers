@@ -35,9 +35,9 @@ export default function DashboardHeader({ onMenuClick }: { onMenuClick?: () => v
                     </button>
 
                     <Link href="/dashboard" className="flex items-center gap-2">
-                        {/* Catalyzer Logo (Blue text like ALLEN) */}
+                        {/* Catalyzers Logo (Blue text like ALLEN) */}
                         <span className="font-extrabold text-2xl tracking-tighter text-[#0056B3] dark:text-blue-500">
-                            CATALYZER
+                            CATALYZERS
                         </span>
                     </Link>
                 </div>

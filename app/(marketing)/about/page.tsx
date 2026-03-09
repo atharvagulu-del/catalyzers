@@ -1,9 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
+import { Zap, ChevronDown, CheckCircle2 } from "lucide-react";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+
+// Animated Counter component
+const AnimatedCounter = ({ from = 0, to, duration = 2 }: { from?: number, to: number, duration?: number }) => {
+    const nodeRef = useRef<HTMLSpanElement>(null);
+    const inView = useInView(nodeRef, { once: true, margin: "-50px" });
+
+    useEffect(() => {
+        if (!inView) return;
+
+        const node = nodeRef.current;
+        if (!node) return;
+
+        let startValue = from;
+        const endValue = to;
+        const frameDuration = 1000 / 60; // 60fps
+        const totalFrames = Math.round((duration * 1000) / frameDuration);
+        let frame = 0;
+
+        const counter = setInterval(() => {
+            frame++;
+            const progress = frame / totalFrames;
+            // Easing function (easeOutQuart)
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
+            const currentCount = Math.round(startValue + (endValue - startValue) * easeProgress);
+
+            if (node) node.textContent = currentCount.toLocaleString();
+
+            if (frame === totalFrames) {
+                clearInterval(counter);
+            }
+        }, frameDuration);
+
+        return () => clearInterval(counter);
+    }, [from, to, duration, inView]);
+
+    return <span ref={nodeRef}>{from}</span>;
+};
 
 export default function AboutPage() {
     const [scrollY, setScrollY] = useState(0);
@@ -82,7 +127,7 @@ export default function AboutPage() {
                 >
                     <Image
                         src="/assets/background/collage.png"
-                        alt="Catalyzer Collage"
+                        alt="Catalyzers Collage"
                         fill
                         className="object-cover"
                         priority
@@ -186,175 +231,166 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Vision Section - PW Style */}
-            <section className="relative py-16 md:py-24 overflow-hidden bg-[#FEF9F5]">
-                {/* Side Star Decoration (Absolute Left) */}
-                <div className="absolute top-10 left-[-20px] md:left-10 w-24 h-24 md:w-32 md:h-32 pointer-events-none opacity-80">
-                    <Image
-                        src="/assets/background/vision-star.png"
-                        alt="Decoration"
-                        fill
-                        className="object-contain"
-                    />
-                </div>
-
-                {/* Background Cross Pattern (Subtle) */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }}>
-                </div>
-
+            {/* Vision Section */}
+            <section className="relative py-20 overflow-hidden bg-slate-50">
                 <div className="container px-4 md:px-6 relative z-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
                         {/* Text Content */}
                         <div className="space-y-8 pl-4 md:pl-0">
-                            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 border-l-4 border-[#F3C74C] pl-6">
-                                Our Vision
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1E293B] tracking-tight">
+                                Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#7B61FF]">Vision</span>
                             </h2>
 
-                            <div className="space-y-6">
+                            <div className="space-y-6 pt-4">
                                 {/* Point 1 */}
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1.5 flex-shrink-0 text-[#F3C74C]">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
+                                    <div className="mt-1 flex-shrink-0 w-7 h-7 rounded-full bg-[#EEEDFA] flex items-center justify-center shadow-sm">
+                                        <Zap className="w-4 h-4 text-[#5A4BDA] fill-[#5A4BDA]" />
                                     </div>
-                                    <p className="text-lg text-gray-700 leading-relaxed font-medium">
+                                    <p className="text-lg md:text-xl text-[#475569] leading-relaxed font-medium">
                                         To democratize education at scale in India.
                                     </p>
                                 </div>
 
                                 {/* Point 2 */}
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1.5 flex-shrink-0 text-[#F3C74C]">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
+                                    <div className="mt-1 flex-shrink-0 w-7 h-7 rounded-full bg-[#EEEDFA] flex items-center justify-center shadow-sm">
+                                        <Zap className="w-4 h-4 text-[#5A4BDA] fill-[#5A4BDA]" />
                                     </div>
-                                    <p className="text-lg text-gray-700 leading-relaxed font-medium">
+                                    <p className="text-lg md:text-xl text-[#475569] leading-relaxed font-medium">
                                         To ensure every child has access to quality education at the most affordable costs.
                                     </p>
                                 </div>
 
                                 {/* Point 3 */}
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1.5 flex-shrink-0 text-[#F3C74C]">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
+                                    <div className="mt-1 flex-shrink-0 w-7 h-7 rounded-full bg-[#EEEDFA] flex items-center justify-center shadow-sm">
+                                        <Zap className="w-4 h-4 text-[#5A4BDA] fill-[#5A4BDA]" />
                                     </div>
-                                    <p className="text-lg text-gray-700 leading-relaxed font-medium">
-                                        To allow every child to realize his/her dream, live up to their true potential and be their lifelong learning partner.
+                                    <p className="text-lg md:text-xl text-[#475569] leading-relaxed font-medium">
+                                        To allow every child to realize their dream, live up to their true potential and be their lifelong learning partner.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Images (Hexagon Cluster) */}
-                        <div className="relative h-[480px] w-full flex justify-center items-center mt-8 lg:mt-0">
-                            <style jsx>{`
-                                .clip-hexagon {
-                                    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-                                }
-                            `}</style>
-
-                            {/* Container: 520px width = 250px + 20px gap + 250px. Height adjusted for gap. */}
-                            <div className="relative w-[520px] h-[400px] scale-[0.6] sm:scale-[0.8] md:scale-100 origin-center">
-                                {/* Top Left Hexagon - (kids1.png) */}
-                                <div className="absolute top-0 left-0 w-[250px] h-[216px] clip-hexagon transition-transform hover:z-20 hover:scale-105 duration-300 shadow-xl overflow-hidden bg-gray-200">
-                                    <Image
-                                        src="/assets/hexagon/kids1.png"
-                                        alt="Vision Student"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-
-                                {/* Top Right Hexagon - (kids2.png) */}
-                                <div className="absolute top-0 right-0 w-[250px] h-[216px] clip-hexagon transition-transform hover:z-20 hover:scale-105 duration-300 shadow-xl overflow-hidden bg-gray-200">
-                                    <Image
-                                        src="/assets/hexagon/kids2.png"
-                                        alt="Vision Group"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-
-                                {/* Bottom Middle Hexagon - (all3.png) - Top offset 182px (162px nesting + 20px gap) */}
-                                <div className="absolute top-[182px] left-1/2 -translate-x-1/2 w-[250px] h-[216px] clip-hexagon z-10 hover:scale-105 transition-transform duration-300 shadow-xl overflow-hidden bg-[#5A4BDA]">
-                                    <Image
-                                        src="/assets/hexagon/all3.png"
-                                        alt="Vision Center"
-                                        fill
-                                        className="object-cover scale-75 origin-bottom"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Decorative Star Bottom Right */}
-                            <div className="absolute bottom-[-20px] right-[10%] w-20 h-20 opacity-80 pointer-events-none">
-                                <Image src="/assets/background/vision-star.png" alt="Star" fill className="object-contain" />
+                        {/* Image Content */}
+                        <div className="relative">
+                            <div className="relative bg-[#F4F5FB] rounded-[2rem] md:rounded-[3rem] pt-8 px-4 overflow-hidden shadow-sm border border-slate-100 flex items-end justify-center min-h-[350px]">
+                                <Image
+                                    src="/assets/illustrations/catalyzers_hero.png"
+                                    alt="Catalyzers Founders"
+                                    width={600}
+                                    height={400}
+                                    className="w-[90%] md:w-full h-auto object-contain drop-shadow-xl translate-y-4"
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Founders Section */}
-            <section className="py-16 md:py-24 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-                <div className="container px-4 md:px-6">
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-16">
-                        Meet Our Founders
-                    </h2>
+            {/* Founders Section - Ultra Premium Alternating Layout (Compact) */}
+            <section className="relative py-20 md:py-28 bg-white overflow-hidden">
+                {/* Abstract light beam background */}
+                <div className="absolute top-[10%] left-0 w-full h-[300px] bg-gradient-to-br from-indigo-50/40 via-blue-50/20 to-purple-50/40 transform -skew-y-6 pointer-events-none" />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                        {/* Founder 1 - Adil Sir */}
-                        <div className="bg-gray-800/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-700 hover:border-primary transition-all duration-300">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-32 h-32 rounded-full overflow-hidden mb-6 border-4 border-primary">
+                <div className="container px-4 md:px-6 relative z-10">
+                    <div className="text-center mb-16 md:mb-24">
+                        <div className="inline-block bg-slate-50 border border-slate-100/60 shadow-sm text-slate-800 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold mb-4 tracking-wide uppercase">
+                            Visionary Leadership
+                        </div>
+                        <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight">
+                            Meet Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-blue-500">Founders</span>
+                        </h2>
+                    </div>
+
+                    <div className="max-w-5xl mx-auto space-y-16 md:space-y-24">
+                        {/* Founder 1 - Adil Sir (Image Left, Text Right) */}
+                        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16 group">
+                            {/* Image Container */}
+                            <div className="w-full md:w-[45%] lg:w-[40%] relative">
+                                {/* Animated colorful aura */}
+                                <div className="absolute -inset-4 md:-inset-6 bg-gradient-to-tr from-[#5A4BDA] to-blue-400 rounded-full blur-[40px] opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
+
+                                <div className="relative aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden border border-white/60 shadow-[0_15px_40px_-10px_rgba(90,75,218,0.15)]">
                                     <Image
                                         src="/assets/teachers/adilsir.png"
                                         alt="Adil Sir"
-                                        width={128}
-                                        height={128}
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover object-top scale-105 group-hover:scale-110 transition-transform duration-1000 ease-out"
                                     />
+                                    {/* Glass reflection overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-black/10 via-white/5 to-white/20 pointer-events-none" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2">Adil Sir</h3>
-                                <p className="text-primary font-semibold mb-4">Founder & Physics Faculty</p>
-                                <p className="text-gray-300 leading-relaxed mb-6 italic">
-                                    &quot;My aim is to democratize education and make quality learning accessible to every student in India. Education should empower, not exclude.&quot;
-                                </p>
-                                <a href="/teachers/adil-sir">
-                                    <button className="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105">
-                                        Read More
-                                    </button>
-                                </a>
+                            </div>
+
+                            {/* Text Content */}
+                            <div className="w-full md:w-[55%] lg:w-[60%] space-y-6">
+                                <div>
+                                    <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">Adil Sir</h3>
+                                    <p className="text-base text-[#5A4BDA] font-bold tracking-widest uppercase flex items-center gap-3">
+                                        <span className="w-6 h-[2px] bg-[#5A4BDA]"></span>
+                                        Founder & Physics Faculty
+                                    </p>
+                                </div>
+
+                                <div className="relative">
+                                    <span className="absolute -top-8 -left-4 md:-left-6 text-6xl text-slate-200/50 font-serif leading-none select-none pointer-events-none">"</span>
+                                    <p className="text-lg md:text-xl text-slate-600 leading-relaxed italic relative z-10 font-medium pb-2">
+                                        My aim is to democratize education and make quality learning accessible to every student in India. Education should empower, not exclude.
+                                    </p>
+                                </div>
+
+                                <div className="pt-2">
+                                    <a href="/teachers/adil-sir" className="inline-flex items-center justify-center px-6 py-3 text-sm md:text-base rounded-full bg-slate-900 text-white font-semibold hover:bg-[#5A4BDA] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                                        Discover Adil Sir's Profile
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Founder 2 - Placeholder */}
-                        <div className="bg-gray-800/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-700 hover:border-primary transition-all duration-300">
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-32 h-32 rounded-full overflow-hidden mb-6 border-4 border-primary">
+                        {/* Founder 2 - Kirti Ma'am (Text Left, Image Right) */}
+                        <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-16 group">
+                            {/* Text Content */}
+                            <div className="w-full md:w-[55%] lg:w-[60%] space-y-6 md:text-right flex flex-col items-start md:items-end">
+                                <div className="w-full">
+                                    <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2 tracking-tight">Kirti Ma&apos;am</h3>
+                                    <p className="text-base text-blue-500 font-bold tracking-widest uppercase flex items-center md:justify-end gap-3">
+                                        Co-Founder & Chemistry Faculty
+                                        <span className="w-6 h-[2px] bg-blue-500 hidden md:block"></span>
+                                    </p>
+                                </div>
+
+                                <div className="relative text-left md:text-right">
+                                    <span className="absolute -top-8 -left-4 md:left-auto md:-right-6 text-6xl text-slate-200/50 font-serif leading-none select-none pointer-events-none">"</span>
+                                    <p className="text-lg md:text-xl text-slate-600 leading-relaxed italic relative z-10 font-medium pb-2">
+                                        Quality education combined with personalized mentorship is the key to unlocking every student&apos;s potential. We&apos;re here to guide them every step of the way.
+                                    </p>
+                                </div>
+
+                                <div className="pt-2">
+                                    <a href="/teachers/kirti-maam" className="inline-flex items-center justify-center px-6 py-3 text-sm md:text-base rounded-full bg-slate-900 text-white font-semibold hover:bg-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                                        Discover Kirti Ma&apos;am's Profile
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Image Container */}
+                            <div className="w-full md:w-[45%] lg:w-[40%] relative">
+                                {/* Animated colorful aura */}
+                                <div className="absolute -inset-4 md:-inset-6 bg-gradient-to-tl from-cyan-400 to-blue-500 rounded-full blur-[40px] opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
+
+                                <div className="relative aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden border border-white/60 shadow-[0_15px_40px_-10px_rgba(59,130,246,0.15)]">
                                     <Image
                                         src="/assets/teachers/kirti_updated.png"
                                         alt="Kirti Ma'am"
-                                        width={128}
-                                        height={128}
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover object-top scale-105 group-hover:scale-110 transition-transform duration-1000 ease-out"
                                     />
+                                    {/* Glass reflection overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-tl from-black/10 via-white/5 to-white/20 pointer-events-none" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2">Kirti Ma&apos;am</h3>
-                                <p className="text-primary font-semibold mb-4">Co-Founder & Chemistry Faculty</p>
-                                <p className="text-gray-300 leading-relaxed mb-6 italic">
-                                    &quot;Quality education combined with personalized mentorship is the key to unlocking every student&apos;s potential. We&apos;re here to guide them every step of the way.&quot;
-                                </p>
-                                <a href="/teachers/kirti-maam">
-                                    <button className="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105">
-                                        Read More
-                                    </button>
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -429,29 +465,100 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Stats Section */}
-            <section className="py-16 md:py-24 bg-gradient-to-br from-primary to-primary-dark text-white">
-                <div className="container px-4 md:px-6">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-                        <div className="text-center">
-                            <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">2K+</div>
-                            <div className="text-sm md:text-base text-purple-200">Happy Students</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">1000+</div>
-                            <div className="text-sm md:text-base text-purple-200">Mock Tests</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">4K+</div>
-                            <div className="text-sm md:text-base text-purple-200">YouTube Subscribers</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">3</div>
-                            <div className="text-sm md:text-base text-purple-200">Expert Faculty</div>
+            {/* Modern Stats Section (Floating Glassmorphism) */}
+            <section className="relative py-24 bg-[#F8FAFC] overflow-hidden">
+                {/* Decorative background blur */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-gradient-to-r from-blue-400/20 via-indigo-400/20 to-purple-400/20 blur-[100px] rounded-full pointer-events-none" />
+
+                <div className="container px-4 md:px-6 relative z-10">
+                    <div className="bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] rounded-[3rem] p-10 md:p-14 max-w-6xl mx-auto">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 divide-x divide-slate-100/50">
+                            <div className="text-center px-4">
+                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                                    <AnimatedCounter to={2000} />+
+                                </div>
+                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Happy Students</div>
+                            </div>
+                            <div className="text-center px-4">
+                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                                    <AnimatedCounter to={1000} />+
+                                </div>
+                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Mock Tests</div>
+                            </div>
+                            <div className="text-center px-4">
+                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                                    <AnimatedCounter to={4000} />+
+                                </div>
+                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">YouTube Subs</div>
+                            </div>
+                            <div className="text-center px-4">
+                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                                    <AnimatedCounter to={15} />+
+                                </div>
+                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Expert Faculty</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
+
+            {/* Premium FAQ Section */}
+            <section className="py-20 md:py-32 bg-white relative">
+                <div className="absolute left-0 top-0 w-1/3 h-full bg-slate-50/50 skew-x-12 -translate-x-10 pointer-events-none" />
+
+                <div className="container px-4 md:px-6 relative z-10">
+                    <div className="max-w-3xl mx-auto text-center mb-16">
+                        <div className="inline-block bg-[#EEEDFA] text-[#5A4BDA] px-4 py-1.5 rounded-full text-sm font-semibold mb-6 tracking-wide uppercase">
+                            Got Questions?
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+                            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-blue-500">Questions</span>
+                        </h2>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto">
+                        <Accordion type="single" collapsible className="w-full space-y-4">
+                            {[
+                                {
+                                    q: "What makes Catalyzers different from other coaching institutes?",
+                                    a: "We act as a supplementary bridge to your primary coaching. We focus heavily on resolving doubts, strengthening fundamental concepts, and providing personalized attention that large classroom batches often miss."
+                                },
+                                {
+                                    q: "Do you only teach JEE and NEET students?",
+                                    a: "While our core focus is engineering and medical entrance exams, we also provide rigorous foundation courses and board exam preparation to ensure holistic academic excellence."
+                                },
+                                {
+                                    q: "How does the doubt-solving system work?",
+                                    a: "We hold dedicated doubt-clearing sessions where students can directly interact with senior faculty. You won't just get the answer; you'll understand the methodology behind it."
+                                },
+                                {
+                                    q: "Are the mock tests aligned with the latest exam patterns?",
+                                    a: "Absolutely. Our academic team constantly updates the test series to strictly reflect the latest syllabus, difficulty level, and patterns of JEE Main, Advanced, and NEET."
+                                },
+                                {
+                                    q: "Can I join online, or is it offline only?",
+                                    a: "We offer flexible learning modes. You can join our comprehensive online programs from anywhere in India, or visit our physical smart classrooms if you prefer an in-person environment."
+                                }
+                            ].map((faq, i) => (
+                                <AccordionItem key={i} value={`item-${i}`} className="border border-slate-200 bg-white rounded-2xl px-6 py-2 hover:border-indigo-200 transition-colors shadow-sm">
+                                    <AccordionTrigger className="text-left text-lg font-semibold text-slate-800 hover:text-[#5A4BDA] hover:no-underline [&[data-state=open]>div>svg]:rotate-180">
+                                        <div className="flex w-full items-center justify-between gap-4">
+                                            <span>{faq.q}</span>
+                                            <div className="h-8 w-8 shrink-0 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200">
+                                                <ChevronDown className="h-4 w-4" />
+                                            </div>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="text-slate-600 leading-relaxed text-base pt-2 pb-4 pr-12">
+                                        {faq.a}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
+                </div>
+            </section>
+
 
             <Footer />
         </div>

@@ -5,7 +5,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                     {/* About Section */}
                     <div className="space-y-4">
-                        <h4 className="text-white font-bold text-lg">About Catalyzer</h4>
+                        <h4 className="text-white font-bold text-lg">About Catalyzers</h4>
                         <p className="text-sm leading-relaxed">
                             India&apos;s Trusted & Affordable Educational Platform,
                             empowering millions of
@@ -122,7 +122,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="border-t border-gray-800 pt-8 text-center">
                     <p className="text-sm">
-                        &copy; 2026 Catalyzer. All rights reserved.
+                        &copy; 2026 Catalyzers. All rights reserved.
                     </p>
                 </div>
             </div>

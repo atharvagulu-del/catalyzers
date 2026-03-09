@@ -32,34 +32,34 @@ const categories = [
 
 export default function ExamCategories() {
     return (
-        <section className="py-16 md:py-24 bg-white">
-            <div className="container px-4 md:px-6">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12">
+        <section className="py-20 md:py-32 bg-white">
+            <div className="container px-4 md:px-8">
+                <h2 className="text-4xl md:text-5xl lg:text-[56px] font-extrabold text-center mb-16 leading-tight">
                     Choose Your Path to{" "}
                     <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                         Success
                     </span>
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     {categories.map((category) => (
                         <div
                             key={category.name}
-                            className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 p-6 md:p-8 transition-all duration-300 hover:shadow-xl group"
+                            className="relative overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group"
                         >
                             {/* Decorative Background Blob */}
                             <div
-                                className={`absolute -right-20 -top-20 w-64 h-64 rounded-full ${category.blobColor} opacity-60`}
+                                className={`absolute -right-24 -top-24 w-80 h-80 rounded-full ${category.blobColor} opacity-60 blur-3xl transition-transform duration-500 group-hover:scale-110`}
                             />
 
                             {/* SVG Icon - Top Left */}
-                            <div className="relative z-10 mb-6">
-                                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center p-3">
+                            <div className="relative z-10 mb-8">
+                                <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center p-4">
                                     <Image
                                         src={category.icon}
                                         alt={`${category.name} icon`}
-                                        width={40}
-                                        height={40}
+                                        width={48}
+                                        height={48}
                                         className="w-full h-full object-contain"
                                     />
                                 </div>
@@ -68,22 +68,22 @@ export default function ExamCategories() {
                             {/* Content */}
                             <div className="relative z-10">
                                 {/* Title */}
-                                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                                <h3 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">
                                     {category.name}
                                 </h3>
 
                                 {/* Description */}
-                                <p className="text-sm text-gray-600 mb-6">
+                                <p className="text-base md:text-lg text-gray-600 mb-8 max-w-sm">
                                     {category.description}
                                 </p>
 
                                 {/* Class Selection Pills */}
-                                <div className="flex flex-wrap gap-2 mb-8">
+                                <div className="flex flex-wrap gap-3 mb-10">
                                     {category.classes.map((classItem) => (
                                         <a
                                             key={classItem.label}
                                             href={classItem.href}
-                                            className="px-4 py-2 rounded-full border border-gray-300 text-sm text-gray-700 hover:border-primary hover:text-primary hover:bg-purple-50 transition-all duration-200"
+                                            className="px-5 py-2.5 rounded-full border border-gray-300 text-sm md:text-base font-medium text-gray-700 hover:border-primary hover:text-primary hover:bg-purple-50 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                                         >
                                             {classItem.label}
                                         </a>
@@ -93,11 +93,11 @@ export default function ExamCategories() {
                                 {/* Explore Category Link */}
                                 <a
                                     href={category.href}
-                                    className="inline-flex items-center gap-2 text-gray-900 font-medium hover:text-primary transition-colors group/link"
+                                    className="inline-flex items-center gap-3 text-gray-900 font-bold text-lg hover:text-primary transition-colors group/link"
                                 >
                                     <span>Explore Category</span>
-                                    <div className="w-8 h-8 rounded-full bg-gray-200 group-hover/link:bg-primary flex items-center justify-center transition-all duration-300">
-                                        <ArrowRight className="w-4 h-4 text-gray-700 group-hover/link:text-white transition-colors" />
+                                    <div className="w-10 h-10 rounded-full bg-gray-200 group-hover/link:bg-primary flex items-center justify-center transition-all duration-300 shadow-sm group-hover/link:shadow-md">
+                                        <ArrowRight className="w-5 h-5 text-gray-700 group-hover/link:text-white transition-colors" />
                                     </div>
                                 </a>
                             </div>

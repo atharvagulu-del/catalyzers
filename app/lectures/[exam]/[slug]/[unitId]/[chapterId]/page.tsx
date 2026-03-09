@@ -1,13 +1,14 @@
 "use client";
 
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { lectureData } from "@/lib/lectureData";
+import { lectureData, Resource } from "@/lib/lectureData";
+import { getChapterResources } from "@/lib/contentManager";
 import LessonSidebar from "@/components/lectures/LessonSidebar";
 import QuizInterface from "@/components/lectures/QuizInterface";
 import { Play, FileText, HelpCircle, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { saveLastVisited } from "@/lib/learningHistory";
 import { checkGoalCompletion } from "@/lib/dailyGoals";
 import { trackLectureWatchTime } from "@/lib/performanceTracking";
@@ -32,7 +33,49 @@ export default function LessonPage({ params, searchParams }: PageProps) {
         lectureData[`${params.exam}-${params.slug.replace('mathematics', 'maths')}`];
 
     const unit = subjectData?.units.find(u => u.id === params.unitId);
-    const chapter = unit?.chapters.find(c => c.id === params.chapterId);
+    const staticChapter = unit?.chapters.find(c => c.id === params.chapterId);
+
+    // State for dynamic resources
+    const [chapterResources, setChapterResources] = useState<Resource[]>(staticChapter?.resources || []);
+    const [loadingContent, setLoadingContent] = useState(true);
+
+    // Fetch dynamic content from database
+    useEffect(() => {
+        async function fetchDynamicContent() {
+            if (!staticChapter || !subjectData) {
+                setLoadingContent(false);
+                return;
+            }
+
+            try {
+                // Extract just the grade number (e.g., "12" from "12th")
+                const gradeNumber = subjectData.grade.replace(/\D/g, '');
+
+                const dynamicResources = await getChapterResources(
+                    params.exam.toUpperCase(),
+                    subjectData.subject,
+                    gradeNumber,
+                    staticChapter.id,
+                    staticChapter.resources
+                );
+                setChapterResources(dynamicResources);
+            } catch (error) {
+                console.error('Failed to fetch dynamic content:', error);
+                // Fallback to static resources on error
+                setChapterResources(staticChapter.resources);
+            } finally {
+                setLoadingContent(false);
+            }
+        }
+
+        fetchDynamicContent();
+    }, [params.chapterId, staticChapter, subjectData, params.exam]);
+
+    // Create chapter object with dynamic resources
+    const chapter = staticChapter ? {
+        ...staticChapter,
+        resources: chapterResources
+    } : null;
 
     // Determine active resource
     const activeResourceId = typeof searchParams.resource === 'string' ? searchParams.resource : null;

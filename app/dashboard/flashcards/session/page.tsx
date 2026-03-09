@@ -21,17 +21,31 @@ interface SessionData {
     cardCount: number;
 }
 
+// Helper to fix corrupted LaTeX (control characters that should be backslashes)
+const fixLatex = (text: string): string => {
+    return text
+        .replace(/\f/g, '\\f')   // Form-feed -> \f (for \frac)
+        .replace(/\x08/g, '\\b') // Backspace -> \b (for \beta)
+        .replace(/\t/g, '\\t')   // Tab -> \t (for \theta)
+        .replace(/\r/g, '\\r')   // Carriage return -> \r (for \rho)
+        // Note: don't replace \n as it might be intentional line breaks
+        .replace(/\\/g, '\\');   // Normalize backslashes
+};
+
 // Helper to render LaTeX content
 const renderContent = (text: string) => {
-    const parts = (text || "").split(/(\$.*?\$)/g);
+    // Fix any corrupted LaTeX first
+    const fixedText = fixLatex(text || "");
+    const parts = fixedText.split(/(\$.*?\$)/g);
     return (
         <span>
             {parts.map((part, i) => {
                 if (part.startsWith('$') && part.endsWith('$')) {
                     try {
-                        return <span key={i} className="inline-block mx-1"><InlineMath math={part.slice(1, -1)} /></span>;
+                        const math = part.slice(1, -1);
+                        return <span key={i} className="inline-block mx-1"><InlineMath math={math} /></span>;
                     } catch {
-                        return <span key={i} className="text-red-500">{part}</span>;
+                        return <span key={i} className="text-slate-700">{part}</span>;
                     }
                 }
                 return <span key={i}>{part}</span>;

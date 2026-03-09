@@ -52,6 +52,7 @@ export interface OfflineTest {
     custom_topics?: string[];  // Custom topics added by teacher
     exam_type?: 'JEE' | 'NEET';  // Exam type for syllabus
     test_paper?: string[];  // Array of image URLs for test paper
+    solution_paper?: string[]; // Array of image URLs for solution paper
     created_at: string;
 }
 
@@ -271,6 +272,15 @@ export async function updateTestPaper(testId: string, testPaperUrls: string[]): 
     return !error;
 }
 
+export async function updateTestSolutionPaper(testId: string, solutionPaperUrls: string[]): Promise<boolean> {
+    const { error } = await supabase
+        .from('offline_tests')
+        .update({ solution_paper: solutionPaperUrls })
+        .eq('id', testId);
+
+    return !error;
+}
+
 // ==========================================
 // TEST STUDENTS QUERIES
 // ==========================================
@@ -427,13 +437,12 @@ export async function getMyTestsWithResults(userId: string): Promise<TestWithRes
             const myIndex = sortedResults.findIndex(r => r.student_id === userId);
             if (myIndex !== -1) {
                 myRank = myIndex + 1;
-                // Percentile formula: ((N - R) / N) * 100 where N = total, R = rank
-                // For single student, show 100%ile (they're at the top)
+                // Percentile formula: ((N - R) / (N - 1)) * 100
+                // For single student, show 100%ile
                 const totalWithMarks = sortedResults.length;
                 if (totalWithMarks === 1) {
                     myPercentile = 100;
                 } else {
-                    // Standard percentile: percentage of students scoring less than you
                     const studentsBelow = totalWithMarks - myRank;
                     myPercentile = Math.round((studentsBelow / (totalWithMarks - 1)) * 100);
                 }
@@ -479,8 +488,15 @@ export async function getTestResultsWithRankings(testId: string): Promise<{
 
     const rankedResults = sortedResults.map((result, index) => {
         const rank = index + 1;
-        const studentsBelow = sortedResults.length - rank;
-        const percentile = Math.round((studentsBelow / sortedResults.length) * 100);
+        const total = sortedResults.length;
+
+        let percentile: number;
+        if (total === 1) {
+            percentile = 100;
+        } else {
+            const studentsBelow = total - rank;
+            percentile = Math.round((studentsBelow / (total - 1)) * 100);
+        }
 
         return {
             ...result,
@@ -583,8 +599,13 @@ export async function getTestWithFullDetails(testId: string, userId: string): Pr
         const myIndex = sortedResults.findIndex(r => r.student_id === userId);
         if (myIndex !== -1) {
             myRank = myIndex + 1;
-            const studentsBelow = sortedResults.length - myRank;
-            myPercentile = Math.round((studentsBelow / sortedResults.length) * 100);
+            const total = sortedResults.length;
+            if (total === 1) {
+                myPercentile = 100;
+            } else {
+                const studentsBelow = total - myRank;
+                myPercentile = Math.round((studentsBelow / (total - 1)) * 100);
+            }
         }
     }
 

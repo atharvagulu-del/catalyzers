@@ -76,7 +76,7 @@ export const getChaptersForTest = (
         'Full Test': 'mathematics', // Default for full tests
     };
 
-    const normalizedSubject = subjectMap[subject] || subject.toLowerCase();
+    const normalizedSubject = subjectMap[subject] || (subject ? subject.toLowerCase() : 'mathematics');
     const normalizedGrade = gradeMap[grade] || '11';
 
     const key = `${exam.toLowerCase()}-${normalizedSubject}-${normalizedGrade}`;
@@ -91,6 +91,7 @@ export const getChaptersForTest = (
     // 1. Full Test chapters (contain "full test" in title)
     // 2. Quiz-only chapters (contain "quiz" or "practice" in title without actual lecture content)
     const filterChapter = (chapter: Chapter): boolean => {
+        if (!chapter || !chapter.title) return false;
         const lowerTitle = chapter.title.toLowerCase();
         const excludePatterns = [
             'full test',
@@ -135,6 +136,62 @@ export const getLecturesForChapters = (
         chapterTitle: ch.title,
         resources: ch.resources,
     }));
+};
+
+// Helper to get video candidates with FULL navigation context for the player
+// This is critical because the Player requires subjectId, unitId, chapterId to function (Next/Prev logic)
+export const getLectureRecommendationCandidates = (
+    exam: 'JEE' | 'NEET',
+    subject: string,
+    grade: string,
+    chapterIds: string[]
+): { resource: Resource; params: { subjectId: string; unitId: string; chapterId: string; resourceIndex: number; title: string, id: string } }[] => {
+
+    // 1. Reconstruct the Subject ID (Key)
+    const gradeMap: Record<string, string> = { '11': '11', '12': '12', 'Dropper': '12' };
+    const subjectMap: Record<string, string> = {
+        'Physics': 'physics', 'Chemistry': 'chemistry',
+        'Mathematics': 'mathematics', 'Maths': 'mathematics',
+        'Biology': 'biology'
+    };
+
+    const normalizedSubject = subjectMap[subject] || (subject ? subject.toLowerCase() : 'mathematics');
+    const normalizedGrade = gradeMap[grade] || '11';
+    const subjectId = `${exam.toLowerCase()}-${normalizedSubject}-${normalizedGrade}`;
+
+    const subjectData = lectureData[subjectId];
+    if (!subjectData) {
+        console.warn(`[Recommendations] No data found for ${subjectId}`);
+        return [];
+    }
+
+    const candidates: { resource: Resource; params: { subjectId: string; unitId: string; chapterId: string; resourceIndex: number; title: string; id: string } }[] = [];
+
+    // 2. Traverse to find matching chapters and extract videos
+    subjectData.units.forEach(unit => {
+        unit.chapters.forEach(chapter => {
+            if (chapterIds.includes(chapter.id)) {
+                // Found a relevant chapter
+                chapter.resources.forEach((res, index) => {
+                    if (res.type === 'video') {
+                        candidates.push({
+                            resource: res,
+                            params: {
+                                subjectId: subjectId,
+                                unitId: unit.id,
+                                chapterId: chapter.id,
+                                resourceIndex: index,
+                                title: res.title,
+                                id: res.id
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    return candidates;
 };
 
 // Helper to generate mock questions for any topic with varied templates

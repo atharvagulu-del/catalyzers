@@ -4124,5 +4124,973 @@ export const lectureData: Record<string, SubjectData> = {
                 ]
             }
         ]
+    },
+
+    // ==================== 12TH GRADE JEE CONTENT ====================
+
+    'jee-mathematics-12': {
+        id: 'jee-mathematics-12',
+        title: 'Mathematics Class 12 (JEE)',
+        exam: 'JEE',
+        grade: '12th',
+        subject: 'Mathematics',
+        units: [
+            {
+                id: 'relations-functions-12',
+                title: 'Relations & Functions',
+                chapters: [
+                    {
+                        id: 'types-relations',
+                        title: 'Types of Relations',
+                        description: 'Reflexive, Symmetric, Transitive, Equivalence relations.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-rel-12-1', title: 'Types of Relations', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-rel-12-1', title: 'PYQs: Relations', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Types of Relations', 3) }
+                        ]
+                    },
+                    {
+                        id: 'types-functions',
+                        title: 'Types of Functions',
+                        description: 'One-one, Onto, Bijective, Inverse functions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-func-12-1', title: 'Types of Functions', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-func-12-1', title: 'PYQs: Functions', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Types of Functions 12', 3) }
+                        ]
+                    },
+                    {
+                        id: 'composite-inverse',
+                        title: 'Composition & Inverse',
+                        description: 'Composition of functions, Inverse of bijective functions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-func-12-2', title: 'Composition & Inverse', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-func-12-2', title: 'PYQs: Composition', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Composite Functions', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'inverse-trig-12',
+                title: 'Inverse Trigonometric Functions',
+                chapters: [
+                    {
+                        id: 'inverse-trig-basics',
+                        title: 'Inverse Trig Basics',
+                        description: 'Domain, Range, Principal values of inverse trig functions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-itf-1', title: 'Inverse Trig Basics', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-itf-1', title: 'PYQs: ITF Basics', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Inverse Trig Basics', 3) }
+                        ]
+                    },
+                    {
+                        id: 'itf-properties',
+                        title: 'Properties of ITF',
+                        description: 'Sum, Difference, Simplification formulae.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-itf-2', title: 'ITF Properties', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-itf-2', title: 'PYQs: ITF Properties', type: 'pyq', questionCount: 3, questions: generateMockQuestions('ITF Properties', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'matrices-determinants',
+                title: 'Matrices & Determinants',
+                chapters: [
+                    {
+                        id: 'matrices-intro',
+                        title: 'Matrices Basics',
+                        description: 'Types, Operations, Transpose, Symmetric matrices.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mat-1', title: 'Matrices Basics', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-mat-1', title: 'PYQs: Matrices', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Matrices', 3) }
+                        ]
+                    },
+                    {
+                        id: 'determinants',
+                        title: 'Determinants',
+                        description: 'Evaluation, Properties, Minors, Cofactors.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-det-1', title: 'Determinants', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-det-1', title: 'PYQs: Determinants', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Determinants', 3) }
+                        ]
+                    },
+                    {
+                        id: 'matrix-inverse',
+                        title: 'Inverse of Matrix',
+                        description: 'Adjoint, Inverse, Linear equations using matrices.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mat-2', title: 'Matrix Inverse', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-mat-2', title: 'PYQs: Matrix Inverse', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Matrix Inverse', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'continuity-differentiability',
+                title: 'Continuity & Differentiability',
+                chapters: [
+                    {
+                        id: 'continuity',
+                        title: 'Continuity',
+                        description: 'Continuity at a point, Algebra of continuous functions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-cont-1', title: 'Continuity', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-cont-1', title: 'PYQs: Continuity', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Continuity', 3) }
+                        ]
+                    },
+                    {
+                        id: 'differentiability',
+                        title: 'Differentiability',
+                        description: 'Derivatives, Chain rule, Implicit differentiation.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-diff-1', title: 'Differentiability', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-diff-1', title: 'PYQs: Differentiability', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Differentiability', 3) }
+                        ]
+                    },
+                    {
+                        id: 'exponential-log-derivatives',
+                        title: 'Exponential & Log Derivatives',
+                        description: 'Derivatives of e^x, log x, Logarithmic differentiation.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-diff-2', title: 'Exp & Log Derivatives', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-diff-2', title: 'PYQs: Exp Derivatives', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Exponential Derivatives', 3) }
+                        ]
+                    },
+                    {
+                        id: 'higher-order-derivatives',
+                        title: 'Higher Order Derivatives',
+                        description: 'Second derivatives, Rolles theorem, LMVT.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-diff-3', title: 'MVT & Higher Derivatives', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-diff-3', title: 'PYQs: MVT', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Mean Value Theorem', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'applications-derivatives',
+                title: 'Applications of Derivatives',
+                chapters: [
+                    {
+                        id: 'rate-of-change',
+                        title: 'Rate of Change',
+                        description: 'Derivative as rate measure.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-aod-1', title: 'Rate of Change', type: 'video', duration: '15:00', url: 'placeholder' },
+                            { id: 'p-aod-1', title: 'PYQs: Rate of Change', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Rate of Change', 3) }
+                        ]
+                    },
+                    {
+                        id: 'monotonicity',
+                        title: 'Monotonicity',
+                        description: 'Increasing/Decreasing functions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-aod-2', title: 'Monotonicity', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-aod-2', title: 'PYQs: Monotonicity', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Monotonicity', 3) }
+                        ]
+                    },
+                    {
+                        id: 'maxima-minima',
+                        title: 'Maxima & Minima',
+                        description: 'Local/Global extrema, First/Second derivative tests.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-aod-3', title: 'Maxima & Minima', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-aod-3', title: 'PYQs: Maxima Minima', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Maxima Minima', 3) }
+                        ]
+                    },
+                    {
+                        id: 'tangent-normal',
+                        title: 'Tangent & Normal',
+                        description: 'Equations of tangent, normal, approximations.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-aod-4', title: 'Tangent & Normal', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-aod-4', title: 'PYQs: Tangent Normal', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Tangent Normal', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'integrals',
+                title: 'Integrals',
+                chapters: [
+                    {
+                        id: 'indefinite-integrals',
+                        title: 'Indefinite Integrals',
+                        description: 'Integration methods: Substitution, Parts, Partial fractions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-int-1', title: 'Indefinite Integrals', type: 'video', duration: '30:00', url: 'placeholder' },
+                            { id: 'p-int-1', title: 'PYQs: Indefinite Integrals', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Indefinite Integrals', 3) }
+                        ]
+                    },
+                    {
+                        id: 'definite-integrals',
+                        title: 'Definite Integrals',
+                        description: 'Fundamental theorem, Properties, Evaluation.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-int-2', title: 'Definite Integrals', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-int-2', title: 'PYQs: Definite Integrals', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Definite Integrals', 3) }
+                        ]
+                    },
+                    {
+                        id: 'area-under-curves',
+                        title: 'Area Under Curves',
+                        description: 'Area between curves using integration.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-int-3', title: 'Area Under Curves', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-int-3', title: 'PYQs: Area Under Curves', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Area Under Curves', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'differential-equations',
+                title: 'Differential Equations',
+                chapters: [
+                    {
+                        id: 'de-basics',
+                        title: 'DE Basics',
+                        description: 'Order, Degree, Formation of DE.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-de-1', title: 'DE Basics', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-de-1', title: 'PYQs: DE Basics', type: 'pyq', questionCount: 3, questions: generateMockQuestions('DE Basics', 3) }
+                        ]
+                    },
+                    {
+                        id: 'first-order-de',
+                        title: 'First Order DE',
+                        description: 'Variable separable, Homogeneous, Linear DE.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-de-2', title: 'First Order DE', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-de-2', title: 'PYQs: First Order DE', type: 'pyq', questionCount: 3, questions: generateMockQuestions('First Order DE', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'vectors-3d',
+                title: 'Vectors & 3D Geometry',
+                chapters: [
+                    {
+                        id: 'vectors-basics',
+                        title: 'Vector Algebra',
+                        description: 'Components, Dot product, Cross product.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-vec-1', title: 'Vector Algebra', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-vec-1', title: 'PYQs: Vectors', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Vector Algebra', 3) }
+                        ]
+                    },
+                    {
+                        id: '3d-coordinates',
+                        title: '3D Coordinates',
+                        description: 'Direction cosines, Direction ratios.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-3d-1', title: '3D Coordinates', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-3d-1', title: 'PYQs: 3D Coordinates', type: 'pyq', questionCount: 3, questions: generateMockQuestions('3D Coordinates', 3) }
+                        ]
+                    },
+                    {
+                        id: 'lines-3d',
+                        title: 'Lines in 3D',
+                        description: 'Equations, Angle, Distance, Coplanarity.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-3d-2', title: 'Lines in 3D', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-3d-2', title: 'PYQs: Lines 3D', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Lines in 3D', 3) }
+                        ]
+                    },
+                    {
+                        id: 'planes-3d',
+                        title: 'Planes in 3D',
+                        description: 'Equations, Angle between planes, Distance.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-3d-3', title: 'Planes in 3D', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-3d-3', title: 'PYQs: Planes', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Planes in 3D', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'probability-12',
+                title: 'Probability',
+                chapters: [
+                    {
+                        id: 'conditional-probability',
+                        title: 'Conditional Probability',
+                        description: 'Multiplication theorem, Independent events.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-prob-12-1', title: 'Conditional Probability', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-prob-12-1', title: 'PYQs: Conditional Prob', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Conditional Probability', 3) }
+                        ]
+                    },
+                    {
+                        id: 'bayes-theorem',
+                        title: 'Bayes Theorem',
+                        description: 'Total probability, Bayes theorem applications.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-prob-12-2', title: 'Bayes Theorem', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-prob-12-2', title: 'PYQs: Bayes Theorem', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Bayes Theorem', 3) }
+                        ]
+                    },
+                    {
+                        id: 'probability-distribution',
+                        title: 'Probability Distribution',
+                        description: 'Random variables, Mean, Variance, Binomial.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-prob-12-3', title: 'Probability Distribution', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-prob-12-3', title: 'PYQs: Distribution', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Probability Distribution', 3) }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    'jee-physics-12': {
+        id: 'jee-physics-12',
+        title: 'Physics Class 12 (JEE)',
+        exam: 'JEE',
+        grade: '12th',
+        subject: 'Physics',
+        units: [
+            {
+                id: 'electrostatics',
+                title: 'Electrostatics',
+                chapters: [
+                    {
+                        id: 'electric-charges',
+                        title: 'Electric Charges & Fields',
+                        description: 'Coulombs law, Electric field, Dipole.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elec-1', title: 'Electric Charges & Fields', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-elec-1', title: 'PYQs: Electric Charges', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Electric Charges', 3) }
+                        ]
+                    },
+                    {
+                        id: 'gauss-law',
+                        title: 'Gauss Law',
+                        description: 'Electric flux, Gauss law applications.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elec-2', title: 'Gauss Law', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-elec-2', title: 'PYQs: Gauss Law', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Gauss Law', 3) }
+                        ]
+                    },
+                    {
+                        id: 'electrostatic-potential',
+                        title: 'Electrostatic Potential',
+                        description: 'Potential, Potential energy, Equipotential surfaces.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elec-3', title: 'Electrostatic Potential', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-elec-3', title: 'PYQs: Potential', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Electrostatic Potential', 3) }
+                        ]
+                    },
+                    {
+                        id: 'capacitance',
+                        title: 'Capacitance',
+                        description: 'Capacitors, Series/Parallel, Energy stored.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elec-4', title: 'Capacitance', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-elec-4', title: 'PYQs: Capacitors', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Capacitance', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'current-electricity',
+                title: 'Current Electricity',
+                chapters: [
+                    {
+                        id: 'current-resistance',
+                        title: 'Current & Resistance',
+                        description: 'Ohms law, Resistivity, Temperature dependence.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-curr-1', title: 'Current & Resistance', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-curr-1', title: 'PYQs: Current', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Current Electricity', 3) }
+                        ]
+                    },
+                    {
+                        id: 'kirchhoffs-laws',
+                        title: 'Kirchhoffs Laws',
+                        description: 'KCL, KVL, Circuit analysis.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-curr-2', title: 'Kirchhoffs Laws', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-curr-2', title: 'PYQs: Kirchhoff', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Kirchhoffs Laws', 3) }
+                        ]
+                    },
+                    {
+                        id: 'electrical-instruments',
+                        title: 'Electrical Instruments',
+                        description: 'Wheatstone bridge, Meter bridge, Potentiometer.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-curr-3', title: 'Electrical Instruments', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-curr-3', title: 'PYQs: Instruments', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Electrical Instruments', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'magnetism',
+                title: 'Magnetism & Moving Charges',
+                chapters: [
+                    {
+                        id: 'magnetic-force',
+                        title: 'Magnetic Force on Charges',
+                        description: 'Lorentz force, Motion in magnetic field.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mag-1', title: 'Magnetic Force', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-mag-1', title: 'PYQs: Magnetic Force', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Magnetic Force', 3) }
+                        ]
+                    },
+                    {
+                        id: 'biot-savart',
+                        title: 'Biot-Savart Law',
+                        description: 'Magnetic field due to current elements.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mag-2', title: 'Biot-Savart Law', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-mag-2', title: 'PYQs: Biot-Savart', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Biot-Savart Law', 3) }
+                        ]
+                    },
+                    {
+                        id: 'amperes-law',
+                        title: 'Amperes Law',
+                        description: 'Amperes circuital law, Solenoid, Toroid.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mag-3', title: 'Amperes Law', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-mag-3', title: 'PYQs: Amperes Law', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Amperes Law', 3) }
+                        ]
+                    },
+                    {
+                        id: 'magnetism-matter',
+                        title: 'Magnetism & Matter',
+                        description: 'Magnetic properties, Diamagnetic, Paramagnetic, Ferromagnetic.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mag-4', title: 'Magnetism & Matter', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-mag-4', title: 'PYQs: Matter Magnetism', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Magnetism Matter', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'emi',
+                title: 'Electromagnetic Induction',
+                chapters: [
+                    {
+                        id: 'faradays-law',
+                        title: 'Faradays Law',
+                        description: 'Induced EMF, Lenzs law, Motional EMF.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-emi-1', title: 'Faradays Law', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-emi-1', title: 'PYQs: Faradays Law', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Faradays Law', 3) }
+                        ]
+                    },
+                    {
+                        id: 'inductance',
+                        title: 'Inductance',
+                        description: 'Self inductance, Mutual inductance, Energy stored.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-emi-2', title: 'Inductance', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-emi-2', title: 'PYQs: Inductance', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Inductance', 3) }
+                        ]
+                    },
+                    {
+                        id: 'ac-circuits',
+                        title: 'AC Circuits',
+                        description: 'LCR circuits, Resonance, Power factor.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-emi-3', title: 'AC Circuits', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-emi-3', title: 'PYQs: AC Circuits', type: 'pyq', questionCount: 3, questions: generateMockQuestions('AC Circuits', 3) }
+                        ]
+                    },
+                    {
+                        id: 'transformers',
+                        title: 'Transformers',
+                        description: 'Working principle, Step-up, Step-down.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-emi-4', title: 'Transformers', type: 'video', duration: '15:00', url: 'placeholder' },
+                            { id: 'p-emi-4', title: 'PYQs: Transformers', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Transformers', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'optics',
+                title: 'Optics',
+                chapters: [
+                    {
+                        id: 'ray-optics',
+                        title: 'Ray Optics',
+                        description: 'Reflection, Refraction, Prism, TIR.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-opt-1', title: 'Ray Optics Basics', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-opt-1', title: 'PYQs: Ray Optics', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Ray Optics', 3) }
+                        ]
+                    },
+                    {
+                        id: 'lenses-mirrors',
+                        title: 'Lenses & Mirrors',
+                        description: 'Mirror formula, Lens formula, Magnification.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-opt-2', title: 'Lenses & Mirrors', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-opt-2', title: 'PYQs: Lenses', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Lenses Mirrors', 3) }
+                        ]
+                    },
+                    {
+                        id: 'optical-instruments',
+                        title: 'Optical Instruments',
+                        description: 'Microscope, Telescope, Eye.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-opt-3', title: 'Optical Instruments', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-opt-3', title: 'PYQs: Optical Instruments', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Optical Instruments', 3) }
+                        ]
+                    },
+                    {
+                        id: 'wave-optics',
+                        title: 'Wave Optics',
+                        description: 'Interference, Diffraction, Polarization.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-opt-4', title: 'Wave Optics', type: 'video', duration: '30:00', url: 'placeholder' },
+                            { id: 'p-opt-4', title: 'PYQs: Wave Optics', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Wave Optics', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'modern-physics',
+                title: 'Modern Physics',
+                chapters: [
+                    {
+                        id: 'dual-nature',
+                        title: 'Dual Nature of Matter',
+                        description: 'Photoelectric effect, De Broglie wavelength.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mod-1', title: 'Dual Nature', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-mod-1', title: 'PYQs: Dual Nature', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Dual Nature', 3) }
+                        ]
+                    },
+                    {
+                        id: 'atoms',
+                        title: 'Atoms',
+                        description: 'Bohrs model, Hydrogen spectrum, Energy levels.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mod-2', title: 'Atoms', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-mod-2', title: 'PYQs: Atoms', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Atoms', 3) }
+                        ]
+                    },
+                    {
+                        id: 'nuclei',
+                        title: 'Nuclei',
+                        description: 'Nuclear structure, Radioactivity, Decay law.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mod-3', title: 'Nuclei', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-mod-3', title: 'PYQs: Nuclei', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Nuclei', 3) }
+                        ]
+                    },
+                    {
+                        id: 'semiconductors',
+                        title: 'Semiconductors',
+                        description: 'p-n junction, Diode, Transistor, Logic gates.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-mod-4', title: 'Semiconductors', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-mod-4', title: 'PYQs: Semiconductors', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Semiconductors', 3) }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+
+    'jee-chemistry-12': {
+        id: 'jee-chemistry-12',
+        title: 'Chemistry Class 12 (JEE)',
+        exam: 'JEE',
+        grade: '12th',
+        subject: 'Chemistry',
+        units: [
+            {
+                id: 'solid-state',
+                title: 'Solid State',
+                chapters: [
+                    {
+                        id: 'crystal-structure',
+                        title: 'Crystal Structure',
+                        description: 'Lattices, Unit cells, Packing efficiency.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-solid-1', title: 'Crystal Structure', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-solid-1', title: 'PYQs: Crystal Structure', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Crystal Structure', 3) }
+                        ]
+                    },
+                    {
+                        id: 'defects',
+                        title: 'Crystal Defects',
+                        description: 'Point defects, Electrical properties.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-solid-2', title: 'Crystal Defects', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-solid-2', title: 'PYQs: Defects', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Crystal Defects', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'solutions',
+                title: 'Solutions',
+                chapters: [
+                    {
+                        id: 'concentration',
+                        title: 'Concentration Units',
+                        description: 'Molarity, Molality, Mole fraction, ppm.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-sol-1', title: 'Concentration Units', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-sol-1', title: 'PYQs: Concentration', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Concentration Units', 3) }
+                        ]
+                    },
+                    {
+                        id: 'colligative',
+                        title: 'Colligative Properties',
+                        description: 'Raoults law, Elevation, Depression, Osmosis.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-sol-2', title: 'Colligative Properties', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-sol-2', title: 'PYQs: Colligative', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Colligative Properties', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'electrochemistry',
+                title: 'Electrochemistry',
+                chapters: [
+                    {
+                        id: 'electrolytic-cells',
+                        title: 'Electrolytic Cells',
+                        description: 'Electrolysis, Faradays laws.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elchem-1', title: 'Electrolytic Cells', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-elchem-1', title: 'PYQs: Electrolysis', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Electrolytic Cells', 3) }
+                        ]
+                    },
+                    {
+                        id: 'galvanic-cells',
+                        title: 'Galvanic Cells',
+                        description: 'EMF, Nernst equation, Standard potentials.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elchem-2', title: 'Galvanic Cells', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-elchem-2', title: 'PYQs: Galvanic Cells', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Galvanic Cells', 3) }
+                        ]
+                    },
+                    {
+                        id: 'conductance',
+                        title: 'Conductance',
+                        description: 'Conductivity, Molar conductivity, Kohlrausch law.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-elchem-3', title: 'Conductance', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-elchem-3', title: 'PYQs: Conductance', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Conductance', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'chemical-kinetics',
+                title: 'Chemical Kinetics',
+                chapters: [
+                    {
+                        id: 'rate-laws',
+                        title: 'Rate Laws',
+                        description: 'Rate of reaction, Order, Molecularity.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-kin-1', title: 'Rate Laws', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-kin-1', title: 'PYQs: Rate Laws', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Rate Laws', 3) }
+                        ]
+                    },
+                    {
+                        id: 'integrated-rate',
+                        title: 'Integrated Rate Equations',
+                        description: 'Zero, First, Second order reactions.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-kin-2', title: 'Integrated Rate Equations', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-kin-2', title: 'PYQs: Integrated Rate', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Integrated Rate Equations', 3) }
+                        ]
+                    },
+                    {
+                        id: 'arrhenius',
+                        title: 'Arrhenius Equation',
+                        description: 'Temperature dependence, Activation energy.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-kin-3', title: 'Arrhenius Equation', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-kin-3', title: 'PYQs: Arrhenius', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Arrhenius Equation', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'surface-chemistry',
+                title: 'Surface Chemistry',
+                chapters: [
+                    {
+                        id: 'adsorption',
+                        title: 'Adsorption',
+                        description: 'Physical & Chemical adsorption, Isotherms.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-surf-1', title: 'Adsorption', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-surf-1', title: 'PYQs: Adsorption', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Adsorption', 3) }
+                        ]
+                    },
+                    {
+                        id: 'colloids',
+                        title: 'Colloids',
+                        description: 'Types, Properties, Coagulation.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-surf-2', title: 'Colloids', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-surf-2', title: 'PYQs: Colloids', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Colloids', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'coordination-compounds',
+                title: 'Coordination Compounds',
+                chapters: [
+                    {
+                        id: 'coord-basics',
+                        title: 'Coordination Basics',
+                        description: 'Werner theory, Ligands, Coordination number.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-coord-1', title: 'Coordination Basics', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-coord-1', title: 'PYQs: Coordination Basics', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Coordination Basics', 3) }
+                        ]
+                    },
+                    {
+                        id: 'isomerism',
+                        title: 'Isomerism in Coord. Compounds',
+                        description: 'Geometric, Optical, Linkage isomerism.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-coord-2', title: 'Isomerism', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-coord-2', title: 'PYQs: Isomerism', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Coordination Isomerism', 3) }
+                        ]
+                    },
+                    {
+                        id: 'bonding-theories',
+                        title: 'Bonding Theories',
+                        description: 'VBT, CFT, Crystal field splitting.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-coord-3', title: 'Bonding Theories', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-coord-3', title: 'PYQs: Bonding', type: 'pyq', questionCount: 3, questions: generateMockQuestions('CFT VBT', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'organic-halides-alcohols',
+                title: 'Haloalkanes, Alcohols, Phenols',
+                chapters: [
+                    {
+                        id: 'haloalkanes',
+                        title: 'Haloalkanes & Haloarenes',
+                        description: 'Prep, Reactions, SN1/SN2, Elimination.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-hal-1', title: 'Haloalkanes', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-hal-1', title: 'PYQs: Haloalkanes', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Haloalkanes', 3) }
+                        ]
+                    },
+                    {
+                        id: 'alcohols',
+                        title: 'Alcohols',
+                        description: 'Prep, Reactions, Dehydration.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-alc-1', title: 'Alcohols', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-alc-1', title: 'PYQs: Alcohols', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Alcohols', 3) }
+                        ]
+                    },
+                    {
+                        id: 'phenols',
+                        title: 'Phenols',
+                        description: 'Acidity, Reactions, Kolbe reaction.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-phe-1', title: 'Phenols', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-phe-1', title: 'PYQs: Phenols', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Phenols', 3) }
+                        ]
+                    },
+                    {
+                        id: 'ethers',
+                        title: 'Ethers',
+                        description: 'Prep, Williamsons synthesis, Cleavage.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-eth-1', title: 'Ethers', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-eth-1', title: 'PYQs: Ethers', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Ethers', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'aldehydes-ketones',
+                title: 'Aldehydes, Ketones & Carboxylic Acids',
+                chapters: [
+                    {
+                        id: 'aldehydes-ketones',
+                        title: 'Aldehydes & Ketones',
+                        description: 'Prep, Nucleophilic addition, Aldol.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-ald-1', title: 'Aldehydes & Ketones', type: 'video', duration: '28:00', url: 'placeholder' },
+                            { id: 'p-ald-1', title: 'PYQs: Aldehydes', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Aldehydes Ketones', 3) }
+                        ]
+                    },
+                    {
+                        id: 'carboxylic-acids',
+                        title: 'Carboxylic Acids',
+                        description: 'Acidity, Prep, Reactions, Derivatives.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-car-1', title: 'Carboxylic Acids', type: 'video', duration: '25:00', url: 'placeholder' },
+                            { id: 'p-car-1', title: 'PYQs: Carboxylic Acids', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Carboxylic Acids', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'amines',
+                title: 'Amines',
+                chapters: [
+                    {
+                        id: 'amines-classification',
+                        title: 'Amines Classification',
+                        description: 'Types, Basicity, Prep methods.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-ami-1', title: 'Amines Basics', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-ami-1', title: 'PYQs: Amines', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Amines', 3) }
+                        ]
+                    },
+                    {
+                        id: 'diazonium-salts',
+                        title: 'Diazonium Salts',
+                        description: 'Prep, Reactions, Sandmeyer.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-ami-2', title: 'Diazonium Salts', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-ami-2', title: 'PYQs: Diazonium', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Diazonium Salts', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'biomolecules',
+                title: 'Biomolecules',
+                chapters: [
+                    {
+                        id: 'carbohydrates',
+                        title: 'Carbohydrates',
+                        description: 'Classification, Glucose, Fructose structure.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-bio-1', title: 'Carbohydrates', type: 'video', duration: '20:00', url: 'placeholder' },
+                            { id: 'p-bio-1', title: 'PYQs: Carbohydrates', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Carbohydrates', 3) }
+                        ]
+                    },
+                    {
+                        id: 'proteins',
+                        title: 'Proteins',
+                        description: 'Amino acids, Peptide bond, Structure levels.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-bio-2', title: 'Proteins', type: 'video', duration: '22:00', url: 'placeholder' },
+                            { id: 'p-bio-2', title: 'PYQs: Proteins', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Proteins', 3) }
+                        ]
+                    },
+                    {
+                        id: 'nucleic-acids',
+                        title: 'Nucleic Acids',
+                        description: 'DNA, RNA, Nucleotides.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-bio-3', title: 'Nucleic Acids', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-bio-3', title: 'PYQs: Nucleic Acids', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Nucleic Acids', 3) }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'polymers',
+                title: 'Polymers',
+                chapters: [
+                    {
+                        id: 'polymers-classification',
+                        title: 'Classification of Polymers',
+                        description: 'Addition, Condensation, Natural, Synthetic.',
+                        masteryLevel: 0,
+                        resources: [
+                            { id: 'v-poly-1', title: 'Polymers Classification', type: 'video', duration: '18:00', url: 'placeholder' },
+                            { id: 'p-poly-1', title: 'PYQs: Polymers', type: 'pyq', questionCount: 3, questions: generateMockQuestions('Polymers', 3) }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 };

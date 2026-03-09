@@ -18,7 +18,7 @@ const testimonials: Testimonial[] = [
         name: "Vankatesh Amrutwar",
         achievement: "IIT Bombay",
         course: "JEE",
-        text: "Catalyzer's offline coaching in Kota transformed my preparation. The daily classes, personal mentorship, and regular tests helped me achieve my dream rank. Adil Sir's teaching methodology made complex topics easy to understand.",
+        text: "Catalyzers' offline coaching in Kota transformed my preparation. The daily classes, personal mentorship, and regular tests helped me achieve my dream rank. Adil Sir's teaching methodology made complex topics easy to understand.",
         image: "/assets/toppers/vankateshamrutwariitbombay.png",
     },
     {
@@ -26,7 +26,7 @@ const testimonials: Testimonial[] = [
         name: "Deepak Suthar",
         achievement: "IIT Delhi",
         course: "JEE",
-        text: "The faculty at Catalyzer Kota is exceptional. Their dedication and the comprehensive study material provided gave me the confidence to crack JEE Advanced. The doubt clearing sessions were incredibly helpful.",
+        text: "The faculty at Catalyzers Kota is exceptional. Their dedication and the comprehensive study material provided gave me the confidence to crack JEE Advanced. The doubt clearing sessions were incredibly helpful.",
         image: "/assets/toppers/deepaksuthariitdelhi.png",
     },
     {
@@ -34,7 +34,7 @@ const testimonials: Testimonial[] = [
         name: "Palak Khandelwal",
         achievement: "IIT Dhanbad",
         course: "JEE",
-        text: "Coming to Kota and joining Catalyzer was the best decision of my life. The intensive dropper batch program with 8+ hours of daily classes ensured I covered the entire syllabus thoroughly. Highly recommended!",
+        text: "Coming to Kota and joining Catalyzers was the best decision of my life. The intensive dropper batch program with 8+ hours of daily classes ensured I covered the entire syllabus thoroughly. Highly recommended!",
         image: "/assets/toppers/palakkhandelwaliitdhanbad.png",
     },
     {
@@ -42,7 +42,7 @@ const testimonials: Testimonial[] = [
         name: "Rudra Gupta",
         achievement: "IIT Guwahati",
         course: "JEE",
-        text: "Catalyzer's affordable fees without compromising on quality education is remarkable. The mock tests and all India test series helped me understand my weak areas and improve consistently.",
+        text: "Catalyzers' affordable fees without compromising on quality education is remarkable. The mock tests and all India test series helped me understand my weak areas and improve consistently.",
         image: "/assets/toppers/rudraguptaiitguwahti.png",
     },
     {
@@ -50,7 +50,7 @@ const testimonials: Testimonial[] = [
         name: "Siddharth Sagar",
         achievement: "IIT Roorkee",
         course: "JEE",
-        text: "The personalized attention and one-on-one mentoring at Catalyzer made all the difference. The teachers genuinely care about each student's success. Thank you for helping me achieve my dream!",
+        text: "The personalized attention and one-on-one mentoring at Catalyzers made all the difference. The teachers genuinely care about each student's success. Thank you for helping me achieve my dream!",
         image: "/assets/toppers/siddharthsagariitroorke.png",
     },
     {
@@ -58,7 +58,7 @@ const testimonials: Testimonial[] = [
         name: "Yogeshwari Chandrawat",
         achievement: "IIT Delhi",
         course: "JEE",
-        text: "The study environment at Catalyzer Kota campus is excellent. Daily practice tests and previous year papers practice gave me the edge I needed to crack JEE Advanced. Forever grateful!",
+        text: "The study environment at Catalyzers Kota campus is excellent. Daily practice tests and previous year papers practice gave me the edge I needed to crack JEE Advanced. Forever grateful!",
         image: "/assets/toppers/yogeshwarichandrawatiitdelhi.png",
     },
 ];
@@ -72,11 +72,11 @@ export default function Testimonials() {
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
                         Students ❤️{" "}
                         <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                            Catalyzer
+                            Catalyzers
                         </span>
                     </h2>
                     <p className="text-lg md:text-xl text-gray-600 font-medium">
-                        Hear from students at Catalyzer
+                        Hear from students at Catalyzers
                     </p>
                 </div>
 

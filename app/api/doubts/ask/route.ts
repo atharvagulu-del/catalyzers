@@ -9,11 +9,12 @@ import path from 'path';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rnoxehthfxffirafloth.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJub3hlaHRoZnhmZmlyYWZsb3RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMjEzNzQsImV4cCI6MjA4MzU5NzM3NH0.9HqDWUW6iYUL6tIkiY3PnJ1vYJobWEunoeMi1XQkV9A";
 
-// Google Gemini API Key
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Groq API Configuration
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-if (!GEMINI_API_KEY) {
-    console.error("Missing GEMINI_API_KEY environment variable");
+if (!GROQ_API_KEY) {
+    console.error("Missing GROQ_API_KEY environment variable");
 }
 
 // Free tier rate limit
@@ -22,105 +23,85 @@ const DAILY_LIMIT = 50;
 // Get all available chapters for AI to choose from
 const ALL_CHAPTERS = getAllChaptersForAI();
 
-// Helper function to call Gemini API
-async function callGemini(prompt: string, history: any[], skipContextCheck: boolean = false): Promise<{ text: string, isDifferentTopic: boolean } | null> {
-    if (!GEMINI_API_KEY) {
-        throw new Error("Missing GEMINI_API_KEY");
+// Helper function to call Groq API
+async function callGroq(prompt: string, history: any[], skipContextCheck: boolean = false): Promise<{ text: string, isDifferentTopic: boolean } | null> {
+    if (!GROQ_API_KEY) {
+        throw new Error("Missing GROQ_API_KEY");
     }
 
     // Build system prompt based on whether we should check context
     const systemPrompt = skipContextCheck
-        ? `System: You are "Catalyzer Assist", a friendly academic mentor for JEE/NEET students.
+        ? `You are "Catalyzers Assist", an academic mentor for JEE/NEET students.
 RULES:
-- Use LaTeX for math: inline $...$ and block $$...$$
-- Use numbered lists for steps
-- Use bullet points for key concepts
-- DO NOT use markdown tables
-- Keep responses concise (under 300 words)
-- Be encouraging and exam-focused
+- Use LaTeX: inline $...$ and block $$...$$
+- Be CONCISE - max 100-150 words
+- Use bullet points, not long paragraphs
+- Focus on the KEY formula or concept
+- Skip unnecessary introductions
 - Never mention being an AI
-- Answer the user's question directly without checking if it's a new topic.`
-        : `System: You are "Catalyzer Assist", a friendly academic mentor for JEE/NEET students.
+- Answer directly and helpfully`
+        : `You are "Catalyzers Assist", an academic mentor for JEE/NEET students.
 
-**MANDATORY CONTEXT CHECK - DO THIS FIRST:**
-Look at the conversation history and the NEW question. Detect topic switches between:
-- Different SUBJECTS: Physics ↔ Chemistry ↔ Mathematics ↔ Biology
-- Different CHAPTERS within a subject: Mechanics ↔ Thermodynamics, Organic ↔ Inorganic, Trigonometry ↔ Calculus
+**CONTEXT CHECK:**
+If the user switches topics (Physics↔Math↔Chemistry↔Biology), respond with exactly: [DIFF_TOPIC]
+Do not answer. Just output [DIFF_TOPIC] and stop.
 
-**IF you detect a topic switch:**
-1. Start your response with EXACTLY: [DIFF_TOPIC]
-2. Then add a brief note like "Switching to Chemistry."
-3. DO NOT answer the question at all. Just output [DIFF_TOPIC] and stop.
-
-**Examples of topic switches that MUST trigger [DIFF_TOPIC]:**
-- "Newton's laws" → "equation of straight line" (Physics → Math)
-- "inertia" → "trigonometric functions" (Physics → Math)
-- "straight line" → "mole concept" (Math → Chemistry)
-- "photosynthesis" → "Newton's law" (Biology → Physics)
-
-**IF the question is about the SAME topic as history, answer normally with:**
-- LaTeX for math: inline $...$ and block $$...$$
-- Numbered lists for steps
-- Bullet points for key concepts
-- Concise responses (under 300 words)
-- Encouraging, exam-focused tone`;
+**IF SAME TOPIC:**
+- Use LaTeX: inline $...$ and block $$...$$
+- Be CONCISE - max 100-150 words
+- Use bullet points
+- Focus on KEY formulas/concepts
+- No long introductions`;
 
     const messages = [
-        {
-            role: "user",
-            parts: [{ text: systemPrompt }]
-        },
+        { role: "system", content: systemPrompt },
         ...history.map((msg: any) => ({
-            role: msg.role === 'mentor' ? 'model' : 'user',
-            parts: [{ text: msg.content || "" }]
+            role: msg.role === 'mentor' ? 'assistant' : 'user',
+            content: msg.content || ""
         })),
-        { role: "user", parts: [{ text: prompt }] }
+        { role: "user", content: prompt }
     ];
 
-    // FREE TIER MODELS ONLY
-    // Models from User's Access List
-    const configurations = [
-        { model: "gemini-2.0-flash", version: "v1beta" },
-        { model: "gemini-2.0-flash-lite", version: "v1beta" },
-        { model: "gemini-1.5-flash", version: "v1beta" }
-    ];
+    try {
+        console.log(`[Groq Chat] Calling llama-3.3-70b-versatile...`);
+        const response = await fetch(GROQ_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: messages,
+                max_tokens: 1000,
+                temperature: 0.7
+            })
+        });
 
-    for (const config of configurations) {
-        try {
-            console.log(`[Gemini Chat] Trying ${config.model} (${config.version})...`);
-            const response = await fetch(`https://generativelanguage.googleapis.com/${config.version}/models/${config.model}:generateContent?key=${GEMINI_API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: messages })
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                console.error(`[Gemini Chat] ${config.model} Error: ${response.status} - ${errText}`);
-                if (config === configurations[configurations.length - 1]) return null;
-                continue;
-            }
-
-            const data = await response.json();
-            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-            if (rawText) {
-                console.log(`[Gemini Chat] Success with ${config.model}`);
-                const isDifferentTopic = rawText.includes("[DIFF_TOPIC]");
-
-                if (isDifferentTopic) {
-                    // Return a fixed prompt message, NOT the AI's answer
-                    return {
-                        text: "This looks like a different question. To ensure higher accuracy, I'll start a new chat for this one. You can always access both chats from your history list.",
-                        isDifferentTopic: true
-                    };
-                }
-
-                return { text: rawText.trim(), isDifferentTopic: false };
-            }
-        } catch (err: any) {
-            console.error(`[Gemini Chat] Exception on ${config.model}:`, err.message);
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error(`[Groq Chat] Error: ${response.status} - ${errText}`);
+            return null;
         }
+
+        const data = await response.json();
+        const rawText = data.choices?.[0]?.message?.content;
+
+        if (rawText) {
+            console.log(`[Groq Chat] Success`);
+            const isDifferentTopic = rawText.includes("[DIFF_TOPIC]");
+
+            if (isDifferentTopic) {
+                return {
+                    text: "This looks like a different question. To ensure higher accuracy, I'll start a new chat for this one. You can always access both chats from your history list.",
+                    isDifferentTopic: true
+                };
+            }
+
+            return { text: rawText.trim(), isDifferentTopic: false };
+        }
+    } catch (err: any) {
+        console.error(`[Groq Chat] Exception:`, err.message);
     }
 
     return null; // Signal failure
@@ -128,7 +109,7 @@ Look at the conversation history and the NEW question. Detect topic switches bet
 
 // AI-POWERED LECTURE FINDER - Asks AI to pick the best lecture
 async function findLectureWithAI(userQuestion: string): Promise<ChapterInfo | null> {
-    if (!GEMINI_API_KEY) return null;
+    if (!GROQ_API_KEY) return null;
 
     // Create a compact list of chapters for AI to choose from
     const chapterList = ALL_CHAPTERS.map((ch, i) =>
@@ -158,53 +139,45 @@ MATCHING RULES:
 Reply with ONLY: { "index": NUMBER }
 No markdown, no explanation, just the JSON object.`;
 
-    // FREE TIER MODELS ONLY
-    const configurations = [
-        { model: "gemini-2.0-flash-lite", version: "v1beta" },  // UNLIMITED
-        { model: "gemini-2.5-flash-lite", version: "v1beta" },  // UNLIMITED
-        { model: "gemini-2.0-flash", version: "v1beta" }        // 4K req/min
-    ];
+    try {
+        const response = await fetch(GROQ_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.1-8b-instant",  // Faster model for quick lookups
+                messages: [{ role: "user", content: prompt }],
+                max_tokens: 50,
+                temperature: 0.1,
+                response_format: { type: "json_object" }
+            })
+        });
 
-    for (const config of configurations) {
-        try {
-            // Silently try models for lecture finding
-            const response = await fetch(`https://generativelanguage.googleapis.com/${config.version}/models/${config.model}:generateContent?key=${GEMINI_API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ role: "user", parts: [{ text: prompt }] }],
-                    generationConfig: { responseMimeType: "application/json" } // Force JSON mode
-                })
-            });
+        if (response.ok) {
+            const data = await response.json();
+            let answerRaw = data.choices?.[0]?.message?.content?.trim();
 
-            if (response.ok) {
-                const data = await response.json();
-                let answerRaw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-                if (answerRaw) {
-                    answerRaw = answerRaw.replace(/```json/g, '').replace(/```/g, '');
-                    try {
-                        const parsed = JSON.parse(answerRaw);
-                        const index = parsed.index;
-                        if (index >= 0 && index < ALL_CHAPTERS.length) {
-                            console.log(`[Gemini Lecture Finder] Selected: ${ALL_CHAPTERS[index].title}`);
-                            return ALL_CHAPTERS[index];
-                        }
-                    } catch (e) {
-                        // ignore parse error
+            if (answerRaw) {
+                answerRaw = answerRaw.replace(/```json/g, '').replace(/```/g, '');
+                try {
+                    const parsed = JSON.parse(answerRaw);
+                    const index = parsed.index;
+                    if (index >= 0 && index < ALL_CHAPTERS.length) {
+                        console.log(`[Groq Lecture Finder] Selected: ${ALL_CHAPTERS[index].title}`);
+                        return ALL_CHAPTERS[index];
                     }
+                } catch (e) {
+                    // ignore parse error
                 }
-                // If invalid answer, try next
-                continue;
-            } else {
-                // Ignore 404/400 errors for lecture finder to ensure silent fallback
             }
-        } catch (err) {
-            // ignore exception
         }
+    } catch (err) {
+        // ignore exception
     }
     // All AI attempts failed -> return null so keyword search takes over
-    console.log("[Gemini Lecture Finder] All AI models failed. Falling back to keyword search.");
+    console.log("[Groq Lecture Finder] AI lookup failed. Falling back to keyword search.");
     return null;
 }
 
@@ -302,7 +275,7 @@ export async function POST(req: Request) {
 
         // 5. AI Response + Lecture Search
         const [aiResult, aiLecture] = await Promise.all([
-            callGemini(message, history || [], skipContextCheck === true),
+            callGroq(message, history || [], skipContextCheck === true),
             findLectureWithAI(message)
         ]);
 

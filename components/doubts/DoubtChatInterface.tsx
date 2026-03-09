@@ -390,7 +390,7 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
                     {/* No avatar in header needed if it's cleaner, or just small text */}
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-                    <span className="font-bold text-slate-800 dark:text-slate-100 text-lg">Catalyzer Assist</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-100 text-lg">Catalyzers Assist</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
@@ -448,7 +448,7 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
                                 onClick={() => setInput("What are Newton's Laws of Motion?")}
                                 className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium shadow-md hover:shadow-lg transition-all text-sm"
                             >
-                                Ask Catalyzer
+                                Ask Catalyzers
                             </button>
                             <button
                                 onClick={() => setInput("Search for recent physics questions")}

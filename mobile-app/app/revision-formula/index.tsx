@@ -1,9 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { ChevronLeft, Calculator, Atom, FlaskConical, BookOpen, ChevronRight, FileText } from 'lucide-react-native';
-import { Skeleton } from '@/components/Skeleton';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { revisionData } from '@/lib/revisionData';
 import { useAppColors } from '@/hooks/use-app-colors';
@@ -18,16 +16,7 @@ const subjectMeta: Record<string, { icon: any, color: string }> = {
 export default function RevisionFormulaScreen() {
     const router = useRouter();
     const colors = useAppColors();
-    const [isLoading, setIsLoading] = useState(true);
     const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
-
-    useFocusEffect(
-        useCallback(() => {
-            setIsLoading(true);
-            const timer = setTimeout(() => setIsLoading(false), 500);
-            return () => clearTimeout(timer);
-        }, [])
-    );
 
     const toggleSubject = (id: string) => {
         setExpandedSubject(prev => (prev === id ? null : id));
@@ -44,23 +33,6 @@ export default function RevisionFormulaScreen() {
             }
         });
     };
-
-    if (isLoading) {
-        return (
-            <View style={{ flex: 1, backgroundColor: colors.bg, padding: 20 }}>
-                <View style={{ paddingTop: 50, marginBottom: 20 }}>
-                    <Skeleton width={40} height={40} borderRadius={20} />
-                </View>
-                <View style={{ gap: 8, marginBottom: 30 }}>
-                    <Skeleton width={180} height={32} borderRadius={4} />
-                    <Skeleton width={250} height={16} borderRadius={4} />
-                </View>
-                <View style={{ gap: 16 }}>
-                    {[1, 2, 3].map(i => <Skeleton key={i} width="100%" height={80} borderRadius={16} />)}
-                </View>
-            </View>
-        );
-    }
 
     return (
         <Animated.View entering={FadeIn} style={{ flex: 1, backgroundColor: colors.bg }}>

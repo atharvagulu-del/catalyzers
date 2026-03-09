@@ -5,17 +5,16 @@ import { Send, Image as ImageIcon, Sparkles, MoreVertical, ChevronLeft, PlayCirc
 import { useAppColors } from '@/hooks/use-app-colors';
 import { Linking } from 'react-native';
 import LottieView from 'lottie-react-native';
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useAuth } from '@/context/AuthProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Markdown from 'react-native-markdown-display';
+import { MathMessage } from '@/components/MathMessage';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { findRelatedLectures, LectureSuggestion } from '@/lib/lectureSearch';
 import { supabase } from '@/lib/supabase';
 
-// Initialize Gemini
-const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+// Groq API Configuration
+const GROQ_API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY || "";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 interface Message {
     id: string;
@@ -25,28 +24,26 @@ interface Message {
     suggestions?: LectureSuggestion[];
 }
 
-// Updated Prompt to avoid LaTeX issues and be more mobile-friendly
-const SYSTEM_PROMPT_CONTEXT_CHECK = `System: You are "Catalyzer Assist", a friendly academic mentor for JEE/NEET students.
+// Updated Prompt to use LaTeX and be concise
+const SYSTEM_PROMPT_CONTEXT_CHECK = `You are "Catalyzers Assist", an academic mentor for JEE/NEET students.
 
-**MANDATORY CONTEXT CHECK:**
-Detect topic switches (e.g. Physics -> Math). 
-IF SWITCH DETECTED: Start response with exactly: [DIFF_TOPIC]. Do not say anything else.
+**CONTEXT CHECK:**
+If the user switches topics (Physics↔Math↔Chemistry↔Biology), respond with exactly: [DIFF_TOPIC]
+Do not answer. Just output [DIFF_TOPIC] and stop.
 
 **IF SAME TOPIC:**
-- Explain clearly using simple text formatting.
-- **AVOID LaTeX** ($...$) as it may not render on some mobile devices.
-- Use readable text for math: e.g. "x^2 + y^2", "integral of...", "sqrt(x)".
-- Use **Bold** for key terms.
-- Use bullet points.
-- Keep it concise (< 200 words).
-- Be encouraging!`;
+- Use LaTeX for math: $...$  for inline, $$...$$ for block
+- Be CONCISE - max 100-150 words
+- Use bullet points
+- Focus on KEY formulas/concepts
+- No long introductions`;
 
-const SYSTEM_PROMPT_NO_CHECK = `System: You are "Catalyzer Assist".
+const SYSTEM_PROMPT_NO_CHECK = `You are "Catalyzers Assist", an academic mentor for JEE/NEET.
 RULES:
-- **AVOID LaTeX**. Use clear text representation for math (e.g. x^2, theta, pi).
-- Use **Bold** for emphasis.
-- Keep explanation short and simple.
-- Answer directly.`;
+- Use LaTeX for math: $...$ for inline formulas
+- Be CONCISE - max 100-150 words  
+- Use bullet points
+- Answer directly`;
 
 export default function DoubtChatScreen() {
     const colors = useAppColors();
@@ -162,25 +159,40 @@ export default function DoubtChatScreen() {
         }, 100);
     };
 
-    const callGemini = async (userText: string, history: Message[], skipCheck: boolean) => {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+    // Call Groq API (OpenAI-compatible format)
+    const callGroq = async (userText: string, history: Message[], skipCheck: boolean) => {
         const systemInstruction = skipCheck ? SYSTEM_PROMPT_NO_CHECK : SYSTEM_PROMPT_CONTEXT_CHECK;
 
-        const chatHistory = [
-            { role: 'user', parts: [{ text: systemInstruction }] },
+        const chatMessages = [
+            { role: 'system', content: systemInstruction },
             ...history.map(m => ({
-                role: m.role === 'user' ? 'user' : 'model',
-                parts: [{ text: m.content }]
-            }))
+                role: m.role === 'user' ? 'user' : 'assistant',
+                content: m.content
+            })),
+            { role: 'user', content: userText }
         ];
 
-        const chat = model.startChat({
-            history: chatHistory,
-            generationConfig: { maxOutputTokens: 1000 },
+        const response = await fetch(GROQ_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: chatMessages,
+                max_tokens: 1000,
+                temperature: 0.7
+            })
         });
 
-        const result = await chat.sendMessage(userText);
-        return result.response.text();
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || `Groq API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0]?.message?.content || "I couldn't generate a response.";
     };
 
     const sendMessage = async (text?: string, skipContextCheck: boolean = false) => {
@@ -212,7 +224,7 @@ export default function DoubtChatScreen() {
 
         try {
             const shouldSkip = skipContextCheck || messages.length === 0;
-            const responseText = await callGemini(userMessage.content, messages, shouldSkip);
+            const responseText = await callGroq(userMessage.content, messages, shouldSkip);
 
             if (responseText.includes("[DIFF_TOPIC]")) {
                 Alert.alert(
@@ -262,9 +274,18 @@ export default function DoubtChatScreen() {
         } catch (error: any) {
             console.error(error);
             let errorText = "I'm having trouble connecting right now.";
-            if (error.message && error.message.includes("API key")) {
-                errorText += " (API Key Error)";
+
+            // Check for specific error types
+            if (error.message) {
+                if (error.message.includes("429") || error.message.includes("quota")) {
+                    errorText = "⚠️ I've reached my usage limit for now. Please try again in a few minutes, or contact your teacher if this persists.";
+                } else if (error.message.includes("API key") || error.message.includes("API_KEY")) {
+                    errorText = "⚠️ There's a configuration issue. Please contact support.";
+                } else if (error.message.includes("network") || error.message.includes("fetch")) {
+                    errorText = "📶 Network error. Please check your internet connection.";
+                }
             }
+
             const errorMessage: Message = {
                 id: Date.now().toString() + '_err',
                 role: 'mentor',
@@ -282,7 +303,7 @@ export default function DoubtChatScreen() {
         setIsTyping(true);
         try {
             // Use NO_CHECK prompt for forced continuation
-            const response = await callGemini(text, [], true);
+            const response = await callGroq(text, [], true);
             const relatedLectures = findRelatedLectures(text + " " + response, 1);
 
             const aiMessage: Message = {
@@ -350,7 +371,7 @@ export default function DoubtChatScreen() {
                                     style={{ width: '100%', height: '100%' }}
                                 />
                             </View>
-                            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>Catalyzer Assist</Text>
+                            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>Catalyzers Assist</Text>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -418,13 +439,10 @@ export default function DoubtChatScreen() {
                                         borderColor: colors.border
                                     }}>
                                         {msg.role === 'mentor' ? (
-                                            <Markdown style={{
-                                                body: { color: colors.text, fontSize: 15, lineHeight: 22 },
-                                                paragraph: { marginBottom: 10 },
-                                                code_inline: { backgroundColor: colors.bg, borderRadius: 4, fontFamily: 'System' },
-                                            }}>
-                                                {msg.content}
-                                            </Markdown>
+                                            <MathMessage
+                                                content={msg.content}
+                                                textColor={colors.text}
+                                            />
                                         ) : (
                                             <Text style={{ color: 'white', fontSize: 16 }}>{msg.content}</Text>
                                         )}

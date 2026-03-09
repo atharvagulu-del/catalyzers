@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "941877875646",
+    "project_id": "catalyzers-70c1b",
+    "storage_bucket": "catalyzers-70c1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941877875646:android:2df4b6553b7fe5780b9fef",
+        "android_client_info": {
+          "package_name": "com.catalyzers.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA51uF9Xc-81B7R22L7omL05z93511RKoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

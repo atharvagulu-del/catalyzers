@@ -14,8 +14,10 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { WebView } from 'react-native-webview';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = SCREEN_WIDTH - 64; // Smaller width (was -40)
-const CARD_HEIGHT = CARD_WIDTH * 1.35; // Slightly shorter aspect ratio
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+// Perfect balance: 85% width (max 340px) and 60% height (max 550px)
+const CARD_WIDTH = Math.min(SCREEN_WIDTH * 0.85, 340);
+const CARD_HEIGHT = Math.min(SCREEN_HEIGHT * 0.60, 550);
 const SWIPE_THRESHOLD = 80;
 
 interface FlashCardProps {
@@ -162,48 +164,101 @@ const FlashCard = forwardRef<FlashCardRef, FlashCardProps>(({ question, hint, an
         };
     });
 
-    const renderKaTeX = (content: string, isBack: boolean = false) => `
+    // Helper function to escape HTML but preserve LaTeX
+    const escapeHtmlForKaTeX = (text: string): string => {
+        // First, escape HTML entities (but not backslashes yet)
+        let escaped = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
+        // Normalize LaTeX backslashes - convert double backslashes to single
+        // This handles cases where the API returns \\frac instead of \frac
+        escaped = escaped.replace(/\\\\/g, '\\');
+
+        return escaped;
+    };
+
+    const renderKaTeX = (content: string, isBack: boolean = false) => {
+        const escapedContent = escapeHtmlForKaTeX(content);
+
+        return `
         <!DOCTYPE html>
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+            <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+            <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
             <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
                 html, body {
                     background-color: transparent !important;
-                    margin: 0;
-                    padding: 0;
                     height: 100%;
                     width: 100%;
-                    overflow: height;
+                    overflow: hidden;
                 }
                 body {
-                    font-family: -apple-system, system-ui;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
                     color: #1E293B;
                     text-align: center;
-                    padding: 16px;
-                    box-sizing: border-box;
+                    padding: 12px; /* Reduced padding */
                 }
-                .math-content { font-size: 18px; line-height: 1.5; }
+                .math-content {
+                    font-size: 16px; /* Slightly smaller for better fit */
+                    line-height: 1.5;
+                    width: 100%;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word; /* Ensure text wraps */
+                }
+                /* KaTeX specific styling */
+                .katex {
+                    font-size: 1.15em !important;
+                    color: #1E293B !important;
+                }
+                .katex-display {
+                    margin: 0.5em 0 !important;
+                }
+                /* Make sure formulas are visible with correct color */
+                .katex .base {
+                    color: #1E293B !important;
+                }
+                .katex-html {
+                    color: #1E293B !important;
+                }
+                /* Override any error styling */
+                .katex-error {
+                    color: #1E293B !important;
+                }
             </style>
         </head>
         <body>
-            <div class="math-content">${content}</div>
+            <div class="math-content" id="content">${escapedContent}</div>
             <script>
-                renderMathInElement(document.body, {
-                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
-                    throwOnError: false
+                document.addEventListener("DOMContentLoaded", function() {
+                    if (typeof renderMathInElement !== 'undefined') {
+                        renderMathInElement(document.getElementById('content'), {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false},
+                                {left: '\\\\(', right: '\\\\)', display: false},
+                                {left: '\\\\[', right: '\\\\]', display: true}
+                            ],
+                            throwOnError: false,
+                            trust: true
+                        });
+                    }
                 });
             </script>
         </body>
         </html>
     `;
+    };
 
     return (
         <GestureDetector gesture={panGesture}>

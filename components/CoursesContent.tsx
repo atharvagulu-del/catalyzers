@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, IndianRupee, Calendar, Clock } from "lucide-react";
+import { Check, IndianRupee, Calendar, Clock, Sparkles, ArrowRight, Minus } from "lucide-react";
 
 // Course types
 type CourseType = "11th" | "12th" | "dropper";
@@ -400,6 +400,10 @@ export default function CoursesContent() {
     const [selectedExam, setSelectedExam] = useState<ExamType>("neet");
     const [selectedType, setSelectedType] = useState<CourseType | "all">("all");
 
+    // Quiz State
+    const [quizExam, setQuizExam] = useState<ExamType | null>(null);
+    const [quizClass, setQuizClass] = useState<CourseType | null>(null);
+
     const filteredCourses = courses.filter(
         (course) =>
             course.exam === selectedExam &&
@@ -414,18 +418,129 @@ export default function CoursesContent() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
-            <section className="bg-gradient-to-br from-primary via-primary-dark to-purple-900 text-white py-12 md:py-16">
-                <div className="container px-4 md:px-6">
+            <section className="relative bg-[#020617] text-white py-20 md:py-32 overflow-hidden">
+                {/* Premium Background Effects */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+                <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-indigo-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+                <div className="container px-4 md:px-6 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                            Our Courses
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6 backdrop-blur-sm">
+                            <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">Academic Ecosystem</span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
+                            Master Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Potential</span>
                         </h1>
-                        <p className="text-base md:text-lg text-purple-100 mb-2">
-                            📍 Offline Coaching in Kota - India&apos;s Coaching Capital
+                        <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto font-light">
+                            India's most rigorously designed batches in Kota. Choose your path and let our visionaries guide you to a top rank.
                         </p>
-                        <p className="text-sm md:text-base text-purple-200">
-                            Expert Faculty • Proven Results • Affordable Fees
-                        </p>
+
+                        <div className="flex flex-wrap justify-center gap-6 text-sm font-semibold text-slate-400">
+                            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Expert Faculty</span>
+                            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-indigo-500"></div> Tracked Results</span>
+                            <span className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-purple-500"></div> Transparent Fees</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Interactive Quiz: Find Your Perfect Batch */}
+            <section className="py-16 md:py-24 bg-white relative overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
+
+                <div className="container px-4 md:px-6 relative z-10">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="text-center mb-10">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 mb-4 shadow-sm">
+                                <Sparkles className="w-6 h-6" />
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                                Find Your Perfect Batch in 10 Seconds
+                            </h2>
+                            <p className="text-lg text-slate-600">
+                                Not sure which program is right for you? Let's narrow it down.
+                            </p>
+                        </div>
+
+                        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 md:p-10 shadow-lg">
+                            {/* Step 1 */}
+                            <div className="mb-8">
+                                <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-sm">1</span>
+                                    What is your target exam?
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4 pl-11">
+                                    <button
+                                        onClick={() => setQuizExam("jee")}
+                                        className={`py-4 rounded-xl border-2 font-bold transition-all flex flex-col items-center justify-center gap-2 ${quizExam === "jee" ? "border-blue-600 bg-blue-50 text-blue-700 shadow-md" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                                    >
+                                        <span>JEE Main & Adv.</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setQuizExam("neet")}
+                                        className={`py-4 rounded-xl border-2 font-bold transition-all flex flex-col items-center justify-center gap-2 ${quizExam === "neet" ? "border-red-500 bg-red-50 text-red-700 shadow-md" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                                    >
+                                        <span>NEET UG</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Step 2 */}
+                            <div className={`transition-all duration-500 ${quizExam ? "opacity-100 translate-y-0" : "opacity-50 translate-y-4 pointer-events-none"}`}>
+                                <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 text-sm">2</span>
+                                    Which class are you in right now?
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pl-11">
+                                    <button
+                                        onClick={() => setQuizClass("11th")}
+                                        className={`py-3 rounded-xl border-2 font-bold transition-all ${quizClass === "11th" ? "border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                                    >
+                                        11th Moving
+                                    </button>
+                                    <button
+                                        onClick={() => setQuizClass("12th")}
+                                        className={`py-3 rounded-xl border-2 font-bold transition-all ${quizClass === "12th" ? "border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                                    >
+                                        12th Moving
+                                    </button>
+                                    <button
+                                        onClick={() => setQuizClass("dropper")}
+                                        className={`py-3 rounded-xl border-2 font-bold transition-all ${quizClass === "dropper" ? "border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                                    >
+                                        12th Passed (Dropper)
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Result */}
+                            {quizExam && quizClass && (
+                                <div className="mt-10 pl-11 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <div className="p-6 bg-gradient-to-br from-[#020617] to-indigo-950 rounded-2xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-900 relative overflow-hidden">
+                                        {/* Background effect */}
+                                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+
+                                        <div className="relative z-10 text-center md:text-left">
+                                            <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2 flex items-center justify-center md:justify-start gap-1">
+                                                <Sparkles className="w-3 h-3" /> Recommended For You
+                                            </p>
+                                            <h4 className="text-3xl font-extrabold mb-1">
+                                                {quizClass === "11th" ? "Disha" : quizClass === "12th" ? "Marg" : "Manzil"} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">{quizExam.toUpperCase()}</span> Batch
+                                            </h4>
+                                            <p className="text-slate-400 text-sm mt-2 max-w-sm">
+                                                The perfect 1-year offline program tailored exactly for {quizExam.toUpperCase()} aspirants in {quizClass === 'dropper' ? 'their drop year' : `class ${quizClass}`}.
+                                            </p>
+                                        </div>
+                                        <a href={`#${quizExam}`} className="relative z-10 w-full md:w-auto">
+                                            <Button className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all hover:scale-105 hover:-translate-y-1">
+                                                View Batch Details <ArrowRight className="w-5 h-5 ml-2" />
+                                            </Button>
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -509,27 +624,30 @@ export default function CoursesContent() {
                         {filteredCourses.map((course) => (
                             <div
                                 key={course.id}
-                                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200"
+                                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 overflow-hidden border border-slate-200 hover:border-blue-200 flex flex-col"
                             >
                                 {/* Course Image/Banner */}
-                                <div className="relative h-40 bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
+                                <div className="relative h-48 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center overflow-hidden">
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+
                                     {course.badge && (
-                                        <div className="absolute top-3 left-3 bg-white text-primary px-3 py-1 rounded-md text-xs font-bold shadow-sm">
+                                        <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest uppercase shadow-sm">
                                             {course.badge}
                                         </div>
                                     )}
                                     {course.popular && (
-                                        <div className="absolute top-3 right-3 bg-secondary text-white px-3 py-1 rounded-md text-xs font-bold shadow-sm">
+                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest uppercase shadow-lg shadow-blue-500/30">
                                             POPULAR
                                         </div>
                                     )}
-                                    <div className="text-white text-center px-4">
-                                        <h3 className="text-xl font-bold">{course.name}</h3>
+                                    <div className="text-white text-center px-6 relative z-10 transform group-hover:scale-105 transition-transform duration-500">
+                                        <h3 className="text-2xl font-bold drop-shadow-md">{course.name}</h3>
                                     </div>
                                 </div>
 
                                 {/* Course Details */}
-                                <div className="p-5">
+                                <div className="p-6 flex-grow flex flex-col">
                                     {/* Meta Info */}
                                     <div className="flex items-center gap-4 text-xs text-gray-600 mb-3">
                                         <span className="flex items-center gap-1">
@@ -572,32 +690,36 @@ export default function CoursesContent() {
                                     </div>
 
                                     {/* Pricing */}
-                                    <div className="border-t pt-4">
-                                        <div className="flex items-baseline gap-2 mb-2">
+                                    <div className="border-t border-slate-100 mt-auto pt-5">
+                                        <div className="flex items-baseline gap-2 mb-1">
                                             <div className="flex items-baseline">
-                                                <IndianRupee className="w-5 h-5 text-primary" />
-                                                <span className="text-3xl font-bold text-primary">
+                                                <IndianRupee className="w-5 h-5 text-slate-900" />
+                                                <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
                                                     {course.price.toLocaleString("en-IN")}
                                                 </span>
                                             </div>
-                                            <span className="text-sm text-gray-500 line-through">
+                                            <span className="text-sm text-slate-400 line-through font-medium">
                                                 ₹{course.mrp.toLocaleString("en-IN")}
                                             </span>
                                         </div>
-                                        <div className="mb-4">
-                                            <span className="inline-block px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-medium">
-                                                {course.discount}% discount applied
+                                        <div className="mb-6">
+                                            <span className="inline-block px-2.5 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                                                Save {course.discount}% Today
                                             </span>
                                         </div>
 
                                         {/* Buttons */}
-                                        <div className="flex gap-2">
-                                            <Button variant="outline" className="flex-1" size="sm">
-                                                Explore
-                                            </Button>
-                                            <Button className="flex-1" size="sm">
-                                                Buy Now
-                                            </Button>
+                                        <div className="flex gap-3">
+                                            <a href={`/courses/${course.id}`} className="flex-1 w-full relative z-20">
+                                                <Button variant="outline" className="w-full rounded-xl border-slate-300 text-slate-700 font-bold hover:bg-slate-50 relative z-20" size="lg">
+                                                    Explore
+                                                </Button>
+                                            </a>
+                                            <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer" className="flex-1 w-full relative z-20">
+                                                <Button className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-600/20 relative z-20" size="lg">
+                                                    Enroll Now
+                                                </Button>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -653,12 +775,152 @@ export default function CoursesContent() {
                 </div>
             </section>
 
+            {/* Apple-Style Comparison Table */}
+            <section className="py-16 md:py-24 bg-slate-50 border-t border-slate-200">
+                <div className="container px-4 md:px-6 max-w-6xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                            Compare the Programs.
+                        </h2>
+                        <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
+                            Whether you need to build the foundation or require intensive revision, see exactly what each offline batch includes.
+                        </p>
+                    </div>
+
+                    <div className="overflow-x-auto pb-8">
+                        <table className="w-full min-w-[800px] border-collapse bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                            <thead>
+                                <tr className="border-b-2 border-slate-200 bg-slate-50/50">
+                                    <th className="p-8 text-left w-1/4">
+                                        <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Compare Features</span>
+                                    </th>
+                                    <th className="p-8 text-center w-1/4 border-l border-slate-100">
+                                        <h3 className="text-2xl font-bold text-slate-900 mb-2">Disha</h3>
+                                        <p className="text-slate-500 font-medium text-sm">Class 11th Focus</p>
+                                    </th>
+                                    <th className="p-8 text-center w-1/4 border-l border-slate-100">
+                                        <h3 className="text-2xl font-bold text-slate-900 mb-2">Marg</h3>
+                                        <p className="text-slate-500 font-medium text-sm">Class 12th + Boards</p>
+                                    </th>
+                                    <th className="p-8 text-center w-1/4 border-l border-slate-100 bg-blue-50/30 relative">
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-blue-600"></div>
+                                        <div className="relative inline-block mb-2">
+                                            <span className="absolute -top-1 -right-3 flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                            </span>
+                                            <h3 className="text-2xl font-extrabold text-blue-700">Manzil</h3>
+                                        </div>
+                                        <p className="text-blue-600 font-medium text-sm">Intensive Dropper</p>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-slate-700 text-center">
+                                {/* Core Features Row */}
+                                <tr className="hover:bg-slate-50/50 transition-colors group">
+                                    <td className="p-6 font-bold text-left text-slate-900 text-sm">Daily Class Duration</td>
+                                    <td className="p-6 font-medium border-l border-slate-100">4.5 Hours</td>
+                                    <td className="p-6 font-medium border-l border-slate-100">6 Hours</td>
+                                    <td className="p-6 font-bold text-blue-800 bg-blue-50/30 border-l border-blue-100">8+ Hours <br /><span className="text-xs font-normal text-blue-600">(Intensive)</span></td>
+                                </tr>
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="p-6 font-bold text-left text-slate-900 text-sm">Syllabus Coverage</td>
+                                    <td className="p-6 border-l border-slate-100">11th Class Only</td>
+                                    <td className="p-6 border-l border-slate-100">12th Class + 11th Revision</td>
+                                    <td className="p-6 font-bold text-blue-800 bg-blue-50/30 border-l border-blue-100">Complete 11th & 12th</td>
+                                </tr>
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="p-6 font-bold text-left text-slate-900 text-sm">Testing Frequency</td>
+                                    <td className="p-6 border-l border-slate-100">Bi-Weekly</td>
+                                    <td className="p-6 border-l border-slate-100">Weekly</td>
+                                    <td className="p-6 font-bold text-blue-800 bg-blue-50/30 border-l border-blue-100">Daily Practice + Weekly Mains</td>
+                                </tr>
+
+                                {/* Specialized Features row */}
+                                <tr>
+                                    <td colSpan={4} className="py-8 px-6 bg-slate-50 text-left border-y border-slate-200">
+                                        <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                                            <Sparkles className="w-4 h-4 text-slate-400" /> Specialized Deliverables
+                                        </h4>
+                                    </td>
+                                </tr>
+
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="p-6 font-bold text-left text-slate-900 text-sm">Board Exam Prep Integration</td>
+                                    <td className="p-6 border-l border-slate-100">
+                                        <Check className="w-5 h-5 text-slate-300 mx-auto" />
+                                    </td>
+                                    <td className="p-6 border-l border-slate-100">
+                                        <Check className="w-6 h-6 text-green-500 mx-auto" />
+                                        <span className="text-xs text-green-700 font-bold block mt-1">Dedicated Focus</span>
+                                    </td>
+                                    <td className="p-6 bg-blue-50/30 border-l border-blue-100">
+                                        <Minus className="w-5 h-5 text-slate-400 mx-auto" />
+                                        <span className="text-[10px] text-slate-500 block mt-1 uppercase font-bold tracking-wider">Not Applicable</span>
+                                    </td>
+                                </tr>
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="p-6 font-bold text-left text-slate-900 text-sm">1-on-1 Dedicated Mentor</td>
+                                    <td className="p-6 border-l border-slate-100">
+                                        <Check className="w-5 h-5 text-green-500 mx-auto" />
+                                    </td>
+                                    <td className="p-6 border-l border-slate-100">
+                                        <Check className="w-5 h-5 text-green-500 mx-auto" />
+                                    </td>
+                                    <td className="p-6 bg-blue-50/30 border-l border-blue-100">
+                                        <div className="flex flex-col items-center">
+                                            <Check className="w-6 h-6 text-blue-600" />
+                                            <span className="text-xs text-blue-800 font-bold mt-1">24/7 Priority Access</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="p-6 font-bold text-left text-slate-900 text-sm">All India Test Series (AITS)</td>
+                                    <td className="p-6 border-l border-slate-100">
+                                        <Check className="w-5 h-5 text-slate-300 mx-auto" />
+                                    </td>
+                                    <td className="p-6 border-l border-slate-100">
+                                        <Check className="w-5 h-5 text-green-500 mx-auto" />
+                                    </td>
+                                    <td className="p-6 bg-blue-50/30 border-l border-blue-100">
+                                        <div className="flex flex-col items-center">
+                                            <Check className="w-6 h-6 text-blue-600" />
+                                            <span className="text-xs text-blue-800 font-bold mt-1">Advanced AITS Included</span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                {/* Enroll Row */}
+                                <tr>
+                                    <td className="p-6 border-t-2 border-slate-200"></td>
+                                    <td className="p-6 border-l border-slate-100 border-t-2 border-slate-200">
+                                        <a href="/courses/neet-11th">
+                                            <Button variant="outline" className="w-full rounded-xl border-slate-300 font-bold text-slate-700 hover:bg-slate-50">Explore Disha</Button>
+                                        </a>
+                                    </td>
+                                    <td className="p-6 border-l border-slate-100 border-t-2 border-slate-200">
+                                        <a href="/courses/neet-12th">
+                                            <Button variant="outline" className="w-full rounded-xl border-slate-300 font-bold text-slate-700 hover:bg-slate-50">Explore Marg</Button>
+                                        </a>
+                                    </td>
+                                    <td className="p-6 bg-blue-50/50 border-l border-blue-100 border-t-2 border-slate-200">
+                                        <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer">
+                                            <Button className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20">Enroll in Manzil</Button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
             {/* Why Kota Section */}
             <section className="py-12 md:py-16 bg-gradient-to-br from-purple-50 to-pink-50">
                 <div className="container px-4 md:px-6">
                     <div className="max-w-5xl mx-auto">
                         <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
-                            Why Choose Catalyzer Kota?
+                            Why Choose Catalyzers Kota?
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -707,7 +969,7 @@ export default function CoursesContent() {
                         Ready to Start Your Journey?
                     </h2>
                     <p className="text-base text-purple-100 mb-6 max-w-2xl mx-auto">
-                        Join thousands of successful students at Catalyzer Kota
+                        Join thousands of successful students at Catalyzers Kota
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="/courses">

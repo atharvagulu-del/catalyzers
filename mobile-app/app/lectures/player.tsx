@@ -1,10 +1,9 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { ChevronDown, PlayCircle, SkipForward, FileText, CheckCircle2, ClipboardList, PenTool, Trophy } from 'lucide-react-native';
 import { lectureData } from '@/lib/lectureData';
-import { Skeleton } from '@/components/Skeleton';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useAppColors } from '@/hooks/use-app-colors';
 
@@ -13,7 +12,6 @@ export default function VideoPlayerScreen() {
     const router = useRouter();
     const colors = useAppColors();
     const [playing, setPlaying] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
 
     const {
         subjectId,
@@ -22,13 +20,6 @@ export default function VideoPlayerScreen() {
         resourceId,
         resourceIndex
     } = params;
-
-    // Simulate loading delay for smooth skeleton effect
-    useEffect(() => {
-        setIsLoading(true);
-        const timer = setTimeout(() => setIsLoading(false), 800);
-        return () => clearTimeout(timer);
-    }, [resourceId]); // Re-trigger on resource change
 
     // Safe Casts & Lookups
     const currentSubjectId = typeof subjectId === 'string' ? subjectId : '';
@@ -135,9 +126,6 @@ export default function VideoPlayerScreen() {
     const handleNavigate = (resource: any) => {
         if (!resource) return;
 
-        // Trigger local loading first
-        setIsLoading(true);
-
         if (resource.type === 'video') {
             const targetChapterId = resource.isNextChapter ? resource.chapterId : chapterId;
             const targetResourceIndex = resource.index;
@@ -177,42 +165,6 @@ export default function VideoPlayerScreen() {
 
     const videoTitle = currentResource?.title || params.title || 'Lecture Video';
     const videoDesc = params.description || '';
-
-    if (isLoading) {
-        return (
-            <View style={{ flex: 1, backgroundColor: colors.bg }}>
-                {/* Header Skeleton */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, paddingTop: 60 }}>
-                    <Skeleton width={40} height={40} borderRadius={20} />
-                    <View style={{ flex: 1, marginLeft: 16, gap: 8 }}>
-                        <Skeleton width={120} height={20} borderRadius={4} />
-                        <Skeleton width={80} height={14} borderRadius={4} />
-                    </View>
-                </View>
-
-                {/* Video Skeleton */}
-                <Skeleton width="100%" height={Dimensions.get('window').width * (9 / 16)} borderRadius={0} />
-
-                <View style={{ padding: 20 }}>
-                    {/* Title Skeleton */}
-                    <Skeleton width="80%" height={28} borderRadius={4} />
-                    <View style={{ marginTop: 8 }} />
-                    <Skeleton width="100%" height={16} borderRadius={4} />
-                    <View style={{ marginTop: 4 }} />
-                    <Skeleton width="90%" height={16} borderRadius={4} />
-
-                    {/* Up Next Skeleton */}
-                    <View style={{ marginTop: 32 }}>
-                        <Skeleton width={80} height={16} borderRadius={4} />
-                        <View style={{ marginTop: 12 }} />
-                        <Skeleton width="100%" height={70} borderRadius={12} />
-                        <View style={{ marginTop: 12 }} />
-                        <Skeleton width="100%" height={70} borderRadius={12} />
-                    </View>
-                </View>
-            </View>
-        );
-    }
 
     return (
         <Animated.View entering={FadeIn} style={{ flex: 1, backgroundColor: colors.bg }}>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Search, ChevronRight, PlayCircle, FileText, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { lectureData } from '@/lib/lectureData';
+import { getChapterResources } from '@/lib/contentManager';
 import { Skeleton } from '@/components/Skeleton';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAppColors } from '@/hooks/use-app-colors';
@@ -16,13 +17,8 @@ export default function SubjectDetailScreen() {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        // Simulate network delay for smooth feel
-        const timer = setTimeout(() => setIsLoading(false), 500);
-        return () => clearTimeout(timer);
-    }, []);
+    const [dynamicChapters, setDynamicChapters] = useState<Record<string, any[]>>({});
+    const [loadingChapters, setLoadingChapters] = useState<Record<string, boolean>>({});
 
     if (!subjectData) {
         return (
@@ -36,9 +32,53 @@ export default function SubjectDetailScreen() {
         unit.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const toggleUnit = (unitId: string) => {
-        // Layout animation handles the smooth transition automatically
-        setExpandedUnit(expandedUnit === unitId ? null : unitId);
+    // Fetch dynamic content for chapters in a unit
+    const fetchChapterContent = async (unit: any) => {
+        if (!subjectData) return;
+
+        const examType = subjectData.exam.toUpperCase();
+        const subject = subjectData.subject;
+        const grade = subjectData.grade;
+
+        for (const chapter of unit.chapters) {
+            const cacheKey = `${unit.id}-${chapter.id}`;
+            if (dynamicChapters[cacheKey]) continue; // Already loaded
+
+            setLoadingChapters(prev => ({ ...prev, [cacheKey]: true }));
+
+            try {
+                const resources = await getChapterResources(
+                    examType,
+                    subject,
+                    grade,
+                    chapter.id,
+                    chapter.resources
+                );
+
+                setDynamicChapters(prev => ({
+                    ...prev,
+                    [cacheKey]: resources
+                }));
+            } catch (error) {
+                console.error('Failed to fetch chapter content:', error);
+                setDynamicChapters(prev => ({
+                    ...prev,
+                    [cacheKey]: chapter.resources
+                }));
+            } finally {
+                setLoadingChapters(prev => ({ ...prev, [cacheKey]: false }));
+            }
+        }
+    };
+
+    const toggleUnit = async (unit: any) => {
+        const isExpanding = expandedUnit !== unit.id;
+        setExpandedUnit(isExpanding ? unit.id : null);
+
+        // Fetch dynamic content when expanding
+        if (isExpanding) {
+            await fetchChapterContent(unit);
+        }
     }
 
     const handleResourcePress = (unitId: string, chapterId: string, currentRes: any, index: number) => {
@@ -61,6 +101,7 @@ export default function SubjectDetailScreen() {
             router.push({
                 pathname: '/tests/[id]',
                 params: {
+                    id: currentRes.id,
                     testId: currentRes.id,
                     resourceEncoded: JSON.stringify({
                         ...currentRes,
@@ -101,50 +142,54 @@ export default function SubjectDetailScreen() {
                 </View>
             </View>
 
-            {isLoading ? (
-                <View style={{ padding: 20, gap: 16 }}>
-                    {[1, 2, 3].map(i => <Skeleton key={i} width="100%" height={60} borderRadius={12} />)}
-                </View>
-            ) : (
-                <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
-                    {filteredUnits.map((unit, index) => (
-                        <Animated.View key={unit.id} entering={FadeInDown.delay(index * 100)}>
-                            <View style={{ backgroundColor: colors.cardBg, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border }}>
-                                <TouchableOpacity onPress={() => toggleUnit(unit.id)} activeOpacity={0.8}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, flex: 1 }}>{unit.title}</Text>
-                                        {expandedUnit === unit.id ? <ChevronUp size={20} color={colors.textSecondary} /> : <ChevronDown size={20} color={colors.textSecondary} />}
-                                    </View>
-                                </TouchableOpacity>
+            <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
+                {filteredUnits.map((unit, index) => (
+                    <Animated.View key={unit.id} entering={FadeInDown.delay(index * 100)}>
+                        <View style={{ backgroundColor: colors.cardBg, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border }}>
+                            <TouchableOpacity onPress={() => toggleUnit(unit)} activeOpacity={0.8}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, flex: 1 }}>{unit.title}</Text>
+                                    {expandedUnit === unit.id ? <ChevronUp size={20} color={colors.textSecondary} /> : <ChevronDown size={20} color={colors.textSecondary} />}
+                                </View>
+                            </TouchableOpacity>
 
-                                {expandedUnit === unit.id && (
-                                    <View style={{ marginTop: 16, gap: 12 }}>
-                                        {unit.chapters.map((chapter, cIndex) => (
+                            {expandedUnit === unit.id && (
+                                <View style={{ marginTop: 16, gap: 12 }}>
+                                    {unit.chapters.map((chapter, cIndex) => {
+                                        const cacheKey = `${unit.id}-${chapter.id}`;
+                                        const resources = dynamicChapters[cacheKey] || chapter.resources;
+                                        const isLoadingChapter = loadingChapters[cacheKey];
+
+                                        return (
                                             <View key={chapter.id}>
                                                 <Text style={{ color: colors.text, fontSize: 14, fontWeight: '600', marginBottom: 8 }}>{chapter.title}</Text>
-                                                {chapter.resources.map((resource, rIndex) => {
-                                                    const Icon = resource.type === 'video' ? PlayCircle : resource.type === 'quiz' || resource.type === 'pyq' ? HelpCircle : FileText;
-                                                    return (
-                                                        <TouchableOpacity
-                                                            key={resource.id}
-                                                            onPress={() => handleResourcePress(unit.id, chapter.id, resource, rIndex)}
-                                                            style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.iconBg, padding: 12, borderRadius: 8, marginBottom: 8 }}
-                                                        >
-                                                            <Icon size={16} color={colors.primary} style={{ marginRight: 12 }} />
-                                                            <Text style={{ color: colors.text, flex: 1, fontSize: 13 }}>{resource.title}</Text>
-                                                            <ChevronRight size={16} color={colors.textTertiary} />
-                                                        </TouchableOpacity>
-                                                    );
-                                                })}
+                                                {isLoadingChapter ? (
+                                                    <Skeleton width="100%" height={40} borderRadius={8} />
+                                                ) : (
+                                                    resources.map((resource, rIndex) => {
+                                                        const Icon = resource.type === 'video' ? PlayCircle : resource.type === 'quiz' || resource.type === 'pyq' ? HelpCircle : FileText;
+                                                        return (
+                                                            <TouchableOpacity
+                                                                key={resource.id}
+                                                                onPress={() => handleResourcePress(unit.id, chapter.id, resource, rIndex)}
+                                                                style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.iconBg, padding: 12, borderRadius: 8, marginBottom: 8 }}
+                                                            >
+                                                                <Icon size={16} color={colors.primary} style={{ marginRight: 12 }} />
+                                                                <Text style={{ color: colors.text, flex: 1, fontSize: 13 }}>{resource.title}</Text>
+                                                                <ChevronRight size={16} color={colors.textTertiary} />
+                                                            </TouchableOpacity>
+                                                        );
+                                                    })
+                                                )}
                                             </View>
-                                        ))}
-                                    </View>
-                                )}
-                            </View>
-                        </Animated.View>
-                    ))}
-                </ScrollView>
-            )}
+                                        );
+                                    })}
+                                </View>
+                            )}
+                        </View>
+                    </Animated.View>
+                ))}
+            </ScrollView>
         </View>
     );
 }

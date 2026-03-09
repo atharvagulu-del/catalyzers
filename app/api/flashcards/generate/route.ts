@@ -1,18 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Groq API Configuration
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-if (!GEMINI_API_KEY) {
-    console.error('GEMINI_API_KEY is not set');
+if (!GROQ_API_KEY) {
+    console.error('GROQ_API_KEY is not set');
 }
 
-const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+// Helper function to fix LaTeX backslashes that were corrupted by JSON parsing
+function fixLatexBackslashes(text: string): string {
+    // JSON escape sequences like \f, \n, \t, \r, \b get converted to actual control characters
+    // We need to convert them back to their LaTeX forms
+    // Form-feed \f (ASCII 12) -> should be \f for \frac
+    // Backspace \b (ASCII 8) -> should be \b for \beta, \bar, etc.
+    // Tab \t (ASCII 9) -> should be \t for \theta, \times, etc.
+    // Newline \n (ASCII 10) -> should be \n for \neq, \nu, etc.
+    // Carriage return \r (ASCII 13) -> should be \r for \rho, \rightarrow, etc.
+    return text
+        .replace(/\f/g, '\\f')  // Form-feed -> \f (for \frac)
+        .replace(/\x08/g, '\\b')  // Backspace -> \b (for \beta)
+        .replace(/\t/g, '\\t')  // Tab -> \t (for \theta)
+        .replace(/\n/g, '\\n')  // Newline -> \n (for \neq) - but be careful with actual newlines
+        .replace(/\r/g, '\\r');  // Carriage return -> \r (for \rho)
+}
 
 // Robust JSON extraction function
 function extractJSON(text: string): unknown[] | null {
     // Remove markdown code blocks
     let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/gi, '');
+
+    // CRITICAL FIX: Escape backslashes BEFORE JSON parsing to preserve LaTeX commands
+    // JSON escape sequences like \f, \n, \t, \r, \b will corrupt LaTeX commands
+    // We need to convert single backslashes to double backslashes before parsing
+    // But we must not double-escape already escaped ones (\\)
+    const PLACEHOLDER = '\u0000DOUBLE_BACKSLASH\u0000';
+    cleaned = cleaned
+        .replace(/\\\\/g, PLACEHOLDER)  // Save already escaped \\
+        .replace(/\\([^"\\])/g, '\\\\$1')  // Escape single backslashes (but not \" or \\)
+        .replace(new RegExp(PLACEHOLDER, 'g'), '\\\\');  // Restore \\
 
     // Try to find JSON array
     const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
@@ -24,22 +50,21 @@ function extractJSON(text: string): unknown[] | null {
     // 1. Remove trailing commas
     jsonText = jsonText.replace(/,\s*([}\]])/g, '$1');
 
-    // 2. Fix unescaped newlines in strings
-    jsonText = jsonText.replace(/:\s*"([^"]*)\n([^"]*)"/g, (match, p1, p2) => {
-        return `: "${p1}\\n${p2}"`;
-    });
-
-    // 3. Remove control characters
-    jsonText = jsonText.replace(/[\x00-\x1F\x7F]/g, (char) => {
-        if (char === '\n' || char === '\r' || char === '\t') return '';
-        return '';
-    });
-
-    // 4. Fix broken escape sequences
-    jsonText = jsonText.replace(/\\([^"\\\/bfnrtu])/g, '\\\\$1');
+    // 2. Remove control characters (they shouldn't be in the text at this point)
+    jsonText = jsonText.replace(/[\x00-\x1F\x7F]/g, '');
 
     try {
-        return JSON.parse(jsonText);
+        const parsed = JSON.parse(jsonText);
+        // Post-process to fix any remaining LaTeX issues
+        if (Array.isArray(parsed)) {
+            return parsed.map((card: any) => ({
+                ...card,
+                question: card.question ? fixLatexBackslashes(card.question) : card.question,
+                hint: card.hint ? fixLatexBackslashes(card.hint) : card.hint,
+                answer: card.answer ? fixLatexBackslashes(card.answer) : card.answer
+            }));
+        }
+        return parsed;
     } catch (e1) {
         console.log('First parse attempt failed, trying relaxed parse...');
 
@@ -49,7 +74,17 @@ function extractJSON(text: string): unknown[] | null {
             jsonText = jsonText.replace(/\r?\n/g, ' ');
             // Collapse multiple spaces
             jsonText = jsonText.replace(/\s+/g, ' ');
-            return JSON.parse(jsonText);
+            const parsed = JSON.parse(jsonText);
+            // Post-process to fix LaTeX
+            if (Array.isArray(parsed)) {
+                return parsed.map((card: any) => ({
+                    ...card,
+                    question: card.question ? fixLatexBackslashes(card.question) : card.question,
+                    hint: card.hint ? fixLatexBackslashes(card.hint) : card.hint,
+                    answer: card.answer ? fixLatexBackslashes(card.answer) : card.answer
+                }));
+            }
+            return parsed;
         } catch (e2) {
             console.log('Second parse attempt failed, trying line-by-line extraction...');
 
@@ -61,7 +96,13 @@ function extractJSON(text: string): unknown[] | null {
                     try {
                         const card = JSON.parse(match[0].replace(/\r?\n/g, ' '));
                         if (card.question && card.answer) {
-                            cards.push(card);
+                            // Fix LaTeX in extracted cards
+                            cards.push({
+                                ...card,
+                                question: fixLatexBackslashes(card.question),
+                                hint: card.hint ? fixLatexBackslashes(card.hint) : card.hint,
+                                answer: fixLatexBackslashes(card.answer)
+                            });
                         }
                     } catch {
                         // Skip malformed card
@@ -79,9 +120,9 @@ function extractJSON(text: string): unknown[] | null {
 
 export async function POST(request: NextRequest) {
     try {
-        if (!genAI) {
+        if (!GROQ_API_KEY) {
             return NextResponse.json(
-                { error: 'AI service not configured. Please set GEMINI_API_KEY.' },
+                { error: 'AI service not configured. Please set GROQ_API_KEY.' },
                 { status: 500 }
             );
         }
@@ -95,21 +136,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const models = [
-            'gemini-2.0-flash',
-            'gemini-2.0-flash-lite',
-            'gemini-1.5-flash'
-        ];
-
-        let text = '';
-        let modelUsed = '';
-
-        for (const modelName of models) {
-            try {
-                console.log(`[Flashcards] Trying model: ${modelName}`);
-                const model = genAI.getGenerativeModel({ model: modelName });
-
-                const prompt = `Generate ${count} JEE/NEET flashcards for "${topic}" in ${subject}.
+        const prompt = `Generate ${count} JEE/NEET flashcards for "${topic}" in ${subject}.
 
 IMPORTANT: Return ONLY a JSON array. No explanations, no markdown.
 
@@ -120,100 +147,78 @@ Use $...$ for math formulas.
 
 Return ONLY the JSON array starting with [ and ending with ]`;
 
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                text = response.text();
+        console.log(`[Flashcards] Calling Groq llama-3.3-70b-versatile...`);
 
-                if (text) {
-                    modelUsed = modelName;
-                    break; // Success
-                }
-            } catch (modelError: any) {
-                console.error(`[Flashcards] Failed with ${modelName}:`, modelError.message);
-                // Continue to next model
-            }
+        const response = await fetch(GROQ_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: prompt }],
+                max_tokens: 2000,
+                temperature: 0.7
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error(`[Flashcards] Groq Error: ${response.status} - ${errText}`);
+            return NextResponse.json(
+                { error: 'Failed to generate flashcards. Please try again.' },
+                { status: 500 }
+            );
         }
+
+        const data = await response.json();
+        const text = data.choices?.[0]?.message?.content?.trim();
 
         if (!text) {
-            throw new Error("All AI models failed to generate content. Please try again later.");
-        }
-
-        console.log(`[Flashcards] Success with ${modelUsed}. Raw response (first 300 chars):`, text.substring(0, 300));
-
-        // Extract and parse JSON
-        let cards = extractJSON(text);
-
-        if (!cards || !Array.isArray(cards) || cards.length === 0) {
-            console.error('Failed to extract cards from:', text.substring(0, 500));
             return NextResponse.json(
-                { error: 'Could not generate flashcards for this topic. Please try a different topic.' },
+                { error: 'Empty response from AI' },
                 { status: 500 }
             );
         }
 
-        // Normalize and validate cards
-        let normalizedCards = cards
-            .filter((card: unknown): card is { question?: string; answer?: string; hint?: string } =>
-                typeof card === 'object' && card !== null
-            )
-            .map(card => ({
-                question: String(card.question || 'Question not available'),
-                hint: card.hint ? String(card.hint) : null,
-                answer: String(card.answer || 'Answer not available')
-            }))
-            .filter(card => card.question !== 'Question not available' && card.answer !== 'Answer not available');
+        console.log(`[Flashcards] Success with Groq`);
 
-        // If we got fewer than requested and fewer than 5, try to generate more
-        const minCards = Math.max(5, count);
-        if (normalizedCards.length < minCards) {
-            console.log(`Only got ${normalizedCards.length} cards, trying to generate more...`);
+        // Parse and validate the response
+        const cards = extractJSON(text);
 
-            const morePrompt = `Generate ${minCards - normalizedCards.length} MORE JEE/NEET flashcards for "${topic}" in ${subject}.
-Return ONLY a JSON array like: [{"question": "...", "hint": "..." or null, "answer": "..."}]
-Use $...$ for formulas. Make these DIFFERENT from: ${normalizedCards.slice(0, 3).map(c => c.question.substring(0, 30)).join(', ')}`;
-
-            try {
-                const model = genAI.getGenerativeModel({ model: modelUsed }); // Use the working model
-                const moreResult = await model.generateContent(morePrompt);
-                const moreText = moreResult.response.text();
-                const moreCards = extractJSON(moreText);
-
-                if (moreCards && Array.isArray(moreCards)) {
-                    const moreNormalized = moreCards
-                        .filter((card: unknown): card is { question?: string; answer?: string; hint?: string } =>
-                            typeof card === 'object' && card !== null
-                        )
-                        .map(card => ({
-                            question: String(card.question || ''),
-                            hint: card.hint ? String(card.hint) : null,
-                            answer: String(card.answer || '')
-                        }))
-                        .filter(card => card.question && card.answer);
-
-                    normalizedCards = [...normalizedCards, ...moreNormalized].slice(0, minCards);
-                }
-            } catch (e) {
-                console.log('Failed to generate more cards:', e);
-            }
-        }
-
-        if (normalizedCards.length === 0) {
+        if (!cards || !Array.isArray(cards)) {
+            console.error('[Flashcards] Failed to parse AI response');
             return NextResponse.json(
-                { error: 'No valid flashcards were generated. Please try again.' },
+                { error: 'Failed to parse AI response' },
                 { status: 500 }
             );
         }
 
-        console.log(`Successfully generated ${normalizedCards.length} flashcards for ${topic}`);
+        // Validate each card has required fields
+        const validCards = cards.filter((card: any) =>
+            card &&
+            typeof card.question === 'string' &&
+            typeof card.answer === 'string'
+        );
 
-        return NextResponse.json({ cards: normalizedCards });
-    } catch (error) {
-        console.error('Flashcard generation error:', error);
+        if (validCards.length === 0) {
+            return NextResponse.json(
+                { error: 'No valid flashcards generated' },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            cards: validCards,
+            count: validCards.length
+        });
+
+    } catch (error: any) {
+        console.error('[Flashcards] Error:', error);
         return NextResponse.json(
-            {
-                error: 'An error occurred while generating flashcards.',
-                details: error instanceof Error ? error.message : String(error)
-            },
+            { error: error.message || 'Internal server error' },
             { status: 500 }
         );
     }

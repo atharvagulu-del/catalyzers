@@ -1,49 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft, Info, HelpCircle } from 'lucide-react-native';
-import { Skeleton } from '@/components/Skeleton'; // Import reusable skeleton
 import { useAppColors } from '@/hooks/use-app-colors';
 
 export default function TestInstructionScreen() {
     const { testId, resourceEncoded } = useLocalSearchParams();
     const router = useRouter();
     const colors = useAppColors();
-    const [testData, setTestData] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        // Simulate loading for Skeleton feel
-        const timer = setTimeout(() => {
-            if (resourceEncoded) {
-                setTestData(JSON.parse(resourceEncoded as string));
+    // Parse data immediately - no loading needed since it comes from URL params
+    const testData = useMemo(() => {
+        if (resourceEncoded) {
+            try {
+                return JSON.parse(resourceEncoded as string);
+            } catch {
+                return null;
             }
-            setIsLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
+        }
+        return null;
     }, [resourceEncoded]);
-
-    if (isLoading) {
-        return (
-            <View style={{ flex: 1, backgroundColor: colors.bg, padding: 20 }}>
-                <View style={{ marginTop: 60, marginBottom: 20 }}>
-                    <Skeleton height={28} width={40} borderRadius={8} />
-                </View>
-                <View style={{ marginBottom: 20 }}>
-                    <Skeleton height={60} width={60} borderRadius={16} />
-                </View>
-                <View style={{ marginBottom: 16 }}>
-                    <Skeleton height={32} width={200} borderRadius={8} />
-                </View>
-                <View style={{ marginBottom: 32 }}>
-                    <Skeleton height={60} width="100%" borderRadius={8} />
-                </View>
-                <View style={{ marginBottom: 40 }}>
-                    <Skeleton height={200} width="100%" borderRadius={16} />
-                </View>
-            </View>
-        );
-    }
 
     if (!testData) return null;
 

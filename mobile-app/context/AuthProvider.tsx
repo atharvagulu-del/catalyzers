@@ -22,14 +22,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         // Check active sessions and sets the user
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            if (session?.user?.user_metadata?.full_name) {
-                setFullName(session.user.user_metadata.full_name);
+        const initSession = async () => {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error) {
+                    // Handle invalid refresh token by clearing session
+                    console.warn('Session error, clearing auth state:', error.message);
+                    await AsyncStorage.removeItem('userProfile');
+                    setSession(null);
+                    setUser(null);
+                    setFullName(null);
+                } else {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                    if (session?.user?.user_metadata?.full_name) {
+                        setFullName(session.user.user_metadata.full_name);
+                    }
+                }
+            } catch (err) {
+                console.error('Auth initialization error:', err);
+                // Clear state on any error
+                await AsyncStorage.removeItem('userProfile');
+                setSession(null);
+                setUser(null);
+                setFullName(null);
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
-        });
+        };
+
+        initSession();
 
         // Listen for changes on auth state (logged in, signed out, etc.)
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {

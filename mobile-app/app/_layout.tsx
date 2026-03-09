@@ -5,67 +5,92 @@ import 'react-native-reanimated';
 import "../global.css";
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider } from '@/context/AuthProvider';
+import { AuthProvider, useAuth } from '@/context/AuthProvider';
+import { NotificationProvider } from '@/context/NotificationContext';
+import { ThemeProvider as CustomThemeProvider } from '@/context/ThemeContext';
+import { ThemeTransitionOverlay } from '@/components/ThemeTransitionOverlay';
+
+import { useEffect, useRef, useState } from 'react';
+import Constants from 'expo-constants';
 
 export const unstable_settings = {
   initialRouteName: 'login',
 };
 
-
-import { ThemeProvider as CustomThemeProvider } from '@/context/ThemeContext';
-import { ThemeTransitionOverlay } from '@/components/ThemeTransitionOverlay';
-
-import { useEffect, useRef, useState } from 'react';
-import { registerForPushNotificationsAsync } from '@/lib/notifications';
-import * as Notifications from 'expo-notifications';
+// Check if running in Expo Go
+const isExpoGo = Constants.appOwnership === 'expo';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const notificationListener = useRef<Notifications.EventSubscription>(undefined);
-  const responseListener = useRef<Notifications.EventSubscription>(undefined);
+  const notificationListenerRef = useRef<any>(undefined);
+  const responseListenerRef = useRef<any>(undefined);
 
   useEffect(() => {
-    // Register for push notifications
-    registerForPushNotificationsAsync().then(token => {
-      if (token) setExpoPushToken(token);
-    });
+    if (isExpoGo) {
+      console.log("Skipping push notification setup - not supported in Expo Go");
+      return;
+    }
 
-    // Listen for incoming notifications (foreground)
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      // console.log("Notification Received:", notification);
-    });
+    const setupNotifications = async () => {
+      try {
+        const { registerForPushNotificationsAsync } = await import('@/lib/notifications');
+        const Notifications = await import('expo-notifications');
 
-    // Listen for user interacting with notification (tapping it)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log("Notification Interaction:", response);
-      // Here you could navigate to specific screens based on data
-    });
+        const token = await registerForPushNotificationsAsync();
+        if (token) setExpoPushToken(token);
+
+        notificationListenerRef.current = Notifications.addNotificationReceivedListener(notification => {
+          // Handled by NotificationContext
+        });
+
+        responseListenerRef.current = Notifications.addNotificationResponseReceivedListener(response => {
+          console.log("Notification Interaction:", response);
+        });
+      } catch (e) {
+        console.log("Notifications setup skipped:", e);
+      }
+    };
+
+    setupNotifications();
 
     return () => {
-      notificationListener.current && notificationListener.current.remove();
-      responseListener.current && responseListener.current.remove();
+      notificationListenerRef.current?.remove?.();
+      responseListenerRef.current?.remove?.();
     };
   }, []);
 
   return (
     <AuthProvider>
       <CustomThemeProvider>
-        <RootLayoutNav />
-        <ThemeTransitionOverlay />
+        <NotificationProvider>
+          <RootLayoutNav expoPushToken={expoPushToken} />
+          <ThemeTransitionOverlay />
+        </NotificationProvider>
       </CustomThemeProvider>
     </AuthProvider>
   );
 }
 
-function RootLayoutNav() {
+function RootLayoutNav({ expoPushToken }: { expoPushToken: string | null }) {
   const colorScheme = useColorScheme();
+  const { session } = useAuth();
+
+  // Save push token to Supabase when user is logged in
+  useEffect(() => {
+    if (session?.user?.id && expoPushToken) {
+      import('@/lib/notifications').then(({ savePushToken }) => {
+        savePushToken(session.user.id, expoPushToken);
+      });
+    }
+  }, [session?.user?.id, expoPushToken]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
         <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

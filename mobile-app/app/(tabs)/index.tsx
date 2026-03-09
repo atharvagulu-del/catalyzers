@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StatusBar, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthProvider';
@@ -7,11 +7,17 @@ import { Skeleton } from '@/components/Skeleton';
 import Animated, { FadeIn, FadeInDown, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import {
-  RefreshCw, Target, TrendingUp, Zap, Bell, User, CheckCircle2, Circle as CircleIcon, BookOpen
+  RefreshCw, Target, TrendingUp, Zap, Bell, User, CheckCircle2, Circle as CircleIcon, BookOpen, ChevronRight, Clock, Trophy, Timer, PlayCircle, BarChart3
 } from 'lucide-react-native';
 import { ReviseIcon, CustomIcon, GrowIcon, FlashcardIcon, IdeaIcon } from '@/components/QuickActionsIcons';
 import { getOrCreateDailyPlan, toggleGoalStatus, DailyGoal } from '@/lib/dailyGoals';
 import { useAppColors } from '@/hooks/use-app-colors';
+import { getMyTestsWithResults, getMyEnrollment, TestWithResults, getTestStatus } from '@/lib/offlineTests';
+import { supabase } from '@/lib/supabase';
+import { useNotifications } from '@/context/NotificationContext';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const TEST_CARD_WIDTH = Math.min(300, SCREEN_WIDTH * 0.75);
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -25,16 +31,39 @@ const quickActions = [
 export default function HomeScreen() {
   const { user, fullName } = useAuth();
   const colors = useAppColors();
+  const { unreadCount } = useNotifications();
   const [activeTab, setActiveTab] = useState('Upcoming');
   const [isLoading, setIsLoading] = useState(true);
   const [goals, setGoals] = useState<DailyGoal[]>([]);
+  const [tests, setTests] = useState<TestWithResults[]>([]);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const isFirstLoad = React.useRef(true);
 
   // Animated progress value
   const progress = useSharedValue(0);
 
+  // Fetch tests with real-time updates
+  const fetchTests = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const [enrollmentData, testsData] = await Promise.all([
+        getMyEnrollment(user.id),
+        getMyTestsWithResults(user.id),
+      ]);
+      setIsEnrolled(enrollmentData?.enrollment_status === 'ENROLLED');
+      setTests(testsData);
+    } catch (error) {
+      console.error('Error fetching tests:', error);
+    }
+  }, [user?.id]);
+
   useFocusEffect(
     useCallback(() => {
-      setIsLoading(true);
+      // Only show skeleton on first load, not subsequent navigations
+      if (isFirstLoad.current) {
+        setIsLoading(true);
+      }
+
       const loadData = async () => {
         const fetchedGoals = await getOrCreateDailyPlan();
         setGoals(fetchedGoals);
@@ -50,11 +79,33 @@ export default function HomeScreen() {
           easing: Easing.out(Easing.cubic)
         });
 
+        await fetchTests();
         setIsLoading(false);
+        isFirstLoad.current = false;
       };
       loadData();
-    }, [])
+    }, [fetchTests])
   );
+
+  // Real-time subscription for tests
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const resultsChannel = supabase
+      .channel('home-test-results')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'test_results', filter: `student_id=eq.${user.id}` }, fetchTests)
+      .subscribe();
+
+    const assignmentsChannel = supabase
+      .channel('home-test-assignments')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'test_students', filter: `student_id=eq.${user.id}` }, fetchTests)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(resultsChannel);
+      supabase.removeChannel(assignmentsChannel);
+    };
+  }, [user?.id, fetchTests]);
 
   const handleToggleGoal = async (goal: DailyGoal) => {
     if (goal.isAutomated) return; // Can't manually toggle automated goals
@@ -219,7 +270,30 @@ export default function HomeScreen() {
               <Text style={{ color: colors.textSecondary, marginTop: 4 }}>Your target: <Text style={{ color: colors.primary, fontWeight: '600' }}>JEE</Text></Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 16 }}>
-              <TouchableOpacity><Bell size={24} color={colors.text} /></TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/notifications')}
+                style={{ position: 'relative' }}
+              >
+                <Bell size={24} color={colors.text} />
+                {unreadCount > 0 && (
+                  <View style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: -4,
+                    backgroundColor: '#EF4444',
+                    borderRadius: 10,
+                    minWidth: 18,
+                    height: 18,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingHorizontal: 4,
+                  }}>
+                    <Text style={{ color: '#FFF', fontSize: 10, fontWeight: '700' }}>
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push('/(tabs)/profile')}><User size={24} color={colors.text} /></TouchableOpacity>
             </View>
           </View>
@@ -321,66 +395,134 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Your tests - Allen Style */}
-        <View style={{ paddingHorizontal: 20, marginTop: 32 }}>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 16 }}>Your tests</Text>
-
-          {/* Tabs */}
-          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
-            {['Upcoming', 'Past Tests', 'Missed Tests'].map((tab) => (
-              <TouchableOpacity
-                key={tab}
-                onPress={() => setActiveTab(tab)}
-                style={{
-                  backgroundColor: activeTab === tab ? colors.text : colors.iconBg,
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                  borderRadius: 20
-                }}
-              >
-                <Text style={{
-                  color: activeTab === tab ? (colors.isDark ? '#000' : '#FFF') : colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: 13
-                }}>
-                  {tab}
-                </Text>
+        {/* Your Tests - Horizontal Scroll */}
+        {isEnrolled && (
+          <View style={{ marginTop: 32 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 16 }}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>Your Tests</Text>
+              <TouchableOpacity onPress={() => router.push('/(tabs)/tests')} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Text style={{ fontSize: 13, color: colors.primary, fontWeight: '600' }}>View All</Text>
+                <ChevronRight size={16} color={colors.primary} />
               </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Empty State - Allen Style */}
-          <View style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 60,
-            paddingHorizontal: 20
-          }}>
-            {/* Illustration */}
-            <View style={{ marginBottom: 24 }}>
-              <Text style={{ fontSize: 80 }}>📝</Text>
             </View>
 
-            {/* Text */}
-            <Text style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: colors.text,
-              textAlign: 'center',
-              marginBottom: 8
-            }}>
-              You have no upcoming tests
-            </Text>
-            <Text style={{
-              fontSize: 14,
-              color: colors.textTertiary,
-              textAlign: 'center',
-              lineHeight: 20
-            }}>
-              Tests will appear once admin schedules them
-            </Text>
+            {tests.length > 0 ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}>
+                {tests.slice(0, 4).map((test) => {
+                  const status = getTestStatus(test);
+                  const hasScore = test.my_result?.marks_obtained !== null && test.my_result?.marks_obtained !== undefined;
+                  const start = new Date(test.start_time);
+
+                  const statusConfig = {
+                    live: { label: 'Live', bg: '#EF4444', icon: PlayCircle },
+                    upcoming: { label: 'Upcoming', bg: '#3B82F6', icon: Clock },
+                    ended: { label: 'Awaiting', bg: '#F59E0B', icon: Timer },
+                    results_out: { label: 'Results', bg: '#10B981', icon: Trophy },
+                  }[status];
+
+                  return (
+                    <TouchableOpacity
+                      key={test.id}
+                      onPress={() => router.push(`/tests/test-result/${test.id}` as any)}
+                      style={{
+                        width: TEST_CARD_WIDTH,
+                        backgroundColor: colors.cardBg,
+                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        overflow: 'hidden',
+                        minHeight: 180,
+                      }}
+                    >
+                      {/* Status Bar */}
+                      <View style={{ backgroundColor: statusConfig.bg, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <statusConfig.icon size={14} color="#FFF" />
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#FFF', letterSpacing: 0.5 }}>{statusConfig.label.toUpperCase()}</Text>
+                      </View>
+
+                      <View style={{ padding: 16, flex: 1 }}>
+                        <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 6 }} numberOfLines={2}>{test.test_name}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                          <Text style={{ fontSize: 12, color: colors.textSecondary }}>{test.subject}</Text>
+                          <Text style={{ fontSize: 12, color: colors.textSecondary }}>•</Text>
+                          <Text style={{ fontSize: 12, color: colors.textSecondary }}>{test.max_marks} marks</Text>
+                        </View>
+
+                        {status === 'results_out' && hasScore ? (
+                          <View style={{ gap: 8 }}>
+                            {/* View Syllabus Button */}
+                            {test.chapters && test.chapters.length > 0 && (
+                              <TouchableOpacity
+                                onPress={(e) => {
+                                  e.stopPropagation();
+                                  // Can open syllabus modal or just navigate
+                                }}
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: 6,
+                                  backgroundColor: colors.bg,
+                                  paddingHorizontal: 12,
+                                  paddingVertical: 8,
+                                  borderRadius: 8,
+                                  borderWidth: 1,
+                                  borderColor: colors.border,
+                                }}
+                              >
+                                <BookOpen size={14} color={colors.textSecondary} />
+                                <Text style={{ fontSize: 12, color: colors.textSecondary, fontWeight: '500' }}>View Syllabus</Text>
+                              </TouchableOpacity>
+                            )}
+                            {/* View Result Button */}
+                            <TouchableOpacity
+                              onPress={() => router.push(`/tests/test-result/${test.id}` as any)}
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 6,
+                                backgroundColor: '#10B981',
+                                paddingHorizontal: 12,
+                                paddingVertical: 10,
+                                borderRadius: 8,
+                              }}
+                            >
+                              <BarChart3 size={14} color="#FFFFFF" />
+                              <Text style={{ fontSize: 12, color: '#FFFFFF', fontWeight: '600' }}>View Result</Text>
+                              <ChevronRight size={14} color="#FFFFFF" />
+                            </TouchableOpacity>
+                          </View>
+                        ) : (
+                          <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                              <Clock size={14} color={colors.textSecondary} />
+                              <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+                                {start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} at {start.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                              </Text>
+                            </View>
+                            {test.chapters && test.chapters.length > 0 && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.bg, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, alignSelf: 'flex-start' }}>
+                                <BookOpen size={12} color={colors.primary} />
+                                <Text style={{ fontSize: 11, color: colors.primary, fontWeight: '600' }}>View Syllabus</Text>
+                              </View>
+                            )}
+                          </View>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              <View style={{ alignItems: 'center', paddingVertical: 40, paddingHorizontal: 20 }}>
+                <Text style={{ fontSize: 48, marginBottom: 12 }}>📝</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text, textAlign: 'center' }}>No tests scheduled</Text>
+                <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginTop: 4 }}>Tests will appear once assigned by admin</Text>
+              </View>
+            )}
           </View>
-        </View>
+        )}
 
       </ScrollView>
     </Animated.View>

@@ -59,7 +59,7 @@ export default function ProfileScreen() {
         } catch (e) {
             console.log('Error fetching profile:', e);
         } finally {
-            setTimeout(() => setIsLoading(false), 500);
+            setIsLoading(false);
         }
     };
 

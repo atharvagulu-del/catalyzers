@@ -9,6 +9,7 @@ import {
     getTestResults,
     saveTestResults,
     updateTestPaper,
+    updateTestSolutionPaper,
     OfflineTest,
     TestResult
 } from "@/lib/offlineTests";
@@ -58,6 +59,10 @@ export default function EnterMarksPage({ params }: { params: { testId: string } 
     const [testPaperImages, setTestPaperImages] = useState<string[]>([]);
     const [uploadingImage, setUploadingImage] = useState(false);
 
+    // Solution Paper Upload State
+    const [solutionPaperImages, setSolutionPaperImages] = useState<string[]>([]);
+    const [uploadingSolution, setUploadingSolution] = useState(false);
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
@@ -72,6 +77,11 @@ export default function EnterMarksPage({ params }: { params: { testId: string } 
             // Load existing test paper images
             if (testData.test_paper && testData.test_paper.length > 0) {
                 setTestPaperImages(testData.test_paper);
+            }
+
+            // Load existing solution paper images
+            if (testData.solution_paper && testData.solution_paper.length > 0) {
+                setSolutionPaperImages(testData.solution_paper);
             }
 
             // Fetch assigned students
@@ -149,6 +159,13 @@ export default function EnterMarksPage({ params }: { params: { testId: string } 
         // Validate test paper images - minimum 2 required
         if (testPaperImages.length < 2) {
             setError("Please upload at least 2 test paper images before saving marks. Students need to see the test paper for revision.");
+            return;
+        }
+
+        // Validate Solution Papers - Optional but encourage at least 1 if results are being announced
+        if (solutionPaperImages.length === 0) {
+            // We can choose to block or just warn. Let's block for quality assurance as per user intent "results only being announced after solutions are available"
+            setError("Please upload at least 1 solution paper image before saving marks.");
             return;
         }
 
@@ -287,6 +304,79 @@ export default function EnterMarksPage({ params }: { params: { testId: string } 
         const updatedImages = testPaperImages.filter((_, i) => i !== index);
         setTestPaperImages(updatedImages);
         await updateTestPaper(test.id, updatedImages);
+    }
+
+    // Handle solution paper image upload
+    async function handleSolutionUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const files = e.target.files;
+        if (!files || files.length === 0 || !test) return;
+
+        setUploadingSolution(true);
+        setError("");
+
+        try {
+            const newImageUrls: string[] = [];
+
+            for (const file of Array.from(files)) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    setError('Please upload only image files');
+                    continue;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    setError('Image too large. Max 5MB per image.');
+                    continue;
+                }
+
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `solutions/${test.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+                // Upload to Supabase Storage (Reuse test-papers bucket)
+                const { error: uploadError } = await supabase.storage
+                    .from('test-papers')
+                    .upload(fileName, file);
+
+                if (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    setError('Failed to upload image. Make sure "test-papers" bucket exists.');
+                    continue;
+                }
+
+                // Get public URL
+                const { data: urlData } = supabase.storage
+                    .from('test-papers')
+                    .getPublicUrl(fileName);
+
+                if (urlData.publicUrl) {
+                    newImageUrls.push(urlData.publicUrl);
+                }
+            }
+
+            if (newImageUrls.length > 0) {
+                const updatedImages = [...solutionPaperImages, ...newImageUrls];
+                setSolutionPaperImages(updatedImages);
+
+                // Save to database
+                await updateTestSolutionPaper(test.id, updatedImages);
+            }
+        } catch (err) {
+            console.error('Error uploading solution:', err);
+            setError('Failed to upload solution image');
+        } finally {
+            setUploadingSolution(false);
+        }
+    }
+
+    // Remove solution paper image
+    async function handleRemoveSolutionImage(index: number) {
+        if (!test) return;
+
+        const updatedImages = solutionPaperImages.filter((_, i) => i !== index);
+        setSolutionPaperImages(updatedImages);
+        await updateTestSolutionPaper(test.id, updatedImages);
     }
 
     if (loading) {
@@ -480,6 +570,81 @@ export default function EnterMarksPage({ params }: { params: { testId: string } 
                                 multiple
                                 onChange={handleImageUpload}
                                 disabled={uploadingImage}
+                                className="hidden"
+                            />
+                        </label>
+                    </div>
+                )}
+            </div>
+
+            {/* Solution Paper Upload Section */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-purple-600" />
+                        <h3 className="font-semibold text-slate-900 dark:text-white">Solution Paper Images</h3>
+                    </div>
+                    <label className="flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+                        {uploadingSolution ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <Upload className="w-4 h-4" />
+                        )}
+                        <span className="text-sm font-medium">
+                            {uploadingSolution ? "Uploading..." : "Upload Solutions"}
+                        </span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleSolutionUpload}
+                            disabled={uploadingSolution}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                    Upload solution sheets. These will be visible to students ONLY after results are announced.
+                </p>
+
+                {solutionPaperImages.length === 0 ? (
+                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
+                        <FileText className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">No solution images uploaded yet</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {solutionPaperImages.map((imageUrl, index) => (
+                            <div key={index} className="relative group aspect-[3/4] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                                <Image
+                                    src={imageUrl}
+                                    alt={`Solution page ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                />
+                                <button
+                                    onClick={() => handleRemoveSolutionImage(index)}
+                                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs py-1 text-center">
+                                    Page {index + 1}
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* Add More Button */}
+                        <label className="aspect-[3/4] rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center cursor-pointer hover:border-purple-400 dark:hover:border-purple-600 transition-colors">
+                            <Plus className="w-8 h-8 text-slate-400 mb-1" />
+                            <span className="text-xs text-slate-500">Add More</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleSolutionUpload}
+                                disabled={uploadingSolution}
                                 className="hidden"
                             />
                         </label>
