@@ -4,11 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 // Admin password - simple protection
 const ADMIN_PASSWORD = 'atharva@6971';
 
-// Initialize Supabase client with service role for admin operations
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Initialize Supabase client with service role for admin operations (lazy)
+function getSupabaseAdmin() {
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+}
 
 // Helper to extract YouTube ID from URL
 function extractYouTubeId(url: string): string | null {
@@ -40,7 +42,7 @@ export async function GET(request: NextRequest) {
         const examType = searchParams.get('examType') || 'JEE';
         const includeInactive = searchParams.get('includeInactive') === 'true';
 
-        let query = supabaseAdmin
+        let query = getSupabaseAdmin()
             .from('chapter_content')
             .select('*')
             .eq('exam_type', examType)
@@ -80,7 +82,7 @@ export async function POST(request: NextRequest) {
         const youtubeId = contentType === 'video' ? extractYouTubeId(youtubeUrl || '') : null;
 
         // Get max sort order
-        const { data: maxOrder } = await supabaseAdmin
+        const { data: maxOrder } = await getSupabaseAdmin()
             .from('chapter_content')
             .select('sort_order')
             .eq('chapter_id', chapterId)
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
 
         const sortOrder = (maxOrder?.sort_order || 0) + 1;
 
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await getSupabaseAdmin()
             .from('chapter_content')
             .insert({
                 resource_id: resourceId,
@@ -142,7 +144,7 @@ export async function PUT(request: NextRequest) {
 
         updates.updated_at = new Date().toISOString();
 
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await getSupabaseAdmin()
             .from('chapter_content')
             .update(updates)
             .eq('id', id)
@@ -172,7 +174,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Content ID required' }, { status: 400 });
         }
 
-        const { error } = await supabaseAdmin
+        const { error } = await getSupabaseAdmin()
             .from('chapter_content')
             .delete()
             .eq('id', id);
