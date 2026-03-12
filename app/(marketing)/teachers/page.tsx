@@ -14,7 +14,7 @@ const teachers = [
         shortBio: "With over 14 years of experience in teaching Physics for JEE and NEET, Adil Sir is a highly respected educator known for his crystal-clear concept delivery, structured approach, and result-oriented mentorship. His classes are designed to empower students with a deep understanding of Physics while sharpening their problem-solving skills essential for cracking top competitive exams.",
         image: "/assets/teachers/adilsir.png",
         imagePosition: "left",
-        scale: "scale-[1.35]",
+        scale: "scale-100",
     },
     {
         id: "kirti-maam",

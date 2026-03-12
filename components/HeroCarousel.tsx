@@ -49,15 +49,15 @@ export default function HeroCarousel() {
 
                 {/* Single Row - Left Scrolling */}
                 <motion.div
-                    className="flex gap-6 md:gap-10 w-max px-4 md:px-0"
+                    className="flex gap-6 md:gap-10 w-max px-4 md:px-0 py-4"
                     animate={{ x: ['0%', '-33.33%'] }}
-                    transition={{ ease: "linear", duration: 45, repeat: Infinity }}
+                    transition={{ ease: "linear", duration: 60, repeat: Infinity }}
                     style={{ willChange: 'transform' }}
                 >
                     {duplicatedSlides.map((slide, index) => (
                         <div
                             key={index}
-                            className="relative flex-shrink-0 w-[350px] sm:w-[500px] md:w-[700px] lg:w-[850px] aspect-[1442/275] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 group"
+                            className="relative flex-shrink-0 w-[600px] sm:w-[750px] md:w-[900px] lg:w-[1050px] aspect-[1442/275] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-900/20 border border-white/10 group"
                         >
                             <Image
                                 src={slide.src}

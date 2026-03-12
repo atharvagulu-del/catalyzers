@@ -515,8 +515,10 @@ export default function CoursesContent() {
                             </div>
 
                             {/* Result */}
+                            {/* Result */}
                             {quizExam && quizClass && (
-                                <div className="mt-10 pl-11 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="mt-10 pl-11 animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+                                    {/* Primary Recommendation */}
                                     <div className="p-6 bg-gradient-to-br from-[#020617] to-indigo-950 rounded-2xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-900 relative overflow-hidden">
                                         {/* Background effect */}
                                         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -532,12 +534,39 @@ export default function CoursesContent() {
                                                 The perfect 1-year offline program tailored exactly for {quizExam.toUpperCase()} aspirants in {quizClass === 'dropper' ? 'their drop year' : `class ${quizClass}`}.
                                             </p>
                                         </div>
-                                        <a href={`#${quizExam}`} className="relative z-10 w-full md:w-auto">
+                                        <a href={`/courses/${quizExam}-${quizClass === "11th" ? "11th" : quizClass === "12th" ? "12th" : "dropper"}`} className="relative z-10 w-full md:w-auto">
                                             <Button className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-6 rounded-xl shadow-lg shadow-blue-600/30 transition-all hover:scale-105 hover:-translate-y-1">
                                                 View Batch Details <ArrowRight className="w-5 h-5 ml-2" />
                                             </Button>
                                         </a>
                                     </div>
+
+                                    {/* Secondary Recommendation (Combo/Backlog) */}
+                                    {(quizClass === "11th" || quizClass === "12th") && (
+                                        <div className="p-6 bg-gradient-to-br from-[#020617] to-indigo-950 rounded-2xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-900 relative overflow-hidden">
+                                            {/* Background effect */}
+                                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                                            
+                                            <div className="relative z-10 text-center md:text-left">
+                                                <p className="text-blue-400 text-[11px] font-bold uppercase tracking-widest mb-2 flex items-center justify-center md:justify-start gap-1">
+                                                    <Sparkles className="w-3 h-3" /> Best Value Combo
+                                                </p>
+                                                <h4 className="text-xl font-extrabold mb-1">
+                                                    Manzil <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">{quizExam.toUpperCase()}</span> (11th + 12th)
+                                                </h4>
+                                                <p className="text-slate-400 text-sm mt-1 max-w-sm">
+                                                    {quizClass === "11th" 
+                                                        ? "Get the complete 2-year package with a massive discount. Secure your 11th and 12th preparation together."
+                                                        : "Fix your 11th backlog while mastering 12th concepts. The ultimate program for serious aspirants."}
+                                                </p>
+                                            </div>
+                                            <a href={`/courses/${quizExam}-dropper`} className="relative z-10 w-full md:w-auto">
+                                                <Button variant="outline" className="w-full md:w-auto border-blue-800 bg-blue-950/50 text-white hover:bg-blue-900 hover:text-white font-bold px-6 py-5 rounded-xl shadow-sm transition-all hover:scale-105 hover:-translate-y-1">
+                                                    View Combo Details <ArrowRight className="w-4 h-4 ml-2" />
+                                                </Button>
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

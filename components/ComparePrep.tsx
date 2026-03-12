@@ -113,7 +113,7 @@ export default function ComparePrep() {
                                         <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-1.5 flex items-center justify-end gap-2.5">
                                             Instant Doubt Solving <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs shadow-sm">✓</div>
                                         </h3>
-                                        <p className="text-sm text-slate-600 leading-relaxed font-medium">Don't wait till tomorrow. Get 24/7 AI and dedicated TA support exactly when you are stuck.</p>
+                                        <p className="text-sm text-slate-600 leading-relaxed font-medium">Don't wait till tomorrow. Get instant manual teacher doubt solving and dedicated TA support exactly when you are stuck.</p>
                                     </div>
                                     <div className="group">
                                         <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-1.5 flex items-center justify-end gap-2.5">

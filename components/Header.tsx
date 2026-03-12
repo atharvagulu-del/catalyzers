@@ -80,7 +80,7 @@ export default function Header() {
                             { href: "/teachers", label: "Teachers" },
                             { href: "/results", label: "Results" },
                             { href: "/about", label: "About" },
-                            { href: "/lectures", label: "Lectures" },
+                            { href: "/study-material", label: "Study Material" },
                         ].map((link) => (
                             <Link
                                 key={link.href}
@@ -186,7 +186,7 @@ export default function Header() {
                                     { href: "/teachers", label: "Teachers" },
                                     { href: "/results", label: "Results" },
                                     { href: "/about", label: "About" },
-                                    { href: "/lectures", label: "Lectures" },
+                                    { href: "/study-material", label: "Study Material" },
                                 ].map((link) => (
                                     <Link
                                         key={link.href}
