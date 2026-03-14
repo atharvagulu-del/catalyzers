@@ -49,7 +49,7 @@ const coursesData: Record<string, Course> = {
         description: "The perfect foundation for medical aspirants. We start cleanly from the basics of 11th grade and steadily build the rigorous problem-solving skills needed for NEET.",
         targetAudience: "Students moving from Class 10th to 11th who want early advantage in NEET.",
         features: [
-            "4.5 Hours of daily live offline classes at Kota",
+            "3 Hours of daily live offline classes at Kota",
             "Extensive NCERT line-by-line coverage for Biology",
             "Bi-weekly minor tests & monthly major tests",
             "1-on-1 dedicated academic mentor",
@@ -81,7 +81,7 @@ const coursesData: Record<string, Course> = {
         description: "Your first step towards IIT. We focus heavily on building strong analytical thinking. The syllabus moves at a deliberate pace ensuring deep understanding over rote learning.",
         targetAudience: "Students moving from Class 10th to 11th aiming for top IITs/NITs.",
         features: [
-            "4.5 Hours of daily live offline classes at Kota",
+            "3 Hours of daily live offline classes at Kota",
             "Gradual level-up: Boards -> Mains -> Advanced",
             "Bi-weekly minor tests aligned with JEE Pattern",
             "1-on-1 dedicated academic mentor",
@@ -114,7 +114,7 @@ const coursesData: Record<string, Course> = {
         description: "The ultimate second chance. This intensive 8-month dropper batch is designed to drastically improve your rank. We skip the generic basics and focus purely on high-yield problem solving and massive testing.",
         targetAudience: "12th passed students looking for an intense, highly-focused drop year program for JEE Advanced.",
         features: [
-            "8+ Hours of intensive daily classes & practice sessions",
+            "6 Hours of intensive daily classes & practice sessions",
             "Fast-paced completion of 11th + 12th syllabus",
             "Daily practice sheets with strict tracking",
             "Premium All India Test Series (AITS) access",
@@ -146,7 +146,7 @@ const coursesData: Record<string, Course> = {
         language: "Hinglish",
         badge: "OFFLINE",
         features: [
-            "6 Hours of focused daily offline classes",
+            "3 Hours of focused daily offline classes",
             "Perfect synergy: Term 1/Term 2 Board pre-boards + NEET Mocks",
             "Weekly subjective tests for Boards and objective tests for NEET",
             "Exclusive access to '11th Express Revision' modules",
@@ -180,7 +180,7 @@ const coursesData: Record<string, Course> = {
         badge: "OFFLINE",
         popular: true,
         features: [
-            "8+ Hours of intensive daily classes & rigorous practice",
+            "6 Hours of intensive daily classes & rigorous practice",
             "Fast-paced completion of 11th + 12th syllabus with zero filler",
             "Daily practice sheets tracked by dedicated mentors",
             "Premium All India Test Series (AITS) access",
@@ -213,7 +213,7 @@ const coursesData: Record<string, Course> = {
         language: "Hinglish",
         badge: "OFFLINE",
         features: [
-            "6 Hours of focused daily offline classes",
+            "3 Hours of focused daily offline classes",
             "Perfect synergy: Term 1/Term 2 Board pre-boards + JEE Mocks",
             "Weekly subjective tests for Boards and objective tests for Mains/Adv",
             "Exclusive access to '11th Express Revision' modules",

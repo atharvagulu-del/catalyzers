@@ -650,15 +650,17 @@ export default function CoursesContent() {
                         {selectedExam.toUpperCase()} Complete Programs
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredCourses.map((course) => (
+                        {filteredCourses.map((course) => {
+                            const isNEET = course.exam === 'neet';
+                            return (
                             <div
                                 key={course.id}
-                                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 overflow-hidden border border-slate-200 hover:border-blue-200 flex flex-col"
+                                className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-slate-200 flex flex-col ${isNEET ? 'hover:shadow-red-900/10 hover:border-red-200' : 'hover:shadow-blue-900/10 hover:border-blue-200'}`}
                             >
                                 {/* Course Image/Banner */}
-                                <div className="relative h-48 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center overflow-hidden">
+                                <div className={`relative h-48 bg-gradient-to-br flex items-center justify-center overflow-hidden ${isNEET ? 'from-[#020617] via-rose-950 to-[#020617]' : 'from-slate-900 via-indigo-950 to-slate-900'}`}>
                                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                                    <div className={`absolute inset-0 bg-gradient-to-t to-transparent ${isNEET ? 'from-rose-950/80' : 'from-slate-900/80'}`}></div>
 
                                     {course.badge && (
                                         <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest uppercase shadow-sm">
@@ -666,7 +668,7 @@ export default function CoursesContent() {
                                         </div>
                                     )}
                                     {course.popular && (
-                                        <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest uppercase shadow-lg shadow-blue-500/30">
+                                        <div className={`absolute top-4 right-4 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest uppercase shadow-lg bg-gradient-to-r ${isNEET ? 'from-red-500 to-rose-600 shadow-red-500/30' : 'from-blue-500 to-indigo-600 shadow-blue-500/30'}`}>
                                             POPULAR
                                         </div>
                                     )}
@@ -753,7 +755,8 @@ export default function CoursesContent() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -848,9 +851,9 @@ export default function CoursesContent() {
                                 {/* Core Features Row */}
                                 <tr className="hover:bg-slate-50/50 transition-colors group">
                                     <td className="p-6 font-bold text-left text-slate-900 text-sm">Daily Class Duration</td>
-                                    <td className="p-6 font-medium border-l border-slate-100">4.5 Hours</td>
-                                    <td className="p-6 font-medium border-l border-slate-100">6 Hours</td>
-                                    <td className="p-6 font-bold text-blue-800 bg-blue-50/30 border-l border-blue-100">8+ Hours <br /><span className="text-xs font-normal text-blue-600">(Intensive)</span></td>
+                                    <td className="p-6 font-medium border-l border-slate-100">3 Hours</td>
+                                    <td className="p-6 font-medium border-l border-slate-100">3 Hours</td>
+                                    <td className="p-6 font-bold text-blue-800 bg-blue-50/30 border-l border-blue-100">6 Hours <br /><span className="text-xs font-normal text-blue-600">(Intensive)</span></td>
                                 </tr>
                                 <tr className="hover:bg-slate-50/50 transition-colors">
                                     <td className="p-6 font-bold text-left text-slate-900 text-sm">Syllabus Coverage</td>

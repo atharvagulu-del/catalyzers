@@ -9,38 +9,24 @@ import Image from 'next/image';
 const TESTIMONIALS = [
     {
         id: 1,
-        name: "Aarav Sharma",
-        tagline: "AIR 45 (JEE Adv)",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aarav",
-        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=placeholder"
+        name: "Palak Khandelwal",
+        tagline: "IIT Dhanbad Selection",
+        image: "/assets/students/Palak Khandelwal.png",
+        videoUrl: "https://www.youtube.com/embed/TBFlmdGw6fk"
     },
     {
         id: 2,
-        name: "Ishita Patel",
-        tagline: "NEET Top Ranker",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ishita",
-        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=placeholder"
+        name: "Rudra Gupta",
+        tagline: "JEE Mains Topper (99.95%ile)",
+        image: "/assets/students/Rudra Gupta.png",
+        videoUrl: "https://www.youtube.com/embed/ozjBcZTkYAk"
     },
     {
         id: 3,
-        name: "Rohan Gupta",
-        tagline: "Bits Pilani Secured",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan",
-        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=placeholder"
-    },
-    {
-        id: 4,
-        name: "Meera Singh",
-        tagline: "Selection in AIIMS",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Meera",
-        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=placeholder"
-    },
-    {
-        id: 5,
-        name: "Vikram Malhotra",
-        tagline: "IIT Bombay CSE",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vikram",
-        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=placeholder"
+        name: "Bhaviya Agrawal",
+        tagline: "BITS Pilani",
+        image: "", 
+        videoUrl: "https://www.youtube.com/embed/EHDDH_6mwF4"
     }
 ];
 
@@ -69,7 +55,7 @@ export default function StudentTestimonials() {
                 backgroundAttachment: 'fixed'
             }}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 lg:px-12 relative z-10">
                 {/* Header */}
                 <div className="text-center mb-16 space-y-3">
                     <h2 className="text-3xl md:text-5xl font-bold text-white font-sans tracking-tight">
@@ -86,14 +72,14 @@ export default function StudentTestimonials() {
                 </div>
 
                 {/* Carousel Container */}
-                <div className="relative group">
+                <div className="relative group/carousel">
                     <div className="overflow-hidden" ref={emblaRef}>
                         <div className="flex -ml-4 md:-ml-6 py-4">
                             {TESTIMONIALS.map((student) => (
                                 <div key={student.id} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-4 md:pl-6">
                                     <div className="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col">
                                         {/* Video Section */}
-                                        <div className="relative pb-[56.25%] bg-slate-100">
+                                        <div className="relative pb-[56.25%] bg-slate-900 group/video">
                                             <iframe
                                                 className="absolute top-0 left-0 w-full h-full object-cover"
                                                 src={student.videoUrl}
@@ -105,9 +91,9 @@ export default function StudentTestimonials() {
                                         </div>
 
                                         {/* Content Section */}
-                                        <div className="p-6 flex items-center relative flex-1">
-                                            <div className="relative">
-                                                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500 p-0.5 shrink-0 bg-white">
+                                        <div className="p-5 md:p-6 flex items-center relative flex-1">
+                                            <div className="relative shrink-0">
+                                                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-blue-500 p-[2px] bg-white">
                                                     <Image
                                                         src={student.image}
                                                         alt={student.name}
@@ -119,17 +105,17 @@ export default function StudentTestimonials() {
                                             </div>
 
                                             <div className="ml-4 flex-1">
-                                                <h4 className="text-blue-900 font-bold text-lg leading-tight">
+                                                <h4 className="text-blue-900 font-bold text-[17px] md:text-lg leading-tight">
                                                     {student.name}
                                                 </h4>
-                                                <p className="text-slate-600 font-medium text-sm mt-1">
+                                                <p className="text-slate-600 font-medium text-xs md:text-sm mt-1">
                                                     {student.tagline}
                                                 </p>
                                             </div>
 
                                             {/* Quote Icon */}
-                                            <div className="absolute bottom-4 right-4 opacity-10">
-                                                <Quote size={48} className="text-slate-900" />
+                                            <div className="absolute bottom-4 right-4 opacity-[0.08]">
+                                                <Quote size={40} className="text-slate-900" />
                                             </div>
                                         </div>
                                     </div>
@@ -138,20 +124,20 @@ export default function StudentTestimonials() {
                         </div>
                     </div>
 
-                    {/* Navigation Buttons */}
+                    {/* Navigation Buttons - Updated to be less intrusive */}
                     <button
                         onClick={scrollPrev}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-sm transition-all shadow-lg hidden md:block group-hover:opacity-100 disabled:opacity-50"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-12 lg:-translate-x-16 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-black/30 hover:bg-blue-600 text-white rounded-full backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] opacity-0 group-hover/carousel:opacity-100 disabled:opacity-0 focus:opacity-100 z-20 border border-white/10 hover:scale-110"
                         aria-label="Previous testimonial"
                     >
-                        <ChevronLeft size={32} />
+                        <ChevronLeft size={24} className="mr-0.5" />
                     </button>
                     <button
                         onClick={scrollNext}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full backdrop-blur-sm transition-all shadow-lg hidden md:block group-hover:opacity-100 disabled:opacity-50"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-12 lg:translate-x-16 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-black/30 hover:bg-blue-600 text-white rounded-full backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] opacity-0 group-hover/carousel:opacity-100 disabled:opacity-0 focus:opacity-100 z-20 border border-white/10 hover:scale-110"
                         aria-label="Next testimonial"
                     >
-                        <ChevronRight size={32} />
+                        <ChevronRight size={24} className="ml-0.5" />
                     </button>
                 </div>
 
