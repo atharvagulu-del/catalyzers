@@ -25,8 +25,9 @@ const TESTIMONIALS = [
         id: 3,
         name: "Bhaviya Agrawal",
         tagline: "BITS Pilani",
-        image: "", 
-        videoUrl: "https://www.youtube.com/embed/EHDDH_6mwF4"
+        image: "/assets/students/Bhavya agrawal.png", 
+        videoUrl: "https://www.youtube.com/embed/EHDDH_6mwF4",
+        scaleClass: "scale-[1.35]"
     }
 ];
 
@@ -99,7 +100,7 @@ export default function StudentTestimonials() {
                                                         alt={student.name}
                                                         width={64}
                                                         height={64}
-                                                        className="w-full h-full rounded-full object-cover"
+                                                        className={`w-full h-full rounded-full object-cover ${(student as any).scaleClass || 'scale-100'}`}
                                                     />
                                                 </div>
                                             </div>

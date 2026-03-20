@@ -34,7 +34,7 @@ const teachers = [
         shortBio: "Dedicated, dynamic, and highly skilled in teaching Mathematics to JEE aspirants, Mayank Sir brings 8 years of experience and a genuine passion for making math engaging and accessible. His focus is on helping students move toward achieving their dream ranks.",
         image: "/assets/teachers/mayanksir.png",
         imagePosition: "left",
-        scale: "scale-[1.35]",
+        scale: "scale-[1.20]",
     },
 ];
 

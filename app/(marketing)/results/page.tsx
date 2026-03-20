@@ -27,10 +27,10 @@ const JEE_MAINS = [
     { name: "Shreya Singh", percentile: "99.77", image: "/assets/students/Shreya Singh.png" },
     { name: "Yash", percentile: "99.20", image: "/assets/students/Yash.png" },
     { name: "Saloni Singla", percentile: "99.19", image: "/assets/students/Saloni Singla.png" },
-    { name: "Aditya Choudhary", percentile: "98.88", image: null },
+    { name: "Aditya Choudhary", percentile: "98.88", image: "/assets/students/Aditya Choudhary.png", scaleClass: "scale-[1.35] group-hover:scale-[1.40]" },
     { name: "Ansh Gupta", percentile: "98.82", image: null },
     { name: "Rupam Ratan", percentile: "98.62", image: null },
-    { name: "Bhavya Agarwal", percentile: "98.28", image: null },
+    { name: "Bhavya Agarwal", percentile: "98.28", image: "/assets/students/Bhavya agrawal.png", scaleClass: "scale-[1.35] group-hover:scale-[1.40]" },
     { name: "Ishan Sunil Mittal", percentile: "96.20", image: null },
     { name: "Kevanna Mutha", percentile: "95.12", image: null },
 ];
@@ -39,7 +39,7 @@ const OTHER_ENGINEERING = [
     { name: "Saloni Singla", college: "IIIT Allahabad", percentile: "99.19", image: "/assets/students/Saloni Singla.png" },
     { name: "Gourav Sarvata", college: "NIT Patna", percentile: null, image: null },
     { name: "Yash", college: "BITS Pilani", percentile: "99.20", image: "/assets/students/Yash.png" },
-    { name: "Bhavya Agarwal", college: "BITS Pilani", percentile: "98.28", image: null },
+    { name: "Bhavya Agarwal", college: "BITS Pilani", percentile: "98.28", image: "/assets/students/Bhavya agrawal.png", scaleClass: "scale-[1.35]" },
 ];
 
 const MEDICAL_STUDENTS = [
@@ -273,7 +273,7 @@ export default function ResultsPage() {
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5">
-                            {JEE_MAINS.map((student, i) => (
+                            {JEE_MAINS.filter(s => s.image).map((student, i) => (
                                 <div key={i} className="group relative bg-[#0a0f1c] rounded-2xl border border-slate-800/80 overflow-hidden hover:border-indigo-500/60 transition-all duration-500 flex flex-col translate-y-0 hover:-translate-y-2 shadow-lg hover:shadow-[0_15px_40px_-10px_rgba(79,70,229,0.2)]">
                                     <div className="relative aspect-[4/5] w-full bg-[#050b14] flex items-center justify-center overflow-hidden">
                                         <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
@@ -282,7 +282,7 @@ export default function ResultsPage() {
                                                 src={student.image}
                                                 alt={student.name}
                                                 fill
-                                                className="object-cover object-top opacity-85 group-hover:opacity-100 scale-100 group-hover:scale-105 transition-transform duration-700 ease-out z-0"
+                                                className={`object-cover object-top opacity-85 group-hover:opacity-100 ${(student as any).scaleClass || 'scale-100 group-hover:scale-105'} transition-transform duration-700 ease-out z-0`}
                                                 unoptimized
                                             />
                                         ) : (
@@ -312,7 +312,7 @@ export default function ResultsPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
-                            {OTHER_ENGINEERING.map((student, i) => (
+                            {OTHER_ENGINEERING.filter(s => s.image).map((student, i) => (
                                 <div key={i} className="flex items-center gap-5 p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80 hover:bg-slate-800/60 hover:border-slate-700/80 transition-all duration-300 group hover:-translate-y-1">
                                     <div className="w-16 h-16 rounded-xl bg-[#050b14] border border-slate-800 relative overflow-hidden shrink-0 flex items-center justify-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] group-hover:border-indigo-500/30 transition-colors">
                                         {student.image ? (
@@ -320,7 +320,7 @@ export default function ResultsPage() {
                                                 src={student.image}
                                                 alt={student.name}
                                                 fill
-                                                className="object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity"
+                                                className={`object-cover object-top opacity-80 group-hover:opacity-100 ${(student as any).scaleClass || 'scale-100'} transition-all`}
                                                 unoptimized
                                             />
                                         ) : (
@@ -356,7 +356,7 @@ export default function ResultsPage() {
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-5">
-                        {MEDICAL_STUDENTS.map((student, i) => (
+                        {MEDICAL_STUDENTS.filter(s => s.image).map((student, i) => (
                             <div key={i} className="group relative bg-[#050b14] rounded-2xl overflow-hidden aspect-[3/4] border border-slate-800/60 hover:border-emerald-500/60 hover:shadow-[0_15px_30px_-10px_rgba(16,185,129,0.3)] transition-all duration-500 translate-y-0 hover:-translate-y-2 flex flex-col">
                                 <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 pointer-events-none" />
                                 {student.image ? (
