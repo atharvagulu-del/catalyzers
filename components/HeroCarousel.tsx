@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 
 const slides = [
     { src: "/assets/results/banner1.png", alt: "JEE Mains Top Results" },
-    { src: "/assets/teachers/banner4.png", alt: "Faculty" },
-    { src: "/assets/teachers/banner2.png", alt: "Faculty" },
-    { src: "/assets/teachers/banner5.png?v=2", alt: "Faculty" },
-    { src: "/assets/teachers/banner3.png", alt: "Faculty" },
-    { src: "/assets/teachers/banner6.png", alt: "Faculty" },
+    { src: "/assets/teachers/banner2.png", alt: "Adil Sir - Individual Physics" },
+    { src: "/assets/teachers/banner6.png", alt: "Trust Catalyzers" },
+    { src: "/assets/teachers/banner3.png", alt: "Kirti Ma'am - Individual Chemistry" },
+    { src: "/assets/teachers/banner5.png?v=2", alt: "Batch Chota Result Bada" },
+    { src: "/assets/teachers/banner4.png", alt: "Mayank Sir - Individual Mathematics" },
 ];
 
 export default function HeroCarousel() {
