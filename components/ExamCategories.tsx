@@ -45,7 +45,7 @@ export default function ExamCategories() {
                     {categories.map((category) => (
                         <div
                             key={category.name}
-                            className="relative overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group"
+                            className={`relative flex flex-col overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 p-8 md:p-12 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group ${category.name === 'IIT JEE' ? 'order-first' : 'order-last'}`}
                         >
                             {/* Decorative Background Blob */}
                             <div
