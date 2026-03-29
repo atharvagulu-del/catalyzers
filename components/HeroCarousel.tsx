@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 const slides = [
     { src: "/assets/results/banner1.png", alt: "JEE Mains Top Results" },
+    { src: "/assets/teachers/banner7.png", alt: "Catalyzers YouTube", link: "https://www.youtube.com/@catalyzersinstitute5574" },
     { src: "/assets/teachers/banner2.png", alt: "Adil Sir - Individual Physics" },
     { src: "/assets/teachers/banner6.png", alt: "Trust Catalyzers" },
     { src: "/assets/teachers/banner3.png", alt: "Kirti Ma'am - Individual Chemistry" },
@@ -54,24 +55,38 @@ export default function HeroCarousel() {
                     transition={{ ease: "linear", duration: 60, repeat: Infinity }}
                     style={{ willChange: 'transform' }}
                 >
-                    {duplicatedSlides.map((slide, index) => (
-                        <div
-                            key={index}
-                            className="relative flex-shrink-0 w-[600px] sm:w-[750px] md:w-[900px] lg:w-[1050px] aspect-[1442/275] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-900/20 border border-white/10 group"
-                        >
-                            <Image
-                                src={slide.src}
-                                alt={slide.alt}
-                                fill
-                                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                unoptimized
-                                priority={index < 3}
-                            />
-                            {/* Inner shadow overlay for premium screen effect */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/40 pointer-events-none" />
-                            <div className="absolute inset-0 border border-white/10 rounded-xl sm:rounded-2xl pointer-events-none group-hover:border-indigo-500/30 transition-colors duration-500" />
-                        </div>
-                    ))}
+                    {duplicatedSlides.map((slide, index) => {
+                        const content = (
+                            <>
+                                <Image
+                                    src={slide.src}
+                                    alt={slide.alt}
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    unoptimized
+                                    priority={index < 3}
+                                />
+                                {/* Inner shadow overlay for premium screen effect */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/40 pointer-events-none" />
+                                <div className="absolute inset-0 border border-white/10 rounded-xl sm:rounded-2xl pointer-events-none group-hover:border-indigo-500/30 transition-colors duration-500" />
+                            </>
+                        );
+
+                        return (
+                            <div
+                                key={index}
+                                className="relative flex-shrink-0 w-[600px] sm:w-[750px] md:w-[900px] lg:w-[1050px] aspect-[1442/275] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-900/20 border border-white/10 group"
+                            >
+                                {(slide as any).link ? (
+                                    <a href={(slide as any).link} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 block">
+                                        {content}
+                                    </a>
+                                ) : (
+                                    content
+                                )}
+                            </div>
+                        );
+                    })}
                 </motion.div>
             </div>
         </section>
