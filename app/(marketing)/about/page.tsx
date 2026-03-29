@@ -475,7 +475,7 @@ export default function AboutPage() {
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 divide-x divide-slate-100/50">
                             <div className="text-center px-4">
                                 <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
-                                    <AnimatedCounter to={2000} />+
+                                    <AnimatedCounter to={20000} />+
                                 </div>
                                 <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Happy Students</div>
                             </div>
