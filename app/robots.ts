@@ -16,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
                 ],
             },
         ],
-        sitemap: "https://catalyzers.in/sitemap.xml",
+        sitemap: "https://catalyzers.live/sitemap.xml",
     };
 }

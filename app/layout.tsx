@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://catalyzers.in"),
+    metadataBase: new URL("https://catalyzers.live"),
     title: {
         default: "Catalyzers Institute | JEE & NEET Coaching in Kota",
         template: "%s | Catalyzers Institute",
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
         "dropper batch Kota",
         "class 11 12 coaching",
     ],
-    authors: [{ name: "Catalyzers Institute", url: "https://catalyzers.in" }],
+    authors: [{ name: "Catalyzers Institute", url: "https://catalyzers.live" }],
     creator: "Catalyzers Institute",
     openGraph: {
         type: "website",
         locale: "en_IN",
-        url: "https://catalyzers.in",
+        url: "https://catalyzers.live",
         siteName: "Catalyzers Institute",
         title: "Catalyzers Institute | JEE & NEET Coaching in Kota",
         description:
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
         },
     },
     alternates: {
-        canonical: "https://catalyzers.in",
+        canonical: "https://catalyzers.live",
     },
 };
 
