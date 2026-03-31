@@ -71,6 +71,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: "weekly",
             priority: 0.8,
         },
+        // Videos
+        {
+            url: `${BASE_URL}/videos/catalyzers-introduction`,
+            lastModified: now,
+            changeFrequency: "yearly",
+            priority: 0.6,
+        },
         // Legal Pages
         {
             url: `${BASE_URL}/privacy`,
