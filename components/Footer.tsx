@@ -69,6 +69,7 @@ export default function Footer() {
                                 { name: "Teachers", href: "/teachers" },
                                 { name: "Results", href: "/results" },
                                 { name: "Study Material", href: "/study-material" },
+                                { name: "Video Gallery", href: "/video-gallery" },
                             ].map((link) => (
                                 <li key={link.name}>
                                     <Link href={link.href} className="text-slate-400 hover:text-indigo-400 text-sm font-medium transition-colors flex items-center gap-2 group">
