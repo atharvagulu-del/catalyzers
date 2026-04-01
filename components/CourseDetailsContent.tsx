@@ -327,7 +327,7 @@ export default function CourseDetailsContent({ courseId }: { courseId: string })
                                     <li className="flex items-center gap-3 text-sm font-medium"><Check className="w-4 h-4 text-green-500" /> All India Test Series</li>
                                 </ul>
 
-                                <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer">
+                                <a href="https://cal.com/catalyzers/15min" target="_blank" rel="noopener noreferrer">
                                     <Button className={`w-full py-6 text-lg font-bold rounded-xl shadow-lg transition-transform hover:-translate-y-1 ${isNEET ? 'bg-red-600 hover:bg-red-700 shadow-red-600/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'}`}>
                                         Enroll Now
                                     </Button>

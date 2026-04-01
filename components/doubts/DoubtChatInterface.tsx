@@ -467,7 +467,7 @@ export default function DoubtChatInterface({ sessionId, onNewSession, onSessionC
                         >
                             {isEnrolled ? (
                                 <button
-                                    onClick={() => window.open('https://cal.com/catalyzer/doubt-session', '_blank')}
+                                    onClick={() => window.open('https://cal.com/catalyzers/15min', '_blank')}
                                     className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl group hover:shadow-md transition-all"
                                 >
                                     <div className="flex items-center gap-3">

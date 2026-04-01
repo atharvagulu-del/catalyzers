@@ -124,7 +124,7 @@ export default function Header() {
                                                 Request a Callback
                                             </a>
                                             <a
-                                                href="https://cal.com/atharva-gulve-9osunz/free-counselling"
+                                                href="https://cal.com/catalyzers/15min"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="block px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-xl"

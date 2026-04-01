@@ -746,7 +746,7 @@ export default function CoursesContent() {
                                                     Explore
                                                 </Button>
                                             </a>
-                                            <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer" className="flex-1 w-full relative z-20">
+                                            <a href="https://cal.com/catalyzers/15min" target="_blank" rel="noopener noreferrer" className="flex-1 w-full relative z-20">
                                                 <Button className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-600/20 relative z-20" size="lg">
                                                     Enroll Now
                                                 </Button>
@@ -796,7 +796,7 @@ export default function CoursesContent() {
                                         {subject.discount}% off
                                     </span>
                                 </div>
-                                <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer" className="w-full">
+                                <a href="https://cal.com/catalyzers/15min" target="_blank" rel="noopener noreferrer" className="w-full">
                                     <Button className="w-full" size="sm">
                                         Enroll Now
                                     </Button>
@@ -936,7 +936,7 @@ export default function CoursesContent() {
                                         </a>
                                     </td>
                                     <td className="p-6 bg-blue-50/50 border-l border-blue-100 border-t-2 border-slate-200">
-                                        <a href="https://cal.com/atharva-gulve-9osunz/free-counselling" target="_blank" rel="noopener noreferrer">
+                                        <a href="https://cal.com/catalyzers/15min" target="_blank" rel="noopener noreferrer">
                                             <Button className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20">Enroll in Manzil</Button>
                                         </a>
                                     </td>

@@ -58,7 +58,7 @@ export default function ExplainItPage() {
 
     const handleBookSession = () => {
         if (isEnrolled) {
-            window.open('https://cal.com/catalyzer/doubt-session', '_blank');
+            window.open('https://cal.com/catalyzers/15min', '_blank');
         } else {
             alert("🔒 Premium Feature\n\nOne-on-one live doubt sessions are available only for enrolled students.");
         }

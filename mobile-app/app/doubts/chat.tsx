@@ -79,7 +79,7 @@ export default function DoubtChatScreen() {
 
     const handleBookSession = () => {
         if (isEnrolled) {
-            Linking.openURL('https://cal.com/catalyzer/doubt-session');
+            Linking.openURL('https://cal.com/catalyzers/15min');
         } else {
             Alert.alert("Premium Feature", "Only enrolled students can book 1:1 live doubt sessions.");
         }
