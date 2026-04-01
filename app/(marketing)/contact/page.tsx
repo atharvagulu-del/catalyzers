@@ -1,10 +1,24 @@
 "use client";
 
+import { useEffect } from "react";
 import { MapPin, Phone, Mail, Clock, CalendarDays, ArrowRight, Building2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Cal, { getCalApi } from "@calcom/embed-react";
 
 export default function ContactPage() {
+    useEffect(() => {
+        (async function () {
+            const cal = await getCalApi();
+            cal("ui", {
+                theme: "light",
+                styles: { branding: { brandColor: "#4f46e5" } },
+                hideEventTypeDetails: false,
+                layout: "month_view"
+            });
+        })();
+    }, []);
+
     return (
         <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-500/30">
             <Header />
@@ -101,40 +115,27 @@ export default function ContactPage() {
                             
                         </div>
 
-                        {/* Booking CTA Column */}
-                        <div className="lg:col-span-2 h-full flex mt-6 lg:mt-0">
-                            <div className="w-full bg-slate-900 rounded-[2rem] p-8 md:p-10 shadow-xl flex flex-col justify-center text-left relative overflow-hidden">
-                                
-                                {/* Subtle decorative background element */}
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] pointer-events-none" />
-
-                                <div className="relative z-10 flex-col flex h-full">
-                                    <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-8 border border-white/20">
-                                        <CalendarDays className="w-8 h-8 text-indigo-300" />
-                                    </div>
-
-                                    <h3 className="text-3xl font-bold text-white mb-4">
-                                        Schedule a Free Counseling Session
-                                    </h3>
-                                    <p className="text-slate-300 text-lg mb-10 leading-relaxed">
-                                        Speak directly with our academic experts. Discuss your preparation strategy, clear your doubts, and explore how Catalyzers can help you guarantee your success.
-                                    </p>
-
-                                    <div className="mt-auto">
-                                        <a 
-                                            href="https://cal.com/atharva-gulve-9osunz/free-counselling" 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-lg rounded-xl py-4 transition-colors focus:ring-4 focus:ring-indigo-500/50"
-                                        >
-                                            Book a Free Demo
-                                            <ArrowRight className="w-5 h-5" />
-                                        </a>
-                                        <p className="text-center mt-4 text-sm font-medium text-slate-400">
-                                            100% Free • No Commitments
-                                        </p>
-                                    </div>
+                        {/* Booking CTA Column - Native Cal.com UI */}
+                        <div className="lg:col-span-2 h-[750px] flex flex-col mt-6 lg:mt-0 bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden border border-indigo-100">
+                            <div className="bg-slate-900 px-6 py-5 flex items-center gap-4 shrink-0">
+                                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center shrink-0 border border-white/20">
+                                    <CalendarDays className="w-6 h-6 text-indigo-300" />
                                 </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">
+                                        Book a Free Counseling Session
+                                    </h3>
+                                    <p className="text-slate-400 text-sm">
+                                        Choose to speak directly with an expert
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex-1 w-full bg-slate-50 relative pb-4">
+                                <Cal 
+                                    calLink="catalyzers/15min"
+                                    style={{ width:"100%", height:"100%", overflow:"scroll" }}
+                                    config={{ layout: "month_view" }}
+                                />
                             </div>
                         </div>
 
