@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { MapPin, Phone, Mail, Award, BookOpen, Users } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Cal, { getCalApi } from "@calcom/embed-react";
 
 export default function ContactPage() {
-    const [isCalLoaded, setIsCalLoaded] = useState(false);
-
     useEffect(() => {
         (async function () {
             const cal = await getCalApi();
@@ -18,12 +16,6 @@ export default function ContactPage() {
                 hideEventTypeDetails: false,
                 layout: "month_view"
             });
-            
-            // Show loading state for exactly 1.5 seconds to ensure smooth transition
-            // while the internal iframe sets up its DOM.
-            setTimeout(() => {
-                setIsCalLoaded(true);
-            }, 1200);
         })();
     }, []);
 
@@ -168,27 +160,13 @@ export default function ContactPage() {
                             </p>
                         </div>
                         
-                        <div className="w-full max-w-7xl mx-auto bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-200">
-                            <div className="w-full relative min-h-[750px] bg-slate-50">
-                                
-                                {/* Smooth Loading Overlay */}
-                                {!isCalLoaded && (
-                                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm transition-opacity duration-500">
-                                        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4 shadow-lg" />
-                                        <p className="text-indigo-900 font-bold animate-pulse text-lg">Loading Calendar...</p>
-                                        <p className="text-slate-500 font-medium text-sm mt-2">Connecting to scheduling server</p>
-                                    </div>
-                                )}
-
-                                {/* The Cal.com widget handles its own height dynamically */}
-                                <div className={`w-full h-full transition-opacity duration-700 ${isCalLoaded ? 'opacity-100' : 'opacity-0'}`}>
-                                    <Cal 
-                                        calLink="catalyzers/15min"
-                                        style={{ width:"100%", height:"100%", minHeight: "750px", overflow:"auto" }}
-                                        config={{ layout: "month_view" }}
-                                    />
-                                </div>
-
+                        <div className="w-full max-w-7xl mx-auto">
+                            <div className="w-full relative min-h-[750px]">
+                                <Cal 
+                                    calLink="catalyzers/15min"
+                                    style={{ width:"100%", height:"100%", minHeight: "750px", overflow:"visible" }}
+                                    config={{ layout: "month_view", theme: "light" }}
+                                />
                             </div>
                         </div>
                     </div>
