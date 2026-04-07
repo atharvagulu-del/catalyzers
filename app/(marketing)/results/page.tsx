@@ -179,19 +179,17 @@ export default function ResultsPage() {
             {/* Highlights Bar */}
             <div className="w-full bg-slate-900 border-b border-slate-800 relative z-20 shadow-[0_0_40px_rgba(79,70,229,0.05)]">
                 <div className="container px-4 md:px-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-800/50">
-                        {[
-                            { label: "Total Selections", value: "25k+", icon: Trophy, color: "text-amber-400" },
-                            { label: "In Top 100 AIR", value: "120+", icon: Star, color: "text-blue-400" },
-                            { label: "99+ Percentile", value: "850+", icon: TrendingUp, color: "text-emerald-400" },
-                            { label: "Success Rate", value: "1 in 3", icon: Medal, color: "text-purple-400" },
-                        ].map((stat, i) => (
-                            <div key={i} className="py-10 px-4 flex flex-col items-center text-center group hover:bg-slate-800/20 transition-colors cursor-default">
-                                <stat.icon className={`w-8 h-8 ${stat.color} mb-4 opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all`} />
-                                <span className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2 drop-shadow-sm">{stat.value}</span>
-                                <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">{stat.label}</span>
-                            </div>
-                        ))}
+                    <div className="flex flex-col items-center justify-center py-12 md:py-16 cursor-default relative overflow-hidden group">
+                        {/* Decorative subtle pulse glow */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-amber-500/10 blur-[50px] rounded-full group-hover:bg-amber-500/20 transition-all duration-700" />
+                        
+                        <Trophy className="w-12 h-12 md:w-16 md:h-16 text-amber-400 mb-6 opacity-90 group-hover:scale-110 group-hover:opacity-100 transition-all drop-shadow-[0_0_15px_rgba(251,191,36,0.3)] relative z-10" />
+                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-200 to-slate-400 tracking-tight mb-4 drop-shadow-2xl relative z-10">
+                            3,000+
+                        </span>
+                        <span className="text-sm md:text-base lg:text-lg font-bold text-amber-400/90 tracking-[0.2em] uppercase relative z-10">
+                            Verified Total Selections
+                        </span>
                     </div>
                 </div>
             </div>

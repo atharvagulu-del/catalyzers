@@ -473,29 +473,29 @@ export default function AboutPage() {
                 <div className="container px-4 md:px-6 relative z-10">
                     <div className="bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] rounded-[3rem] p-10 md:p-14 max-w-6xl mx-auto">
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 divide-x divide-slate-100/50">
-                            <div className="text-center px-4">
-                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                            <div className="text-center px-2">
+                                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight sm:tracking-tighter break-all">
                                     <AnimatedCounter to={20000} />+
                                 </div>
-                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Happy Students</div>
+                                <div className="text-[10px] sm:text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-widest break-words leading-tight">Happy Students</div>
                             </div>
-                            <div className="text-center px-4">
-                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                            <div className="text-center px-2">
+                                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight sm:tracking-tighter break-all">
                                     <AnimatedCounter to={1000} />+
                                 </div>
-                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Mock Tests</div>
+                                <div className="text-[10px] sm:text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-widest break-words leading-tight">Mock Tests</div>
                             </div>
-                            <div className="text-center px-4">
-                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                            <div className="text-center px-2">
+                                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight sm:tracking-tighter break-all">
                                     <AnimatedCounter to={4000} />+
                                 </div>
-                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">YouTube Subs</div>
+                                <div className="text-[10px] sm:text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-widest break-words leading-tight">YouTube Subs</div>
                             </div>
-                            <div className="text-center px-4">
-                                <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight">
+                            <div className="text-center px-2">
+                                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#5A4BDA] to-[#3B82F6] mb-3 font-mono tracking-tight sm:tracking-tighter break-all">
                                     <AnimatedCounter to={15} />+
                                 </div>
-                                <div className="text-sm md:text-base font-semibold text-slate-500 uppercase tracking-widest">Expert Faculty</div>
+                                <div className="text-[10px] sm:text-xs md:text-sm font-semibold text-slate-500 uppercase tracking-widest break-words leading-tight">Expert Faculty</div>
                             </div>
                         </div>
                     </div>

@@ -75,7 +75,7 @@ export default function HeroCarousel() {
                         return (
                             <div
                                 key={index}
-                                className="relative flex-shrink-0 w-[600px] sm:w-[750px] md:w-[900px] lg:w-[1050px] aspect-[1442/275] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-900/20 border border-white/10 group"
+                                className="relative flex-shrink-0 w-[900px] sm:w-[1000px] md:w-[1100px] lg:w-[1200px] xl:w-[1300px] aspect-[1442/275] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-900/20 border border-white/10 group"
                             >
                                 {(slide as any).link ? (
                                     <a href={(slide as any).link} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 block">
