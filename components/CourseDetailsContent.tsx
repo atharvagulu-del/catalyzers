@@ -292,13 +292,6 @@ export default function CourseDetailsContent({ courseId }: { courseId: string })
                                         <p className="font-bold">{course.duration}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-3 rounded-2xl backdrop-blur-sm">
-                                    <Clock className={`w-6 h-6 ${isNEET ? 'text-red-400' : 'text-blue-400'}`} />
-                                    <div>
-                                        <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5">Starts On</p>
-                                        <p className="font-bold">{course.startDate}</p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
