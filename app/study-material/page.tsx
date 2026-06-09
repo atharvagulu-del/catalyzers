@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { BookOpen, FileText, Video, Award } from "lucide-react";
+import Link from "next/link";
 
 export const metadata = {
     title: "Free Study Material | Catalyzers",
@@ -52,11 +53,12 @@ export default function StudyMaterialPage() {
                                 color: "bg-indigo-50 border-indigo-100",
                             },
                             {
-                                id: "videos",
-                                title: "Concept Videos",
-                                description: "Watch free conceptual videos to strengthen basics.",
+                                id: "lectures",
+                                title: "Free Lectures",
+                                description: "Watch premium concept lectures and PYQ solving sessions.",
                                 icon: <Video className="w-8 h-8 text-purple-600" />,
                                 color: "bg-purple-50 border-purple-100",
+                                href: "/study-material/lectures"
                             },
                             {
                                 id: "books",
@@ -66,16 +68,16 @@ export default function StudyMaterialPage() {
                                 color: "bg-sky-50 border-sky-100",
                             },
                         ].map((item) => (
-                            <div key={item.id} className={`p-6 rounded-2xl border ${item.color} hover:shadow-md transition-all`}>
+                            <Link href={item.href || `#${item.id}`} key={item.id} className={`p-6 rounded-2xl border ${item.color} hover:shadow-md transition-all group block`}>
                                 <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center mb-6">
                                     {item.icon}
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-800 mb-3">{item.title}</h3>
                                 <p className="text-slate-600 leading-relaxed mb-6">{item.description}</p>
-                                <button className="text-blue-600 font-semibold hover:text-blue-800 transition-colors flex items-center gap-2">
+                                <div className="text-blue-600 font-semibold group-hover:text-blue-800 transition-colors flex items-center gap-2">
                                     Explore &rarr;
-                                </button>
-                            </div>
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 </section>
