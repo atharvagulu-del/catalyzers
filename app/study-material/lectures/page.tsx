@@ -59,6 +59,54 @@ const LECTURES = [
         title: "Fajan's Rule – Most Important Questions & PYQs",
         subject: "JEE Main, Advanced & NEET",
         duration: "PYQs Session",
+    },
+    {
+        id: "Uwj2sr48Ll0",
+        title: "Dipole Moment Most Repeated Questions for JEE & NEET",
+        subject: "Important PYQs with Tricks",
+        duration: "PYQs Session",
+    },
+    {
+        id: "wgvo7x5uoJo",
+        title: "Crack Hybridisation & VSEPR Theory",
+        subject: "Top PYQs for JEE & NEET",
+        duration: "PYQs Session",
+    },
+    {
+        id: "JNhAWG1vU9w",
+        title: "Acidic, Basic & Amphoteric Oxides",
+        subject: "Super Revision with PYQs",
+        duration: "PYQs Session",
+    },
+    {
+        id: "BuNgTZyKIiU",
+        title: "Electronegativity Most Important Questions 🔥",
+        subject: "Repeated PYQs for JEE Mains & NEET",
+        duration: "PYQs Session",
+    },
+    {
+        id: "AVCC-UdH2z4",
+        title: "Electron Affinity PYQs ⚡ Most Important Questions",
+        subject: "Short Tricks | JEE & NEET",
+        duration: "PYQs Session",
+    },
+    {
+        id: "hbOpRSZLBfM",
+        title: "Ionisation Potential Most Repeated Questions + Tricks",
+        subject: "JEE & NEET Chemistry",
+        duration: "PYQs Session",
+    },
+    {
+        id: "s6ic0kZD_JA",
+        title: "Atomic Radius Most Repeated Questions 🔥",
+        subject: "Isoelectronic Species Tricks & PYQs",
+        duration: "PYQs Session",
+    },
+    {
+        id: "3gT1hoFyWlk",
+        title: "Quantum Numbers Most Repeated Questions",
+        subject: "JEE Chemistry",
+        duration: "PYQs Session",
     }
 ];
 
